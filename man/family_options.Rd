@@ -4,7 +4,7 @@
 \alias{family_options}
 \title{Available options for the enrichment of \code{family} objects}
 \usage{
-family_options(what, print = FALSE)
+family_options(what, print = missing(what))
 }
 \arguments{
 \item{what}{a character vector listing the components that should

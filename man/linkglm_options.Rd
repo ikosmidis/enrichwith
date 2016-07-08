@@ -4,7 +4,7 @@
 \alias{linkglm_options}
 \title{Available options for the enrichment of \code{\link[=make.link]{link-glm}} objects}
 \usage{
-linkglm_options(what, print = FALSE)
+linkglm_options(what, print = missing(what))
 }
 \arguments{
 \item{what}{a character vector listing the components that should

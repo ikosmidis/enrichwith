@@ -14,9 +14,9 @@ TRUE)} to see the available options}
 }
 \value{
 The object \code{object} of class
-    \code{\link[=make.link]{link-glm}} with extra components. Run
-    \code{linkglm_options(print = TRUE)} to see what those
-    components are.
+    \code{\link[=make.link]{link-glm}} with extra
+    components. \code{linkglm_options()} reutns the components and
+    their descriptions.
 }
 \description{
 Enrich \code{\link[=make.link]{link-glm}} with further derivatives of

@@ -1,10 +1,28 @@
 #' Methods to enrich various R objects with extra components
 #'
-#' The enrichwith package provides the "enrich" method to enrich
+#' The enrichwith package provides the \code{enrich} method to enrich
 #' various core objects with extra, relevant components. The current
-#' version has methods for enriching objects of class "family" and
-#' "link-glm". The resulting objects preserve their class, so the
-#' methods associated to them still apply.
+#' version has methods for enriching objects of class \code{family}
+#' and \code{link-glm}. The resulting objects preserve their class, so
+#' the methods associated to them still apply.
+#'
+#' Depending on the object, enriching it can be a tedious task. The
+#' enrichwith package streamlines the task into 3 main steps:
+#'
+#' \itemize{
+#'
+#' \item Set up an options function. In this step the enrichment
+#' options, their descriptions and the components in the enriched
+#' object are specficed
+#'
+#' \item Author the enrichment functions. Each of those needs to have
+#' the same name as the respective component in the enriched object,
+#' take as input the object to be enriched, and return as output the
+#' respective component for the enriched object
+#'
+#' \item Author the enrich method.
+#'
+#' }
 #'
 #' @docType package
 #' @name enrichwith

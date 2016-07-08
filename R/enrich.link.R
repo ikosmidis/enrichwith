@@ -19,9 +19,9 @@
 #' the \code{\link{power}} family of links.
 #'
 #' @return The object \code{object} of class
-#'     \code{\link[=make.link]{link-glm}} with extra components. Run
-#'     \code{linkglm_options(print = TRUE)} to see what those
-#'     components are.
+#'     \code{\link[=make.link]{link-glm}} with extra
+#'     components. \code{linkglm_options()} reutns the components and
+#'     their descriptions.
 #'
 #' @name enrich.link-glm
 #' @method enrich link-glm
@@ -60,7 +60,7 @@ assign(x = "enrich.link-glm",
 #' linkglm_options(print = TRUE)
 #' }
 #' @export
-linkglm_options <- function(what, print = FALSE) {
+linkglm_options <- function(what, print = missing(what)) {
     ## List the enrichment options that you would like to make
     ## avaiable for objects of class
     available_options <- c("d2mu.deta", "d3mu.deta",

@@ -7,51 +7,84 @@
 \method{enrich}{family}(object, with = "all", ...)
 }
 \arguments{
-\item{object}{an object of class \code{\link{family}}}
+\item{object}{an object of class \code{\link[stats]{family}}}
 
 \item{with}{a character vector with the names of the components to
-enrich \code{object} with. Run \code{family_options(print =
-TRUE)} to see the available options}
+enrich \code{object} with. Run \code{family_options()} to see
+the available options}
 
 \item{...}{currently not used}
 }
 \value{
 The object \code{object} of class \code{\link{family}} with
-    extra components. Run \code{family_options(print = TRUE)} to
-    see what those components are.
+    extra components. \code{family_options()} reutns the components
+    and their descriptions
 }
 \description{
 Enrich \code{family} objects with family- and link-specfic mathematical
 functions
 }
 \details{
-\code{\link{family}} objects specify the details of the
-    models used by functions such as \code{\link{glm}}. The
-    families implemented in the stats package include
-    \code{\link{binomial}}, \code{\link{poisson}},
-    \code{\link{Gamma}}, \code{\link{inverse.gaussian}},
-    \code{\link{gaussian}}, \code{\link{quasi}},
-    \code{\link{quasibinomial}}, \code{\link{quasipoisson}}. All
-    but the quasi families attempt to specify certain
-    characteristics of distributions from the exponential family,
-    which have probability mass or density function of the form
-\deqn{f(y; \theta) = \exp\left\{\frac{y\theta - b(\theta) + c_1(y)}{phi/m} - a(-m/\phi) + c_2(y)\right\}}{}
-where \eqn{m} is an observation weight.
+\code{\link{family}} objects specify the details of the models used
+by functions such as \code{\link[stats]{glm}}. The families
+implemented in the \code{stats} package include
+\code{\link[stats]{binomial}}, \code{\link[stats]{gaussian}},
+\code{\link[stats]{Gamma}}, \code{\link[stats]{inverse.gaussian}},
+and \code{\link[stats]{poisson}}. \code{\link[stats]{family}}
+objects specify particular characteristics of distributions from
+the exponential family. Such distributions have probability mass or
+density function of the form \deqn{f(y; \theta, \phi) =
+\exp\left\{\frac{y\theta - b(\theta) + c_1(y)}{\phi/m} - a(-m/\phi)
++ c_2(y)\right\} \quad y \in Y \subset \Re\,, \theta \in \Theta
+\subset \Re\, , \phi > 0}{f(y, theta, phi) = exp((y * theta -
+b(theta) + c_1(y))/(phi/m) - a(-m/phi) + c_2(y))} where \eqn{m >
+0}{m > 0} is an observation weight, and \eqn{a(.)}{a(.)},
+\eqn{b(.)}{b(.)}, \eqn{c_1(.)}{c_1(.)} and \eqn{c_2(.)}{c_2(.)} are
+sufficiently smooth, real-valued functions.
 
-These families correspond to models with \eqn{\mu = E(Y; \theta) =
-b'(\theta)} and \eqn{Var(Y; \theta) = \phi V(\mu)/m} (see
-\code{\link{family}} where \code{variance} corresponds to
-\eqn{V(\mu)} above).
+The expected value and the variance of such distributions is
+\eqn{\mu = b'(\theta)}{mu = b'(theta)} and \eqn{\phi V(\mu)/m}{phi * V(mu)/m},
+repsectively, where \eqn{V(\mu)}{V(mu)} is called the variance
+funciton. The parameter \eqn{\phi}{phi} is called a dispersion
+parameter.
 
-Then the deviance residuals (see \code{dev.resids}) in
-\code{\link{family}}) are
-\deqn{-2\left\{y c_1'(\mu) - y c_1'(y) - b(c'(\mu)) + b(c'(y))\right\}}
-with the second and third derivatives of
-the inverse link function with respect to \code{eta}
-(\code{d2mu.eta} and \code{d3mu.eta}; the first is \code{mu.eta}),
-the first and second derivative of the variance function with
-respect to \code{mu} (\code{d1variance}, \code{d2variance}), and
-the first three derivatives of
+Characteristics of the exponential family that are implementented
+in \code{\link[stats]{family}} objects include:
+
+\itemize{
+
+\item \code{variance}: \eqn{V(.)}{V(.)}
+
+\item \code{dev.resids}: \eqn{-2\left\{y c_1'(\mu) - y c_1'(y) -
+b(c_1'(\mu)) + b(c'_1(y))\right\}}{-2(y c_1'(mu) - y c_1'(y) -
+b(c'(mu)) + b(c'(y)))}
+
+\item \code{aic}: \eqn{-2\sum_{i = 1}^n \left\{\log f(y_i; \theta,
+\phi)\right\} + 2\delta}{-2*sum(log f(y, theta, phi)) + 2*delta}
+where \eqn{\delta}{delta} is \code{1} if the family has a dispersion
+parameter and \code{0} else
+}
+
+The \code{\link{quasi}} families differ from the other families in
+that the variance function is not determined by the family but may
+be supplied by the user. Also, the \code{\link{quasibinomial}} and
+\code{\link{quasipoisson}} families differ from the
+\code{\link{binomial}} and \code{\link{poisson}} families only in
+that the dipsersion parameter is estimated to account for
+overdispersion.
+
+For \code{\link[stats]{quasi}}, \code{dev.resid} is \eqn{m(y -
+\mu)^2}{m*(y - mu)^2} . For \code{\link[stats]{quasibinomial}} and
+\code{\link[stats]{quasipoisson}}, \code{dev.resid} is the same as
+for \code{\link[stats]{quasibinomial}} and
+\code{\link{quasipoisson}}, respectively.  The \code{aic} is
+\code{NA} for all \code{quasi} families. See
+\code{\link[stats]{quasi}} for more details.
+
+The \code{enrich} can enriche \code{\link{family}} family objects
+with extra characteristics of the family and of the chosen link
+function. See \code{\link{enrich.link-glm}} for the enrichment of
+link functions.
 }
 \examples{
 ## An example from ?glm to illustrate that things still work with
@@ -63,5 +96,8 @@ print(d.AD <- data.frame(treatment, outcome, counts))
 glm.D93 <- glm(counts ~ outcome + treatment, family = enrich(poisson()))
 anova(glm.D93)
 summary(glm.D93)
+}
+\seealso{
+\code{\link{enrich.link-glm}}, \code{\link[stats]{family}}
 }
 
