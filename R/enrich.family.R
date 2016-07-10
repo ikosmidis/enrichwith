@@ -1,13 +1,13 @@
-#' Enrich \code{family} objects
+#' Enrich objects of class \code{\link{family}}
 #'
-#' Enrich \code{family} objects with family- and link-specfic mathematical
-#' functions
+#' Enrich \code{\link{family}} objects with family-specific
+#' mathematical functions
 #'
-#' @param object an object of class \code{\link[stats]{family}}
+#' @param object an object of class \code{\link{family}}
 #' @param with a character vector with the names of the components to
-#'     enrich \code{object} with. Run \code{family_options()} to see
-#'     the available options
-#' @param ... currently not used
+#'     enrich \code{object} with
+#' @param ... extra arguments to be passed to the \code{compute_*}
+#'     functions
 #'
 #' @details
 #' \code{\link{family}} objects specify the details of the models used
@@ -69,17 +69,15 @@
 #' The \code{enrich} can enriche \code{\link{family}} family objects
 #' with extra characteristics of the family and of the chosen link
 #' function. See \code{\link{enrich.link-glm}} for the enrichment of
-#' link functions.
+#' \code{\link{link-glm}} objects.
 #'
-#' @return The object \code{object} of class \code{\link{family}} with
-#'     extra components. \code{family_options()} reutns the components
-#'     and their descriptions
+#' @return The object \code{object} of class family with extra
+#'     components. \code{get_enrichment_options.family()} returns
+#'     the components and their descriptions.
+#'
+#' @name enrich.family
 #' @method enrich family
-#'
-#' @seealso \code{\link{enrich.link-glm}}, \code{\link[stats]{family}}
-#'
 #' @export
-#'
 #' @examples
 #' ## An example from ?glm to illustrate that things still work with
 #' ## enriched families
@@ -90,81 +88,75 @@
 #' glm.D93 <- glm(counts ~ outcome + treatment, family = enrich(poisson()))
 #' anova(glm.D93)
 #' summary(glm.D93)
-enrich.family <- function(object, with = "all", ...) {
+`enrich.family` <- function(object, with = "all", ...) {
     if (is.null(with)) {
         return(object)
     }
-    what <- family_options(with)
-    for (j in what) {
-        ## Take care of link function specific options
-        if (j %in% c("d2mu.deta", "d3mu.deta")) {
-            object[[j]] <- eval(call(j, object = make.link(object$link)))
-        }
-        else {
-            object[[j]] <- eval(call(j, object = object))
-        }
+    enrichment_options <- get_enrichment_options(object, option = with, ...)
+    component <- unlist(enrichment_options$component)
+    compute <- unlist(enrichment_options$compute_function)
+    for (j in seq.int(length(component))) {
+        object[[component[j]]] <- eval(call(compute[j], object = object))
     }
     object
 }
 
-#' Available options for the enrichment of \code{family} objects
+
+
+#' Available options for the enrichment objects of class
+#' \code{\link{family}}
 #'
-#' @param what a character vector listing the components that should
-#'     be present in the enriched object
-#' @param print if TRUE then the available enrichment options
-#'     are listed
-#' @details A check is being made whether the requested component is
-#'     available in the \code{available_components} specification (see
-#'     \code{\link{options_function}}). No check is being made on
-#'     whether the functions that produce the components exist.
+#' @param object the object to be enriched
+#' @param option a character vector listing the options for enriching
+#'     the object
+#' @param all_options if \code{TRUE} then output a data frame with the
+#'     available enrichment options, their descriptions, the names of
+#'     the components that each option results in, and the names of
+#'     the corresponding \code{compute_*} functions.
+#' @return an object of class \code{enrichment_options}
+#'
+#' @details A check is being made whether the requested option is
+#'     available. No check is being made on whether the functions that
+#'     produce the components exist.
 #' @examples
 #' \dontrun{
-#' family_options(what = "all")
-#' family_options(print = TRUE)
+#' get_enrichment_options.family(option = "all")
+#' get_enrichment_options.family(all_options = TRUE)
 #' }
 #' @export
-family_options <- function(what, print = missing(what)) {
+`get_enrichment_options.family` <- function(object, option, all_options = missing(option)) {
     ## List the enrichment options that you would like to make
     ## avaiable for objects of class
-    available_options <- c("d1variance", "d2variance", "d1afun", "d2afun", "d3afun", "d2mu.deta", "d3mu.deta",
-                           "variance derivatives",
-                           "function a derivatives",
-                           "inverse link derivatives")
+    out <- list()
+    out$option <- c('d1variance', 'd2variance', 'd1afun', 'd2afun', 'd3afun', 'variance derivatives', 'function a derivatives')
     ## Provide the descriptions of the enrichment options
-    descriptions <- c("1st derivative of the variance function",
-                      "2nd derivative of the variance function",
-                      "1st derivative of the a function",
-                      "2nd njderivative of the a function",
-                      "3rd derivative of the a function",
-                      "2nd derivative of the inverse link function",
-                      "3rd derivative of the inverse link function",
-                      "1st and 2nd derivative of the variance function",
-                      "1st, 2nd and 3rd derivative of the a function",
-                      "2nd and 3rd derivative of the inverse link function")
-    available_options <- c(available_options, 'all')
-    descriptions <- c(descriptions, 'all available options')
-    if (print) {
-        cat(paste(paste(available_options, descriptions, sep = " : "), "\n"))
-
-
-        return(invisible())
+    out$description <- c('1st derivative of the variance function', '2nd derivative of the variance function', '1st derivative of the a function', '2nd derivative of the a function', '3rd derivative of the a function', '1st and 2nd derivative of the variance function', '1st, 2nd and 3rd derivative of the a function')
+    ## Add all as an option
+    out$option <- c(out$option, 'all')
+    out$description <- c(out$description, 'all available options')
+    out$component <- list('d1variance', 'd2variance', 'd1afun', 'd2afun', 'd3afun', c('d1variance', 'd2variance'), c('d1afun', 'd2afun', 'd3afun'))
+    out$component[[length(out$component) + 1]] <- unique(unlist(out$component))
+    names(out$component) <- out$option
+    out$compute_function <- lapply(out$component, function(z) paste0('compute_', z))
+    class(out) <- 'enrichment_options'
+    if (all_options) {
+        return(out)
     }
-    if (any(!(what %in% available_options))) {
-        stop(gettextf('one of the options %s is not implemented', paste(what, collapse =  )))
+    invalid_options <- !(option %in% out$option)
+    if (any(invalid_options)) {
+        stop(gettextf('some options have not been implemented: %s', paste0('"', paste(option[invalid_options], collapse = ', '), '"')))
     }
-    ## List what each option in available_options corresponds to
-    ## (one vector of function names per option). The corresponding
-    ## functions should take as input an object of class 'class'
-    family_with <- list("d1variance", "d2variance", "d1afun", "d2afun", "d3afun", "d2mu.deta", "d3mu.deta",
-                        c("d1variance", "d2variance"),
-                        c("d1afun", "d2afun", "d3afun"),
-                        c("d2mu.deta", "d3mu.deta"))
-    family_with[[length(family_with) + 1]] <- unique(unlist(family_with))
-    names(family_with) <- available_options
-    unique(unlist(family_with[what]))
+
+    out <- list(option = option,
+                description = out$description[out$option == option],
+                component = out$component[option],
+                compute_function = out$compute_function[option])
+    class(out) <- 'enrichment_options'
+    out
 }
 
-d1variance <- function(object) {
+
+`compute_d1variance.family` <- function(object, ...) {
     family <- object$family
     switch(family,
            "poisson" = function(mu) {
@@ -208,51 +200,64 @@ d1variance <- function(object) {
            stop(sQuote(family), " family not supported"))
 }
 
-d2variance <- function(object) {
-    family <- object$family
-    d2variance <- switch(family,
-                         "poisson" = function(mu) {
-                             rep(0, length(mu))
-                         },
-                         "quasipoisson" = function(mu) {
-                             rep(0, length(mu))
-                         },
-                         "gaussian" = function(mu) {
-                             rep(0, length(mu))
-                         },
-                         "binomial" = function(mu) {
-                             rep(-2, length(mu))
-                         },
-                         "quasibinomial" = function(mu) {
-                             rep(-2, length(mu))
-                         },
-                         "Gamma" = function(mu) {
-                                    rep(2, length(mu))
-                         },
-                         "inverse.gaussian" = function(mu) {
-                             6 * mu
-                         },
-                         "quasi" = switch(object$varfun,
-                                          "constant" = function(mu) {
-                                              rep(0, length(mu))
-                                          },
-                                          "mu(1-mu)" = function(mu) {
-                                              rep(-2, length(mu))
-                                          },
-                                          "mu" = function(mu) {
-                                              rep(0, length(mu))
-                                          },
-                                          "mu^2" = function(mu) {
-                                              rep(2, length(mu))
-                                          },
-                                          "mu^3" = function(mu) {
-                                              6 * mu
-                                          },
-                                                 stop(sQuote(object$varfun), " variance function not supported")),
-                         stop(sQuote(family), " family not supported"))
+
+`compute_d1variance` <- function(object, ...) {
+    UseMethod('compute_d1variance')
 }
 
-d1afun <- function(object) {
+
+`compute_d2variance.family` <- function(object, ...) {
+    family <- object$family
+    switch(family,
+           "poisson" = function(mu) {
+               rep(0, length(mu))
+           },
+           "quasipoisson" = function(mu) {
+               rep(0, length(mu))
+           },
+           "gaussian" = function(mu) {
+                             rep(0, length(mu))
+           },
+           "binomial" = function(mu) {
+               rep(-2, length(mu))
+           },
+           "quasibinomial" = function(mu) {
+               rep(-2, length(mu))
+           },
+           "Gamma" = function(mu) {
+               rep(2, length(mu))
+           },
+           "inverse.gaussian" = function(mu) {
+               6 * mu
+           },
+           "quasi" = switch(object$varfun,
+                            "constant" = function(mu) {
+                                rep(0, length(mu))
+                            },
+                            "mu(1-mu)" = function(mu) {
+                                rep(-2, length(mu))
+                            },
+                            "mu" = function(mu) {
+                                rep(0, length(mu))
+                                          },
+                            "mu^2" = function(mu) {
+                                rep(2, length(mu))
+                            },
+                            "mu^3" = function(mu) {
+                                6 * mu
+                            },
+                            stop(sQuote(object$varfun), " variance function not supported")),
+           stop(sQuote(family), " family not supported"))
+
+}
+
+
+`compute_d2variance` <- function(object, ...) {
+    UseMethod('compute_d2variance')
+}
+
+
+`compute_d1afun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
            "gaussian" = function(zeta) {
@@ -266,7 +271,13 @@ d1afun <- function(object) {
            })
 }
 
-d2afun <- function(object) {
+
+`compute_d1afun` <- function(object, ...) {
+    UseMethod('compute_d1afun')
+}
+
+
+`compute_d2afun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
            "gaussian" = function(zeta) {
@@ -280,7 +291,13 @@ d2afun <- function(object) {
            })
 }
 
-d3afun <- function(object) {
+
+`compute_d2afun` <- function(object, ...) {
+    UseMethod('compute_d2afun')
+}
+
+
+`compute_d3afun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
            "gaussian" = function(zeta) {
@@ -293,3 +310,35 @@ d3afun <- function(object) {
                -2/zeta^3
            })
 }
+
+
+`compute_d3afun` <- function(object, ...) {
+    UseMethod('compute_d3afun')
+}
+
+
+## Call that created this file
+## build_enrichwith_skeleton(class = "family",
+##                           option = c("d1variance",
+##                                      "d2variance",
+##                                      "d1afun",
+##                                      "d2afun",
+##                                      "d3afun",
+##                                      "variance derivatives",
+##                                      "function a derivatives"),
+##                           description = c("1st derivative of the variance function",
+##                                           "2nd derivative of the variance function",
+##                                           "1st derivative of the a function",
+##                                           "2nd derivative of the a function",
+##                                           "3rd derivative of the a function",
+##                                           "1st and 2nd derivative of the variance function",
+##                                           "1st, 2nd and 3rd derivative of the a function"),
+##                           component = list("d1variance",
+##                                            "d2variance",
+##                                            "d1afun",
+##                                            "d2afun",
+##                                            "d3afun",
+##                                            c("d1variance", "d2variance"),
+##                                            c("d1afun", "d2afun", "d3afun")),
+##                           path = "~/Downloads",
+##                           attempt_rename = TRUE)

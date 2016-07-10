@@ -7,21 +7,17 @@
 #' their class, so the methods associated to them still apply.
 #'
 #' Depending on the object, enriching it can be a tedious task. The
-#' \pkg{enrichwith} package streamlines the task into 3 main steps:
+#' \pkg{enrichwith} package streamlines the task into 3 simple steps:
 #'
 #' \itemize{
 #'
-#' \item Set up an options function. In this step the enrichment
-#' options, their descriptions and the components in the enriched
-#' object are specficed
+#' \item Run \code{\link{build_enrichwith_skeleton}}. This step will
+#' create a file where all functions for an \code{\link{enrich}}
+#' template are set-up
 #'
-#' \item Author the enrichment functions. Each of those needs to have
-#' the same name as the respective component in the enriched object,
-#' take as input the object to be enriched, and return as output the
-#' respective component for the enriched object
+#' \item Write the \code{compute_*} methods
 #'
-#' \item Author the enrich method.
-#'
+#' \item Complete the documentation and/or examples
 #' }
 #'
 #' @docType package
@@ -41,5 +37,27 @@ NULL
 #'
 #' @export
 enrich <- function(object, with, ...) UseMethod("enrich")
+
+#' Generic method for getting available options for the enrichment
+#' objects
+#'
+#' @aliases print.enrichment_options
+#'
+#' @param object the object to be enriched
+#' @param option a character vector listing the options for enriching
+#'     the object
+#' @param all_options if \code{TRUE} then output a data frame with the
+#'     available enrichment options, their descriptions, the names of
+#'     the components that each option results in, and the names of
+#'     the corresponding \code{compute} funcitons.
+#' @return if \code{all_options = TRUE} then an object of class
+#'     \code{enrichment_options} is returned, otherwise if
+#'     \code{option} is specified the output is a character vector
+#'     with the names of the functions that compute the enrichment
+#'     components
+#'
+#' @details A check is being made whether the requested option is
+#'     available. No check is being made on whether the functions that
+#'     produce the components exist.
 get_enrichment_options <- function(object, option, all_options) UseMethod("get_enrichment_options")
 

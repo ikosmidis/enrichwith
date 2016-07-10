@@ -122,6 +122,10 @@ build_enrichwith_skeleton <- function(class,
         writeLines(template_out, con = con)
     }
 
+    ## TODO: append the call that has been used to con
+    ## need ways to format it nicely
+    ## call <- match.call()
+
     close(con)
 }
 

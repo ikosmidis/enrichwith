@@ -3,11 +3,10 @@
 #' Enrich of class {{class}} with
 #' *BRIEFLY EXPLAIN WITH WHAT*
 #'
-#' @details
 #'
 #' @param object an object of class {{class}}
 #' @param with a character vector with the names of the components to
-#'     enrich \code{object} with.
+#'     enrich \code{object} with
 #' @param ... extra arguments to be passed to the
 #'     \code{compute_*} functions
 #'
@@ -24,14 +23,16 @@
 #' @examples
 #' ## *ADD AN EXAMPLE*
 `enrich.{{class}}` <- function(object, with = "all", ...) {
-           if (is.null(with)) {
-               return(object)
-           }
-           what <- get_enrichment_options(object, option = with, ...)
-           for (j in what) {
-               object[[j]] <- eval(call(j, object = object))
-           }
-           object
+    if (is.null(with)) {
+        return(object)
+    }
+    enrichment_options <- get_enrichment_options(object, option = with, ...)
+    component <- unlist(enrichment_options$component)
+    compute <- unlist(enrichment_options$compute_function)
+    for (j in seq.int(length(component))) {
+        object[[component[j]]] <- eval(call(compute[j], object = object))
+    }
+    object
 }
 
 

@@ -31,31 +31,30 @@
 #' elogit$d3mu.deta
 #'
 `enrich.link-glm` <- function(object, with = "all", ...) {
-           if (is.null(with)) {
-               return(object)
-           }
-           what <- get_enrichment_options(object, option = with, ...)
-           for (j in what) {
-               object[[j]] <- eval(call(j, object = object))
-           }
-           object
+    if (is.null(with)) {
+        return(object)
+    }
+    enrichment_options <- get_enrichment_options(object, option = with, ...)
+    component <- unlist(enrichment_options$component)
+    compute <- unlist(enrichment_options$compute_function)
+    for (j in seq.int(length(component))) {
+        object[[component[j]]] <- eval(call(compute[j], object = object))
+    }
+    object
 }
 
 
 
 #' Available options for the enrichment objects of class link-glm
 #'
+#' @param object the object to be enriched
 #' @param option a character vector listing the options for enriching
 #'     the object
 #' @param all_options if \code{TRUE} then output a data frame with the
 #'     available enrichment options, their descriptions, the names of
 #'     the components that each option results in, and the names of
-#'     the corresponding \code{compute} funcitons.
-#' @return if \code{all_options = TRUE} then an object of class
-#'     \code{enrichment_options} is returned, otherwise if
-#'     \code{option} is specified the output is a character vector
-#'     with the names of the functions that compute the enrichment
-#'     components
+#'     the corresponding \code{compute_*} functions.
+#' @return an object of class \code{enrichment_options}
 #'
 #' @details A check is being made whether the requested option is
 #'     available. No check is being made on whether the functions that
@@ -89,7 +88,12 @@
     if (any(invalid_options)) {
         stop(gettextf('some options have not been implemented: %s', paste0('"', paste(option[invalid_options], collapse = ', '), '"')))
     }
-    return(unique(unlist(out$compute_function[option])))
+    out <- list(option = option,
+                description = out$description[out$option == option],
+                component = out$component[option],
+                compute_function = out$compute_function[option])
+    class(out) <- 'enrichment_options'
+    out
 }
 
 

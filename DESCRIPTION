@@ -6,7 +6,9 @@ Description: The enrichwith package provides the "enrich" method to
     extend core objects with extra, relevant components. The current
     version has methods for enriching objects of class "family" and
     "link-glm". The resulting objects preserve their class, so the
-    methods associated to them still apply.
+    methods associated to them still apply. The package also provides
+    facilities to streamline the authoring "enrichwith" templates for
+    objects of arbitrary class
 Depends:
     R (>= 3.3.0)
 License: GPL-2 | GPL-3
