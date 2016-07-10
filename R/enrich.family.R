@@ -134,7 +134,7 @@ family_options <- function(what, print = missing(what)) {
     descriptions <- c("1st derivative of the variance function",
                       "2nd derivative of the variance function",
                       "1st derivative of the a function",
-                      "2nd derivative of the a function",
+                      "2nd njderivative of the a function",
                       "3rd derivative of the a function",
                       "2nd derivative of the inverse link function",
                       "3rd derivative of the inverse link function",

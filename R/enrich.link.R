@@ -1,27 +1,25 @@
-#' Enrich \code{link-glm} objects
+#' Enrich objects of class \code{\link{link-glm}}
 #'
-#' Enrich \code{\link[=make.link]{link-glm}} with further derivatives of
+#' Enrich of class \code{\link{link-glm}} with further derivatives of
 #' \code{linkinv} with respect to \code{eta}.
 #'
 #' @details
 #'
-#' @param object an object of class \code{\link{family}}
+#' @param object an object of class \code{\link{link-glm}}
 #' @param with a character vector with the names of the components to
-#'     enrich \code{object} with. Run \code{linkglm_options(print =
-#'     TRUE)} to see the available options
-#' @param ... currently not used
+#'     enrich \code{object} with.
+#' @param ... extra arguments to be passed to the
+#'     \code{compute_*} functions
 #'
 #' @details
-#'
 #' The \code{enrich.link-glm} method supports \code{logit},
 #' \code{probit}, \code{cauchit}, \code{cloglog}, \code{identity},
 #' \code{log}, \code{sqrt}, \code{1/mu^2}, \code{inverse}, as well as
 #' the \code{\link{power}} family of links.
 #'
-#' @return The object \code{object} of class
-#'     \code{\link[=make.link]{link-glm}} with extra
-#'     components. \code{linkglm_options()} reutns the components and
-#'     their descriptions.
+#' @return The object \code{object} of class \code{\link{link-glm}}
+#'     with extra components. \code{get_enrichment_options.link-glm()}
+#'     returns the components and their descriptions.
 #'
 #' @name enrich.link-glm
 #' @method enrich link-glm
@@ -32,64 +30,70 @@
 #' elogit$d2mu.deta
 #' elogit$d3mu.deta
 #'
-assign(x = "enrich.link-glm",
-       value = function(object, with = "all", ...) {
+`enrich.link-glm` <- function(object, with = "all", ...) {
            if (is.null(with)) {
                return(object)
            }
-           what <- linkglm_options(what = with)
+           what <- get_enrichment_options(object, option = with, ...)
            for (j in what) {
                object[[j]] <- eval(call(j, object = object))
            }
            object
-       })
-
-#' Available options for the enrichment of \code{\link[=make.link]{link-glm}} objects
-#'
-#' @param what a character vector listing the components that should
-#'     be present in the enriched object
-#' @param print if TRUE then the available enrichment options
-#'     are listed
-#' @details A check is being made whether the requested component is
-#'     available in the \code{available_components} specification (see
-#'     \code{\link{options_function}}). No check is being made on
-#'     whether the functions that produce the components exist.
-#' @examples
-#' \dontrun{
-#' linkglm_options(what = "all")
-#' linkglm_options(print = TRUE)
-#' }
-#' @export
-linkglm_options <- function(what, print = missing(what)) {
-    ## List the enrichment options that you would like to make
-    ## avaiable for objects of class
-    available_options <- c("d2mu.deta", "d3mu.deta",
-                           "inverse link derivatives")
-    ## Provide the descriptions of the enrichment options
-    descriptions <- c("2nd derivative of the inverse link function",
-                      "3rd derivative of the inverse link function",
-                      "2nd and 3rd derivative of the inverse link function")
-    available_options <- c(available_options, 'all')
-    descriptions <- c(descriptions, 'all available options')
-    if (print) {
-        cat(paste(paste(available_options, descriptions, sep = ' : '), '\n'))
-        return(invisible())
-    }
-    if (any(!(what %in% available_options))) {
-        stop(gettextf('one of the options %s is not implemented', paste(what, collapse = ', ')))
-	 }
-    ## List what each option in available_options corresponds to
-    ## (one vector of function names per option. The corresponding
-    ## functions should take as input an object of class 'class'
-    linkglm_with <- list("d2mu.deta", "d3mu.deta",
-                         c("d2mu.deta", "d3mu.deta"),
-                         c("d2mu.deta", "d3mu.deta"))
-    linkglm_with[[length(linkglm_with) + 1]] <- unique(unlist(linkglm_with))
-    names(linkglm_with) <- available_options
-    unique(unlist(linkglm_with[what]))
 }
 
-d2mu.deta <- function(object) {
+
+
+#' Available options for the enrichment objects of class link-glm
+#'
+#' @param option a character vector listing the options for enriching
+#'     the object
+#' @param all_options if \code{TRUE} then output a data frame with the
+#'     available enrichment options, their descriptions, the names of
+#'     the components that each option results in, and the names of
+#'     the corresponding \code{compute} funcitons.
+#' @return if \code{all_options = TRUE} then an object of class
+#'     \code{enrichment_options} is returned, otherwise if
+#'     \code{option} is specified the output is a character vector
+#'     with the names of the functions that compute the enrichment
+#'     components
+#'
+#' @details A check is being made whether the requested option is
+#'     available. No check is being made on whether the functions that
+#'     produce the components exist.
+#' @examples
+#' \dontrun{
+#' `get_enrichment_options.link-glm`(option = "all")
+#' `get_enrichment_options.link-glm`(all_options = TRUE)
+#' }
+#' @export
+`get_enrichment_options.link-glm` <- function(object, option, all_options = missing(option)) {
+    ## List the enrichment options that you would like to make
+    ## avaiable for objects of class
+    ## enrichment_options <- c('d2mu.deta', 'd3mu.deta', 'inverse link derivatives')
+    out <- list()
+    out$option <- c('d2mu.deta', 'd3mu.deta', 'inverse link derivatives')
+    ## Provide the descriptions of the enrichment options
+    out$description <- c('2nd derivative of the inverse link function', '3rd derivative of the inverse link function', '2nd and 3rd derivative of the inverse link function')
+    ## Add all as an option
+    out$option <- c(out$option, 'all')
+    out$description <- c(out$description, 'all available options')
+    out$component <- list('d2mu.deta', 'd3mu.deta', c('d2mu.deta', 'd3mu.deta'))
+    out$component[[length(out$component) + 1]] <- unique(unlist(out$component))
+    names(out$component) <- out$option
+    out$compute_function <- lapply(out$component, function(z) paste0('compute_', z))
+    class(out) <- 'enrichment_options'
+    if (all_options) {
+        return(out)
+    }
+    invalid_options <- !(option %in% out$option)
+    if (any(invalid_options)) {
+        stop(gettextf('some options have not been implemented: %s', paste0('"', paste(option[invalid_options], collapse = ', '), '"')))
+    }
+    return(unique(unlist(out$compute_function[option])))
+}
+
+
+`compute_d2mu.deta.link-glm` <- function(object, ...) {
     mu.eta <- object$mu.eta
     linkinv <- object$linkinv
     link <- object$name
@@ -134,7 +138,13 @@ d2mu.deta <- function(object) {
            )# end switch(.)
 }
 
-d3mu.deta <- function(object) {
+
+`compute_d2mu.deta` <- function(object, ...) {
+    UseMethod('compute_d2mu.deta')
+}
+
+
+`compute_d3mu.deta.link-glm` <- function(object, ...) {
     mu.eta <- object$mu.eta
     linkinv <- object$linkinv
     link <- object$name
@@ -179,4 +189,23 @@ d3mu.deta <- function(object) {
            )# end switch(.)
 }
 
+
+`compute_d3mu.deta` <- function(object, ...) {
+    UseMethod('compute_d3mu.deta')
+}
+
 if (getRversion() >= "2.15.1") globalVariables(c("lambda"))
+
+## Created using
+## build_enrichwith_skeleton(class = "link-glm",
+##                           option = c("d2mu.deta",
+##                                      "d3mu.deta",
+##                                      "inverse link derivatives"),
+##                           description = c("2nd derivative of the inverse link function",
+##                                           "3rd derivative of the inverse link function",
+##                                           "2nd and 3rd derivative of the inverse link function"),
+##                           component = list("d2mu.deta",
+##                                            "d3mu.deta",
+##                                            c("d2mu.deta", "d3mu.deta")),
+##                           path = "~/Downloads",
+##                           attempt_rename = TRUE)
