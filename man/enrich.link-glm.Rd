@@ -2,24 +2,26 @@
 % Please edit documentation in R/enrich.link.R
 \name{enrich.link-glm}
 \alias{enrich.link-glm}
-\title{Enrich \code{link-glm} objects}
+\title{Enrich objects of class \code{\link{link-glm}}}
+\usage{
+\method{enrich}{link-glm}(object, with = "all", ...)
+}
 \arguments{
-\item{object}{an object of class \code{\link{family}}}
+\item{object}{an object of class \code{\link{link-glm}}}
 
 \item{with}{a character vector with the names of the components to
-enrich \code{object} with. Run \code{linkglm_options(print =
-TRUE)} to see the available options}
+enrich \code{object} with.}
 
-\item{...}{currently not used}
+\item{...}{extra arguments to be passed to the
+\code{compute_*} functions}
 }
 \value{
-The object \code{object} of class
-    \code{\link[=make.link]{link-glm}} with extra
-    components. \code{linkglm_options()} reutns the components and
-    their descriptions.
+The object \code{object} of class \code{\link{link-glm}}
+    with extra components. \code{get_enrichment_options.link-glm()}
+    returns the components and their descriptions.
 }
 \description{
-Enrich \code{\link[=make.link]{link-glm}} with further derivatives of
+Enrich of class \code{\link{link-glm}} with further derivatives of
 \code{linkinv} with respect to \code{eta}.
 }
 \details{

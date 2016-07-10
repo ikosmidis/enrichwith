@@ -2,27 +2,27 @@
 % Please edit documentation in R/enrich.family.R
 \name{enrich.family}
 \alias{enrich.family}
-\title{Enrich \code{family} objects}
+\title{Enrich objects of class \code{\link{family}}}
 \usage{
 \method{enrich}{family}(object, with = "all", ...)
 }
 \arguments{
-\item{object}{an object of class \code{\link[stats]{family}}}
+\item{object}{an object of class \code{\link{family}}}
 
 \item{with}{a character vector with the names of the components to
-enrich \code{object} with. Run \code{family_options()} to see
-the available options}
+enrich \code{object} with}
 
-\item{...}{currently not used}
+\item{...}{extra arguments to be passed to the \code{compute_*}
+functions}
 }
 \value{
-The object \code{object} of class \code{\link{family}} with
-    extra components. \code{family_options()} reutns the components
-    and their descriptions
+The object \code{object} of class family with extra
+    components. \code{get_enrichment_options.family()} returns
+    the components and their descriptions.
 }
 \description{
-Enrich \code{family} objects with family- and link-specfic mathematical
-functions
+Enrich \code{\link{family}} objects with family-specific
+mathematical functions
 }
 \details{
 \code{\link{family}} objects specify the details of the models used
@@ -84,7 +84,7 @@ for \code{\link[stats]{quasibinomial}} and
 The \code{enrich} can enriche \code{\link{family}} family objects
 with extra characteristics of the family and of the chosen link
 function. See \code{\link{enrich.link-glm}} for the enrichment of
-link functions.
+\code{\link{link-glm}} objects.
 }
 \examples{
 ## An example from ?glm to illustrate that things still work with
@@ -96,8 +96,5 @@ print(d.AD <- data.frame(treatment, outcome, counts))
 glm.D93 <- glm(counts ~ outcome + treatment, family = enrich(poisson()))
 anova(glm.D93)
 summary(glm.D93)
-}
-\seealso{
-\code{\link{enrich.link-glm}}, \code{\link[stats]{family}}
 }
 
