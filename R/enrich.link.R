@@ -1,15 +1,13 @@
-#' Enrich objects of class \code{\link{link-glm}}
+#' Enrich objects of class \code{\link[=make.link]{link-glm}}
 #'
-#' Enrich of class \code{\link{link-glm}} with further derivatives of
+#' Enrich of class \code{\link[=make.link]{link-glm}} with further derivatives of
 #' \code{linkinv} with respect to \code{eta}.
 #'
-#' @details
-#'
-#' @param object an object of class \code{\link{link-glm}}
+#' @param object an object of class \code{\link[=make.link]{link-glm}}
 #' @param with a character vector with the names of the components to
 #'     enrich \code{object} with.
-#' @param ... extra arguments to be passed to the
-#'     \code{compute_*} functions
+#' @param ... extra arguments to be passed to the \code{compute_*}
+#'     functions
 #'
 #' @details
 #' The \code{enrich.link-glm} method supports \code{logit},
@@ -17,7 +15,7 @@
 #' \code{log}, \code{sqrt}, \code{1/mu^2}, \code{inverse}, as well as
 #' the \code{\link{power}} family of links.
 #'
-#' @return The object \code{object} of class \code{\link{link-glm}}
+#' @return The object \code{object} of class \code{\link[=make.link]{link-glm}}
 #'     with extra components. \code{get_enrichment_options.link-glm()}
 #'     returns the components and their descriptions.
 #'
@@ -29,7 +27,6 @@
 #' str(elogit)
 #' elogit$d2mu.deta
 #' elogit$d3mu.deta
-#'
 `enrich.link-glm` <- function(object, with = "all", ...) {
     if (is.null(with)) {
         return(object)
@@ -54,6 +51,7 @@
 #'     available enrichment options, their descriptions, the names of
 #'     the components that each option results in, and the names of
 #'     the corresponding \code{compute_*} functions.
+#'
 #' @return an object of class \code{enrichment_options}
 #'
 #' @details A check is being made whether the requested option is

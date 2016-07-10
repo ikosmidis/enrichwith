@@ -1,5 +1,3 @@
-#' Print \code{enrichment_options} objects
-#'
 #' @export
 print.enrichment_options <- function(x, ...) {
     o_length <- length(x$option)

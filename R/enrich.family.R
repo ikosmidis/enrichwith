@@ -69,7 +69,7 @@
 #' The \code{enrich} can enriche \code{\link{family}} family objects
 #' with extra characteristics of the family and of the chosen link
 #' function. See \code{\link{enrich.link-glm}} for the enrichment of
-#' \code{\link{link-glm}} objects.
+#' \code{\link[=make.link]{link-glm}} objects.
 #'
 #' @return The object \code{object} of class family with extra
 #'     components. \code{get_enrichment_options.family()} returns

@@ -2,31 +2,29 @@
 % Please edit documentation in R/enrich.link.R
 \name{enrich.link-glm}
 \alias{enrich.link-glm}
-\title{Enrich objects of class \code{\link{link-glm}}}
+\title{Enrich objects of class \code{\link[=make.link]{link-glm}}}
 \usage{
 \method{enrich}{link-glm}(object, with = "all", ...)
 }
 \arguments{
-\item{object}{an object of class \code{\link{link-glm}}}
+\item{object}{an object of class \code{\link[=make.link]{link-glm}}}
 
 \item{with}{a character vector with the names of the components to
 enrich \code{object} with.}
 
-\item{...}{extra arguments to be passed to the
-\code{compute_*} functions}
+\item{...}{extra arguments to be passed to the \code{compute_*}
+functions}
 }
 \value{
-The object \code{object} of class \code{\link{link-glm}}
+The object \code{object} of class \code{\link[=make.link]{link-glm}}
     with extra components. \code{get_enrichment_options.link-glm()}
     returns the components and their descriptions.
 }
 \description{
-Enrich of class \code{\link{link-glm}} with further derivatives of
+Enrich of class \code{\link[=make.link]{link-glm}} with further derivatives of
 \code{linkinv} with respect to \code{eta}.
 }
 \details{
-
-
 The \code{enrich.link-glm} method supports \code{logit},
 \code{probit}, \code{cauchit}, \code{cloglog}, \code{identity},
 \code{log}, \code{sqrt}, \code{1/mu^2}, \code{inverse}, as well as
@@ -37,6 +35,5 @@ elogit <- enrich(make.link("logit"), with = "inverse link derivatives")
 str(elogit)
 elogit$d2mu.deta
 elogit$d3mu.deta
-
 }
 

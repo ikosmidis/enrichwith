@@ -84,7 +84,7 @@ for \code{\link[stats]{quasibinomial}} and
 The \code{enrich} can enriche \code{\link{family}} family objects
 with extra characteristics of the family and of the chosen link
 function. See \code{\link{enrich.link-glm}} for the enrichment of
-\code{\link{link-glm}} objects.
+\code{\link[=make.link]{link-glm}} objects.
 }
 \examples{
 ## An example from ?glm to illustrate that things still work with

@@ -36,7 +36,9 @@ NULL
 #' @param ... Arguments to be passed to other methods
 #'
 #' @export
-enrich <- function(object, with, ...) UseMethod("enrich")
+enrich <- function(object, with, ...) {
+    UseMethod("enrich")
+}
 
 #' Generic method for getting available options for the enrichment
 #' objects
@@ -59,5 +61,8 @@ enrich <- function(object, with, ...) UseMethod("enrich")
 #' @details A check is being made whether the requested option is
 #'     available. No check is being made on whether the functions that
 #'     produce the components exist.
-get_enrichment_options <- function(object, option, all_options) UseMethod("get_enrichment_options")
+#' @export
+get_enrichment_options <- function(object, option, all_options) {
+    UseMethod("get_enrichment_options")
+}
 
