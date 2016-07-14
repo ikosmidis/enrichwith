@@ -1,7 +1,8 @@
 #' Enrich objects of class \code{\link[=make.link]{link-glm}}
 #'
-#' Enrich of class \code{\link[=make.link]{link-glm}} with further derivatives of
-#' \code{linkinv} with respect to \code{eta}.
+#'
+#' Enrich objects of class \code{\link[=make.link]{link-glm}} with
+#' further derivatives of \code{linkinv} with respect to \code{eta}.
 #'
 #' @param object an object of class \code{\link[=make.link]{link-glm}}
 #' @param with a character vector with the names of the components to
