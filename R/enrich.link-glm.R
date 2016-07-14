@@ -20,8 +20,6 @@
 #'     with extra components. \code{get_enrichment_options.link-glm()}
 #'     returns the components and their descriptions.
 #'
-#' @name enrich.link-glm
-#' @method enrich link-glm
 #' @export
 #' @examples
 #' elogit <- enrich(make.link("logit"), with = "inverse link derivatives")
@@ -52,7 +50,6 @@
 #'     available enrichment options, their descriptions, the names of
 #'     the components that each option results in, and the names of
 #'     the corresponding \code{compute_*} functions.
-#'
 #' @return an object of class \code{enrichment_options}
 #'
 #' @details A check is being made whether the requested option is
@@ -67,7 +64,6 @@
 `get_enrichment_options.link-glm` <- function(object, option, all_options = missing(option)) {
     ## List the enrichment options that you would like to make
     ## avaiable for objects of class
-    ## enrichment_options <- c('d2mu.deta', 'd3mu.deta', 'inverse link derivatives')
     out <- list()
     out$option <- c('d2mu.deta', 'd3mu.deta', 'inverse link derivatives')
     ## Provide the descriptions of the enrichment options
@@ -87,6 +83,7 @@
     if (any(invalid_options)) {
         stop(gettextf('some options have not been implemented: %s', paste0('"', paste(option[invalid_options], collapse = ', '), '"')))
     }
+
     out <- list(option = option,
                 description = out$description[out$option == option],
                 component = out$component[option],
@@ -199,7 +196,7 @@
 
 if (getRversion() >= "2.15.1") globalVariables(c("lambda"))
 
-## Created using
+## ## Created using
 ## build_enrichwith_skeleton(class = "link-glm",
 ##                           option = c("d2mu.deta",
 ##                                      "d3mu.deta",

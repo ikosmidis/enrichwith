@@ -87,6 +87,7 @@ function. See \code{\link{enrich.link-glm}} for the enrichment of
 \code{\link[=make.link]{link-glm}} objects.
 }
 \examples{
+
 ## An example from ?glm to illustrate that things still work with
 ## enriched families
 counts <- c(18,17,15,20,10,20,25,13,12)

@@ -17,8 +17,6 @@
 #'     components. \code{get_enrichment_options.{{class}}()} returns
 #'     the components and their descriptions.
 #'
-#' @name enrich.{{class}}
-#' @method enrich {{class}}
 #' @export
 #' @examples
 #' ## *ADD AN EXAMPLE*

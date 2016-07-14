@@ -75,10 +75,9 @@
 #'     components. \code{get_enrichment_options.family()} returns
 #'     the components and their descriptions.
 #'
-#' @name enrich.family
-#' @method enrich family
 #' @export
 #' @examples
+#'
 #' ## An example from ?glm to illustrate that things still work with
 #' ## enriched families
 #' counts <- c(18,17,15,20,10,20,25,13,12)
@@ -103,8 +102,7 @@
 
 
 
-#' Available options for the enrichment objects of class
-#' \code{\link{family}}
+#' Available options for the enrichment objects of class family
 #'
 #' @param object the object to be enriched
 #' @param option a character vector listing the options for enriching
@@ -248,7 +246,6 @@
                             },
                             stop(sQuote(object$varfun), " variance function not supported")),
            stop(sQuote(family), " family not supported"))
-
 }
 
 
@@ -317,7 +314,7 @@
 }
 
 
-## Call that created this file
+## Created using
 ## build_enrichwith_skeleton(class = "family",
 ##                           option = c("d1variance",
 ##                                      "d2variance",
