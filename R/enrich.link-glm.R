@@ -20,12 +20,12 @@
 #'     with extra components. \code{get_enrichment_options.link-glm()}
 #'     returns the components and their descriptions.
 #'
-#' @export
 #' @examples
 #' elogit <- enrich(make.link("logit"), with = "inverse link derivatives")
 #' str(elogit)
 #' elogit$d2mu.deta
 #' elogit$d3mu.deta
+#' @export
 `enrich.link-glm` <- function(object, with = "all", ...) {
     if (is.null(with)) {
         return(object)
