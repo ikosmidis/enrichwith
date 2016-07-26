@@ -122,11 +122,14 @@ build_enrichwith_skeleton <- function(class,
         writeLines(template_out, con = con)
     }
 
-    ## TODO: append the call that has been used to con
-    ## need ways to format it nicely
-    ## call <- match.call()
+    call <- match.call()
+
+    writeLines(paste("\n\n\n\n", "## ## Call that produced the enrichwith template for the current script:\n", paste("##", deparse(call), collapse = "\n"), "\n", collapse = "", sep = ""), con = con)
+
 
     close(con)
+
+
 }
 
 

@@ -314,28 +314,20 @@
 }
 
 
-## Created using
-## build_enrichwith_skeleton(class = "family",
-##                           option = c("d1variance",
-##                                      "d2variance",
-##                                      "d1afun",
-##                                      "d2afun",
-##                                      "d3afun",
-##                                      "variance derivatives",
-##                                      "function a derivatives"),
-##                           description = c("1st derivative of the variance function",
-##                                           "2nd derivative of the variance function",
-##                                           "1st derivative of the a function",
-##                                           "2nd derivative of the a function",
-##                                           "3rd derivative of the a function",
-##                                           "1st and 2nd derivative of the variance function",
-##                                           "1st, 2nd and 3rd derivative of the a function"),
-##                           component = list("d1variance",
-##                                            "d2variance",
-##                                            "d1afun",
-##                                            "d2afun",
-##                                            "d3afun",
-##                                            c("d1variance", "d2variance"),
-##                                            c("d1afun", "d2afun", "d3afun")),
-##                           path = "~/Downloads",
-##                           attempt_rename = TRUE)
+
+
+
+
+## ## Call that produced the enrichwith template for the current script:
+## build_enrichwith_skeleton(class = "family", option = c("d1variance",
+##     "d2variance", "d1afun", "d2afun", "d3afun", "variance derivatives",
+##     "function a derivatives"), description = c("1st derivative of the variance function",
+##     "2nd derivative of the variance function", "1st derivative of the a function",
+##     "2nd derivative of the a function", "3rd derivative of the a function",
+##     "1st and 2nd derivative of the variance function", "1st, 2nd and 3rd derivative of the a function"),
+##     component = list("d1variance", "d2variance", "d1afun", "d2afun",
+##         "d3afun", c("d1variance", "d2variance"), c("d1afun",
+##             "d2afun", "d3afun")), path = "~/Downloads", attempt_rename = TRUE)
+
+
+
