@@ -11,13 +11,13 @@
 #'
 #' \itemize{
 #'
-#' \item Run \code{\link{build_enrichwith_skeleton}}. This step will
-#' create a file where all functions for an \code{\link{enrich}}
-#' template are set-up
+#' \item Use \code{\link{create_enrichwith_skeleton}} to produce an
+#' enrichwith template. This template includes all necessary functions
+#' to carry out the enrichment.
 #'
-#' \item Write the \code{compute_*} methods
+#' \item Write the appropriate code for the \code{compute_*} methods
 #'
-#' \item Complete the documentation and/or examples
+#' \item Finalise the documentation and/or include more examples
 #' }
 #'
 #' @docType package
