@@ -69,7 +69,7 @@ cat(format(enriched_link$d3mu.deta), sep = "\n")
 ```
 `enriched_link` is now an enriched `link-glm` object, which, as per the enrichment options above, has the extra components `d2mu.deta` and `d3mu.deta`, for the calculation of 2nd and 3rd derivatives of the inverse link function with respect to `eta`, respectively.
 
-## Philosophy
+## Details
 The **enrichwith** package is an attempt to streamline the process of enriching objects with new components.
 
 For example, suppose you developed a piece of statistical methodology that relies on a property (e.g. 2nd derivatives of the inverse link function) that an object of certain class (e.g. `link-glm`) could have but doesn't.
