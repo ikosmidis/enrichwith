@@ -4,21 +4,33 @@
 #' enrich various core objects with extra, relevant components. The
 #' current version has methods for enriching objects of class
 #' \code{family} and \code{link-glm}. The resulting objects preserve
-#' their class, so the methods associated to them still apply.
+#' their class, so all methods associated to them still apply.
 #'
 #' Depending on the object, enriching it can be a tedious task. The
-#' \pkg{enrichwith} package streamlines the task into 3 simple steps:
+#' \pkg{enrichwith} package is an attempt to structure the task into 3 simple steps:
 #'
-#' \itemize{
+#' \enumerate{
 #'
 #' \item Use \code{\link{create_enrichwith_skeleton}} to produce an
-#' enrichwith template. This template includes all necessary functions
-#' to carry out the enrichment.
+#' enrichwith template.
 #'
-#' \item Write the appropriate code for the \code{compute_*} methods
+#' \item Complete the functions for the \code{compute_*} methods in the
+#' enrichwith template.
 #'
-#' \item Finalise the documentation and/or include more examples
+#' \item Finalise the documentation and/or include more examples.
 #' }
+#'
+#' The first step results in a template that includes all necessary
+#' functions to carry out the enrichment. The second step is where the
+#' user writes the code to calculate the components that the object
+#' will be enriched with. Specifically, each \code{compute_*} function
+#' takes as input the object to be enriched and return the
+#' corresponding new component to be used for the enrichment of the
+#' object. Everything else (for example, mapping between the
+#' enrichment options and the components that the enriched object will
+#' have, checks that an enrichment option exists, listing enrichment
+#' options, enriching the object, and so on) is taken care of by the
+#' methods in \pkg{enrichwith}.
 #'
 #' @docType package
 #' @name enrichwith

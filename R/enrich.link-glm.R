@@ -202,7 +202,7 @@ if (getRversion() >= "2.15.1") globalVariables(c("lambda"))
 
 
 ## ## Call that produced the enrichwith template for the current script:
-## build_enrichwith_skeleton(class = "link-glm", option = c("d2mu.deta",
+## create_enrichwith_skeleton(class = "link-glm", option = c("d2mu.deta",
 ##     "d3mu.deta", "inverse link derivatives"), description = c("2nd derivative of the inverse link function",
 ##     "3rd derivative of the inverse link function", "2nd and 3rd derivative of the inverse link function"),
 ##     component = list("d2mu.deta", "d3mu.deta", c("d2mu.deta",
