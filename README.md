@@ -7,7 +7,7 @@ Suppose you developed a piece of statistical methodology that relies on a compon
 The aim of **enrichwith** is to:
 
 * produce customisable source code templates for the structured implementation of methods to compute new components
-* provide generic methods for the enrichment of the object with those components
+* provide generic methods for the easy enrichment of the object with those components
 
 Specifically, once the methods for the components have been
 implemented, `object_x` can be enriched with the components
