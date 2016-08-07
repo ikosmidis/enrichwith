@@ -1,8 +1,20 @@
 # enrichwith
 
-## Aims and objectives
+Methods to enrich list-like R objects with extra components
 
-Suppose you developed a piece of statistical methodology that relies on a component that an object `object_x` could potentially have but doesn't.
+## Installation
+Get the development version from github with
+
+``` r
+# install.packages("devtools")
+devtools::install_github("ikosmidis/enrichwith")
+```
+
+## Aim and objective
+
+Suppose you developed a piece of statistical methodology that relies
+on a component that a list-like R object `object_x` of a certain class
+could potentially have but doesn't.
 
 The aim of **enrichwith** is to:
 
@@ -18,15 +30,6 @@ enrich(object_x, with = enrichment_option)
 ```
 
 The main objectives of **enrichwith** is to allow users and developers to directly use the enrichment options that other developers have provided, minimising the need of adapting source code of others.
-
-## Installation
-
-Get the development version from github with
-
-``` r
-# install.packages("devtools")
-devtools::install_github("ikosmidis/enrichwith")
-```
 
 ## Example
 Objects of class `link-glm` have as components functions to compute the link function (`linkfun`), the inverse link function (`linkinv`), and the 1st derivative of the link function (`mu.eta`).

@@ -1,13 +1,15 @@
-#' Methods to enrich various R objects with extra components
+#' Methods to enrich list-like R objects with extra components
 #'
-#' The \pkg{enrichwith} package provides the \code{enrich} method to
-#' enrich various objects with extra, relevant components. The
-#' resulting objects preserve the class of the orginal objects. In
-#' this way all methods associated to the class still apply.
+#' The enrichwith package provides the \code{\link{enrich}} method to
+#' enrich list-like R objects with new, relevant components. The
+#' resulting objects preserve their class, so all methods associated
+#' to them still apply. The package can also be used to produce
+#' customisable source code templates for the structured
+#' implementation of methods to compute new components
 #'
 #' Depending on the object, enriching it can be a tedious task. The
-#' \pkg{enrichwith} package is an attempt to streamline the task into
-#' 3 simple steps:
+#' \pkg{enrichwith} package aims to streamline the task into 3 simple
+#' steps:
 #'
 #' \enumerate{
 #'
@@ -33,7 +35,10 @@
 #' checks that an enrichment option exists, listing enrichment
 #' options, enriching the object, and so on) is taken care of by the
 #' methods in **enrichwith**.
-
+#'
+#' Developers can either put their enrichwith templates in their
+#' packages or are welcome to contribute their template to enrichwith,
+#' particularly if that extends core R objects.
 #'
 #' @docType package
 #' @name enrichwith
