@@ -2,8 +2,10 @@
 
 S3method(enrich,"link-glm")
 S3method(enrich,family)
+S3method(enrich,glm)
 S3method(get_enrichment_options,"link-glm")
 S3method(get_enrichment_options,family)
+S3method(get_enrichment_options,glm)
 S3method(print,enrichment_options)
 export(enrich)
 export(get_enrichment_options)

@@ -46,8 +46,7 @@ NULL
 #' Generic method for enriching objects
 #'
 #' @param object the object to be enriched
-#' @param with a character vector with the names of the components to
-#'     enrich \code{object} with
+#' @param with a character vector with enrichment options for \code{object}
 #' @param ... Arguments to be passed to other methods
 #'
 #' @export

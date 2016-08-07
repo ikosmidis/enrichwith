@@ -9,8 +9,7 @@ enrich(object, with, ...)
 \arguments{
 \item{object}{the object to be enriched}
 
-\item{with}{a character vector with the names of the components to
-enrich \code{object} with}
+\item{with}{a character vector with enrichment options for \code{object}}
 
 \item{...}{Arguments to be passed to other methods}
 }
