@@ -97,6 +97,11 @@
     for (j in seq.int(length(component))) {
         object[[component[j]]] <- eval(call(compute[j], object = object))
     }
+    if (is.null(attr(object, "enriched"))) {
+        attr(object, "enriched") <- TRUE
+        classes <- class(object)
+        class(object) <- c(paste0("enriched_", classes[1]), classes)
+    }
     object
 }
 

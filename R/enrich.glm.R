@@ -30,9 +30,13 @@
     for (j in seq.int(length(component))) {
         object[[component[j]]] <- eval(call(compute[j], object = object))
     }
+    if (is.null(attr(object, "enriched"))) {
+        attr(object, "enriched") <- TRUE
+        classes <- class(object)
+        class(object) <- c(paste0("enriched_", classes[1]), classes)
+    }
     object
 }
-
 
 
 #' Available options for the enrichment objects of class glm
@@ -88,8 +92,24 @@
 
 
 `compute_bias.glm` <- function(object, ...) {
+    ## Enrich object with the mle of diseprsion
     object <- enrich(object, with = "MLE of dispersion")
-    link <- enrich(make.link(object$family$link), with = "2nd derivative of the inverse link function")
+    ## Enrich link-glm object with the 2nd and 3rd derivatives of the inverse link function
+    link <- enrich(make.link(object$family$link), with = "inverse link derivatives")
+    if (family$family %in% c("poisson", "binomial")) {
+        dispersionML <- 1
+    }
+    else {
+        y <- model.response(object$model)
+        mus <- fitted(object)
+        weights <- weights(object, type = "prior")
+        nobs <- length(mus)
+        keep <- weights > 0
+        dfResidual <- sum(keep) - object$qr$rank
+    }
+
+    X <- model.matrix(object)
+    W <- mode.
 }
 
 
