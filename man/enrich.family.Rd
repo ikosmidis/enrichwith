@@ -21,7 +21,7 @@ The object \code{object} of class family with extra
     the components and their descriptions.
 }
 \description{
-Enrich \code{\link{family}} objects with family-specific
+Enrich objects of class \code{\link{family}} with family-specific
 mathematical functions
 }
 \details{

@@ -1,6 +1,6 @@
 #' Enrich objects of class {{class}}
 #'
-#' Enrich of class {{class}} with
+#' Enrich objects of class {{class}} with
 #' *BRIEFLY EXPLAIN WITH WHAT*
 #'
 #'
@@ -24,11 +24,16 @@
     if (is.null(with)) {
         return(object)
     }
-    enrichment_options <- get_enrichment_options(object, option = with, ...)
+    dots <- list(...)
+    enrichment_options <- get_enrichment_options(object, option = with)
     component <- unlist(enrichment_options$component)
     compute <- unlist(enrichment_options$compute_function)
     for (j in seq.int(length(component))) {
-        object[[component[j]]] <- eval(call(compute[j], object = object))
+        ccall <- call(compute[j], object = object)
+        for (nam in names(dots)) {
+            ccall[[nam]] <- dots[[nam]]
+        }
+        object[[component[j]]] <- eval(ccall)
     }
     if (is.null(attr(object, "enriched"))) {
         attr(object, "enriched") <- TRUE

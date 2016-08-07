@@ -2,7 +2,7 @@
 % Please edit documentation in R/enrich.glm.R
 \name{enrich.glm}
 \alias{enrich.glm}
-\title{Enrich objects of class glm}
+\title{Enrich objects of class \code{\link{glm}}}
 \usage{
 \method{enrich}{glm}(object, with = "all", ...)
 }
@@ -16,18 +16,23 @@ enrich \code{object} with}
 \code{compute_*} functions}
 }
 \value{
-The object \code{object} of class glm with extra
-    components. \code{get_enrichment_options.glm()} returns
-    the components and their descriptions.
+The object \code{object} of class \code{\link{glm}} with extra
+components. \code{get_enrichment_options.glm()} returns the
+components and their descriptions.
 }
 \description{
-Enrich of class glm with
-*BRIEFLY EXPLAIN WITH WHAT*
+Enrich objects of class \code{\link{glm}} with any or all of a set
+auxliliary functions, the maximum likelihood estimate of the
+dispersion parameter, the expected or observed information at the
+maximum likelihood estimator, and the first term in the expansion
+of the bias of the maximum likelilihood estimator.
 }
 \details{
-*ADD DETAILS IF NECESSARY*
+The auxiliary functions consist of the score functions, the
+expected or observed information and the first-order bias of the
+maximum likelihood estimator as functions of the model parameters.
 }
 \examples{
-## *ADD AN EXAMPLE*
+
 }
 

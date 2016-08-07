@@ -81,12 +81,12 @@ create_enrichwith_skeleton <- function(class,
                                  paste0(paste0("'", comp_valid[!valid], collapse = ", "))))
             }
             else {
-                close(con)
-                stop(gettextf("not syntactically valid component names: %s",
-                              paste0(paste0("'", comp_input[!valid], "'"), collapse = ", ")))
+                ## close(con)
+                warning(gettextf("not syntactically valid component names: %s",
+                                 paste0(paste0("'", comp_input[!valid], "'"), collapse = ", ")))
             }
         }
-        comp_valid
+        if (attempt_rename) comp_valid else comp_input
     })
     dat <- list(class = class_input,
                 option = gsub("\"","'", deparse(option, width.cutoff = 500)),

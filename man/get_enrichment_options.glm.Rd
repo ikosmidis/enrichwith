@@ -2,7 +2,8 @@
 % Please edit documentation in R/enrich.glm.R
 \name{get_enrichment_options.glm}
 \alias{get_enrichment_options.glm}
-\title{Available options for the enrichment objects of class glm}
+\title{Available options for the enrichment objects of class
+\code{\link{glm}}}
 \usage{
 \method{get_enrichment_options}{glm}(object, option,
   all_options = missing(option))
@@ -22,7 +23,8 @@ the corresponding \code{compute_*} functions.}
 an object of class \code{enrichment_options}
 }
 \description{
-Available options for the enrichment objects of class glm
+Available options for the enrichment objects of class
+\code{\link{glm}}
 }
 \details{
 A check is being made whether the requested option is
