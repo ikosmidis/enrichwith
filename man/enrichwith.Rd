@@ -20,22 +20,22 @@ steps:
 
 \enumerate{
 
-\item Use \code{\link{create_enrichwith_skeleton}} to produce an
-enrichwith template.
+\item Use \code{\link{create_enrichwith_skeleton}} to produce a
+customisable enrichwith template.
 
-\item 2. Add the specific code that calculates the components by
-editing the `compute_*` functions.
+\item Edit the \code{compute_*} functions by adding the specific
+code that calculates the components.
 
 \item Finalise the documentation and/or include more examples.
 }
 
 The first step results in a template that includes all necessary
 functions to carry out the enrichment. The second step is where the
-user edits that template and adds code to calculate the components
-that the object will be enriched with. Specifically, each
-\code{compute_*} function takes as input the object to be enriched
-and returns the corresponding new component to be added to the
-object.
+user edits the template and implements the calculation of the
+components that the object will be enriched with. Specifically,
+each \code{compute_*} function takes as input the object to be
+enriched and returns the corresponding new component to be added to
+the object.
 
 Everything else (for example, mapping between the enrichment
 options and the components that the enriched object will have,

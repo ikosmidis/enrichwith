@@ -34,23 +34,24 @@ A file with the necessary functions to use
     following functions
 \itemize{
 
-\item One function \code{compute_component.class} for each
-component name from \code{unique(unlist(component))}. This function
-takes as input the object to be enriched and returns as output the
-component to be added to the object
+\item One \code{compute_component.class} function per component
+name from \code{unique(unlist(component))}. The function takes as
+input the object to be enriched and returns as output the component
+to be added to the object.
 
-\item The \code{get_enrichment_options.class} function, that takes as
-input the object to be enriched and returns and an enrichment
-option, and returns the names of the components that will be
-appended to the object for this option. This function can also be
-used to list the available options with descriptions
+\item The \code{get_enrichment_options.class} function, that takes
+as input the object to be enriched and an enrichment option, and
+returns the names of the components that will be appended to the
+object for this option. This function can also be used to list the
+available options and print their description.
 
 \item The \code{enrich.class} function
 
 }
 }
 \description{
-Create an enrichwith skeleton file to help with the development of
-enrichment functions and methods for objects of a specific class
+Create an enrichwith skeleton file for the structured
+implementation of methods to compute new components for objects of
+a specific class
 }
 

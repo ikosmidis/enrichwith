@@ -90,11 +90,16 @@ cat(format(enriched_link$d3mu.deta), sep = "\n")
 The task of implementing the enrichment options is streamlined into 3 steps:
 
 1. Use `create_enrichwith_skeleton` to produce an enrichwith template.
-2. Add the specific code that calculates the components by editing the
-   `compute_*` functions.
+2. Edit the `compute_*` functions by adding the specific code that
+   calculates the components.
 3. Finalise the documentation and/or include more examples.
 
-The first step results in a template that includes all necessary functions to carry out the enrichment. The second step is where the user edits that template and adds code to calculate the components that the object will be enriched with. Specifically, each `compute_*` function takes as input the object to be enriched and returns the corresponding new component to be added to the object.
+The first step results in a template that includes all necessary
+functions to carry out the enrichment. The second step is where the
+user edits that template and and implements the calculation of the
+components that the object will be enriched with. Specifically, each
+`compute_*` function takes as input the object to be enriched and
+returns the corresponding new component to be added to the object.
 
 Everything else (for example, mapping between the enrichment options and the components that the enriched object will have, checks that an enrichment option exists, listing enrichment options, enriching the object, and so on) is taken care of by the methods in **enrichwith**.
 

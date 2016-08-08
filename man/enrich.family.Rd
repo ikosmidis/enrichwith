@@ -16,9 +16,9 @@ enrich \code{object} with}
 functions}
 }
 \value{
-The object \code{object} of class family with extra
-    components. \code{get_enrichment_options.family()} returns
-    the components and their descriptions.
+The object \code{object} of class \code{\link{family}} with
+    extra components. \code{get_enrichment_options.family()}
+    returns the components and their descriptions.
 }
 \description{
 Enrich objects of class \code{\link{family}} with family-specific
@@ -81,10 +81,10 @@ for \code{\link[stats]{quasibinomial}} and
 \code{NA} for all \code{quasi} families. See
 \code{\link[stats]{quasi}} for more details.
 
-The \code{enrich} can enrich \code{\link{family}} family objects
-with extra characteristics of the family and of the chosen link
-function. See \code{\link{enrich.link-glm}} for the enrichment of
-\code{\link[=make.link]{link-glm}} objects.
+The \code{enrich} method can enrich \code{\link{family}} family
+objects with extra characteristics of the family and of the chosen
+link function. See \code{\link{enrich.link-glm}} for the enrichment
+of \code{\link[=make.link]{link-glm}} objects.
 }
 \examples{
 
