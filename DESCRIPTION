@@ -1,6 +1,6 @@
 Package: enrichwith
-Title: Methods to enrich various R objects with extra components
-Version: 0.1
+Title: Methods to Enrich R Objects with Extra Components
+Version: 0.0.1
 Authors@R: person("Ioannis", "Kosmidis", email = "i.kosmidis@ucl.ac.uk", role = c("aut", "cre"))
 Description: The enrichwith package provides the "enrich" method to enrich list-like R objects with new, relevant components. The current version has methods for enriching objects of class "family" and "link-glm". The resulting objects preserve their class, so all methods associated to them still apply. The package can also be used to produce customisable source code templates for the structured implementation of methods to compute new components.
 Depends: R (>= 3.0.0)
