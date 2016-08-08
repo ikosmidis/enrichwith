@@ -34,7 +34,7 @@
 #' options and the components that the enriched object will have,
 #' checks that an enrichment option exists, listing enrichment
 #' options, enriching the object, and so on) is taken care of by the
-#' methods in **enrichwith**.
+#' methods in \pkg{enrichwith}.
 #'
 #' Developers can either put their enrichwith templates in their
 #' packages or are welcome to contribute their template to enrichwith,
@@ -70,7 +70,7 @@ enrich <- function(object, with, ...) {
 #' @param all_options if \code{TRUE} then output a data frame with the
 #'     available enrichment options, their descriptions, the names of
 #'     the components that each option results in, and the names of
-#'     the corresponding \code{compute} funcitons.
+#'     the corresponding \code{compute} functions.
 #' @return if \code{all_options = TRUE} then an object of class
 #'     \code{enrichment_options} is returned, otherwise if
 #'     \code{option} is specified the output is a character vector

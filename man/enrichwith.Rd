@@ -41,7 +41,7 @@ Everything else (for example, mapping between the enrichment
 options and the components that the enriched object will have,
 checks that an enrichment option exists, listing enrichment
 options, enriching the object, and so on) is taken care of by the
-methods in **enrichwith**.
+methods in \pkg{enrichwith}.
 
 Developers can either put their enrichwith templates in their
 packages or are welcome to contribute their template to enrichwith,

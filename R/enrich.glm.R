@@ -1,10 +1,10 @@
 #' Enrich objects of class \code{\link{glm}}
 #'
 #' Enrich objects of class \code{\link{glm}} with any or all of a set
-#' auxliliary functions, the maximum likelihood estimate of the
+#' auxiliary functions, the maximum likelihood estimate of the
 #' dispersion parameter, the expected or observed information at the
 #' maximum likelihood estimator, and the first term in the expansion
-#' of the bias of the maximum likelilihood estimator.
+#' of the bias of the maximum likelihood estimator.
 #'
 #' @param object an object of class glm
 #' @param with a character vector with the names of the components to
@@ -26,7 +26,20 @@
 #'
 #' @export
 #' @examples
+#' \dontrun{
 #'
+#' ## Reproduce left plot in Figure 4.1 in Kosimdis (2007)
+#' ## (see http://www.ucl.ac.uk/~ucakiko/files/ikosmidis_thesis.pdf)
+#' mod <- glm(1 ~ 1, weights = 10, family = binomial())
+#' enriched_mod <- enrich(aa, with = "auxiliary functions")
+#' biasfun <- enriched_mod$auxiliary_functions$bias
+#' probabilities <- seq(1e-02, 1 - 1e-02, length = 100)
+#' biases <- Vectorize(biasfun)(qlogis(probabilities))[1,]
+#' plot(probabilities, biases, type = "l", ylim = c(-0.5, 0.5)
+#'      xlab = expression(pi), ylab = "first-order bias")
+#' abline(h = 0, lty = 2)
+#' title("First-order bias of the MLE of the log-odds", sub = "m = 10")
+#' }
 `enrich.glm` <- function(object, with = "all", ...) {
     if (is.null(with)) {
         return(object)
@@ -75,7 +88,7 @@
 #' @export
 `get_enrichment_options.glm` <- function(object, option, all_options = missing(option)) {
     ## List the enrichment options that you would like to make
-    ## avaiable for objects of class
+    ## available for objects of class
     out <- list()
     out$option <- c('auxiliary functions', 'score vector', 'mle of dispersion', 'expected information', 'observed information', 'first-order bias')
     ## Provide the descriptions of the enrichment options

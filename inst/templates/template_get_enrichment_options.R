@@ -20,7 +20,7 @@
 #' @export
 `get_enrichment_options.{{class}}` <- function(object, option, all_options = missing(option)) {
     ## List the enrichment options that you would like to make
-    ## avaiable for objects of class
+    ## available for objects of class
     out <- list()
     out$option <- {{option}}
     ## Provide the descriptions of the enrichment options

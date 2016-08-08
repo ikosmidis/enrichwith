@@ -17,7 +17,7 @@ the object}
 \item{all_options}{if \code{TRUE} then output a data frame with the
 available enrichment options, their descriptions, the names of
 the components that each option results in, and the names of
-the corresponding \code{compute} funcitons.}
+the corresponding \code{compute} functions.}
 }
 \value{
 if \code{all_options = TRUE} then an object of class

@@ -44,12 +44,12 @@ sufficiently smooth, real-valued functions.
 
 The expected value and the variance of such distributions is
 \eqn{\mu = b'(\theta)}{mu = b'(theta)} and \eqn{\phi V(\mu)/m}{phi * V(mu)/m},
-repsectively, where \eqn{V(\mu)}{V(mu)} is called the variance
-funciton. The parameter \eqn{\phi}{phi} is called a dispersion
+respectively, where \eqn{V(\mu)}{V(mu)} is called the variance
+function. The parameter \eqn{\phi}{phi} is called a dispersion
 parameter.
 
-Characteristics of the exponential family that are implementented
-in \code{\link[stats]{family}} objects include:
+Characteristics of the exponential family that are already
+implemented in \code{\link[stats]{family}} objects include:
 
 \itemize{
 
@@ -81,7 +81,7 @@ for \code{\link[stats]{quasibinomial}} and
 \code{NA} for all \code{quasi} families. See
 \code{\link[stats]{quasi}} for more details.
 
-The \code{enrich} can enriche \code{\link{family}} family objects
+The \code{enrich} can enrich \code{\link{family}} family objects
 with extra characteristics of the family and of the chosen link
 function. See \code{\link{enrich.link-glm}} for the enrichment of
 \code{\link[=make.link]{link-glm}} objects.
