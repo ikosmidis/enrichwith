@@ -96,12 +96,17 @@ The task of implementing the enrichment options is streamlined into 3 steps:
 
 The first step results in a template that includes all necessary
 functions to carry out the enrichment. The second step is where the
-user edits that template and and implements the calculation of the
+user edits that template and implements the calculation of the
 components that the object will be enriched with. Specifically, each
 `compute_*` function takes as input the object to be enriched and
 returns the corresponding new component to be added to the object.
 
-Everything else (for example, mapping between the enrichment options and the components that the enriched object will have, checks that an enrichment option exists, listing enrichment options, enriching the object, and so on) is taken care of by the methods in **enrichwith**.
+Everything else (for example, mapping between the enrichment options
+and the components that the enriched object will have, checks that an
+enrichment option exists, listing enrichment options, enriching the
+object, and so on) is taken care of by the methods in **enrichwith**.
 
-Developers can either put their **enrichwith** templates in their packages or are welcome to contribute their template to **enrichwith**, particularly if that extends core R objects.
+Developers can either put their **enrichwith** templates in their
+packages or are welcome to contribute their template to
+**enrichwith**, particularly if that extends core R objects.
 
