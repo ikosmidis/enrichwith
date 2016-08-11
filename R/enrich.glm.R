@@ -288,8 +288,14 @@
 
 
 `compute_score_mle.glm` <- function(object, ...) {
-    object <- enrich(object, with = "auxialiary functions")
-
+    if (object$family$family %in% c("poisson", "binomial")) {
+        dispersion_mle <- 1
+    }
+    else {
+        dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
+    }
+    object <- enrich(object, with = "auxiliary functions")
+    object$auxiliary_functions$score(coef(object), dispersion_mle)
 }
 
 
@@ -309,18 +315,18 @@
         keep <- prior_weights > 0
         dfResidual <- sum(keep) - object$rank
 
-        gradfun <- function(dispersion) {
-            object$auxiliary_functions$score(coef(object), dispersion)[length(coef(object)) + 1]
+        gradfun <- function(logdispersion) {
+            object$auxiliary_functions$score(coef(object), exp(logdispersion))[length(coef(object)) + 1]
         }
 
         if (dfResidual > 0) {
-            dispFit <- try(uniroot(f = gradfun, lower = .Machine$double.eps, upper = 10000, tol = 1e-06), silent = FALSE)
+            dispFit <- try(uniroot(f = gradfun, lower = 0.5*log(.Machine$double.eps), upper = 20, tol = 1e-08, maxiter = 10000), silent = FALSE)
             if (inherits(dispFit, "try-error")) {
                 warning("the mle of dispersion could not be calculated")
                 dispersion_mle <- NA
             }
             else {
-                dispersion_mle <- dispFit$root
+                dispersion_mle <- exp(dispFit$root)
             }
         }
         else {
