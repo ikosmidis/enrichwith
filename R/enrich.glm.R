@@ -299,7 +299,7 @@
         dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
     }
     object <- enrich(object, with = "auxiliary functions")
-    object$auxiliary_functions$score(coef(object), dispersion_mle)
+    object$auxiliary_functions$score(coef(object, model = "mean"), dispersion_mle)
 }
 
 
@@ -320,7 +320,8 @@
         dfResidual <- sum(keep) - object$rank
 
         gradfun <- function(logdispersion) {
-            object$auxiliary_functions$score(coef(object), exp(logdispersion))[length(coef(object)) + 1]
+            beta <- coef(object, model = "mean")
+            object$auxiliary_functions$score(beta, exp(logdispersion))[length(beta) + 1]
         }
 
         if (dfResidual > 0) {
@@ -337,6 +338,7 @@
             ## if the model is saturated dispersion_mle is NA
             dispersion_mle <- NA
     }
+        names(dispersion_mle) <- "dispersion"
         dispersion_mle
     }
 }
@@ -349,7 +351,7 @@
 `compute_expected_information_mle.glm` <- function(object, dispersion = dispersion_mle) {
     object <- enrich(object, with = "auxiliary functions")
     dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
-    object$auxiliary_functions$information(coef(object), dispersion, type = "expected")
+    object$auxiliary_functions$information(coef(object, model = "mean"), dispersion, type = "expected")
 }
 
 
@@ -361,7 +363,7 @@
 `compute_observed_information_mle.glm` <- function(object, dispersion = dispersion_mle) {
     object <- enrich(object, with = "auxiliary functions")
     dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
-    object$auxiliary_functions$information(coef(object), dispersion, type = "observed")
+    object$auxiliary_functions$information(coef(object, model = "mean"), dispersion, type = "observed")
 }
 
 
@@ -381,12 +383,29 @@
 `compute_bias_mle` <- function(object, ...) {
     object <- enrich(object, with = "auxiliary functions")
     dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
-    object$auxiliary_functions$bias(coef(object), dispersion_mle)
+    object$auxiliary_functions$bias(coef(object, model = "mean"), dispersion_mle)
 }
 
 
 
-
+#' Function to extract model coefficients from objects of class \code{\link{enriched_glm}}
+#'
+#' @param object an object of class \code{\link{enriched_glm}}
+#' @param model either "mean" for the estimates of the parameters in the linear predictor, or "dispersion" for the estimate of the dispersion, or "full" for all estimates
+#' @export
+coef.enriched_glm <- function(object, model = c("mean", "full", "dispersion"), ...) {
+    beta <- object$coefficients
+    switch(match.arg(model),
+           mean = {
+               beta
+           },
+           dispersion = {
+               object$dispersion
+           },
+           full = {
+               c(beta, object$dispersion)
+           })
+}
 
 
 ## ## Call that produced the enrichwith template for the current script:
@@ -399,4 +418,3 @@
 ##     component = list("auxiliary_functions", "score_mle", "dispersion_mle",
 ##         "expected_information_mle", "observed_information_mle",
 ##         "bias_mle"), path = "~/Downloads", attempt_rename = FALSE)
-
