@@ -164,10 +164,11 @@
         d1mus <- d1mu(predictors)
         variances <- variance(fitted_values)
         ## Score for coefss
-        score_coefs <- colSums(prior_weights * d1mus * (y - fitted_values) * x / variances)/dispersion
+        score_beta <- colSums(prior_weights * d1mus * (y - fitted_values) * x / variances)/dispersion
         ## Score for dispersion
         if (family$family %in% c("poisson", "binomial")) {
-            score_dispersion <- 0
+            score_dispersion <- NULL
+            vnames <- names(score_beta)
         }
         else {
             zetas <- -prior_weights/dispersion
@@ -176,10 +177,11 @@
             devianceResiduals <- family$dev.resids(y, fitted_values, prior_weights)
             EdevianceResiduals <- prior_weights * d1afuns
             score_dispersion <- sum(devianceResiduals - EdevianceResiduals, na.rm = TRUE) / (2 * dispersion^2)
+            vnames <- c(names(score_beta), "dispersion")
         }
         ## Overall score
-        out <- c(score_coefs, score_dispersion)
-        names(out) <- paste0("grad_", c(names(score_coefs), "dispersion"))
+        out <- c(score_beta, score_dispersion)
+        names(out) <- paste0("grad_", vnames)
         out
     }
 
@@ -196,25 +198,25 @@
             return(qr(wx))
         }
         ## expected info coefs-coefs
-        info_coefs <- crossprod(wx) / dispersion
+        info_beta <- crossprod(wx) / dispersion
         if (type == "observed") {
             d2mus <- d2mu(predictors)
             d1variances <- d1variance(fitted_values)
             w <- prior_weights * (d2mus / variances - d1mus^2 * d1variances / variances^2) * (y - fitted_values)
             ## observed info coefs-coefs
-            info_coefs <- info_coefs - t(x * w) %*% x / dispersion
+            info_beta <- info_beta - t(x * w) %*% x / dispersion
         }
-        rownames(info_coefs) <- colnames(info_coefs) <- colnames(x)
+        rownames(info_beta) <- colnames(info_beta) <- colnames(x)
         ## If there is no dispersion parameter then return the
         ## information for the coefficients only
         if (family$family %in% c("poisson", "binomial")) {
-            return(info_coefs)
+            return(info_beta)
         }
         ## If there is a dispersion parameter then return the
         ## information on the coefficients and tha dispersion
         else {
             ## expected info coefs-dispersion
-            info_cross <- rep(0, ncol(info_coefs))
+            info_cross <- rep(0, ncol(info_beta))
             ## expected info dispersion-dispersion
             zetas <- -prior_weights/dispersion
             d2afuns <- rep(NA, nobs)
@@ -231,7 +233,7 @@
                 EdevianceResiduals <- prior_weights * d1afuns
                 info_dispe <- info_dispe + sum(devianceResiduals - EdevianceResiduals, na.rm = TRUE) / dispersion^3
             }
-            out <- rbind(cbind(info_coefs, info_cross),
+            out <- rbind(cbind(info_beta, info_cross),
                          c(info_cross, info_dispe))
             colnames(out) <- rownames(out) <- c(colnames(x), "dispersion")
             out
@@ -251,7 +253,8 @@
         ksi <- -0.5 * dispersion * d2mus * hats / (d1mus * sqrt(working_weights))
         bias_beta <- drop(tcrossprod(ksi %*% Q, solve(qr.R(Qr))))
         if (family$family %in% c("poisson", "binomial")) {
-            bias_dispersion <- 0
+            bias_dispersion <- NULL
+            vnames <- names(bias_beta)
         }
         else {
             if (dfResidual > 0) {
@@ -269,10 +272,11 @@
             else {
                 bias_dispersion <- NA
             }
+            vnames <- c(names(bias_beta), "dispersion")
         }
-        names(bias_dispersion) <- "bias_dispersion"
-        names(bias_beta) <- paste0("bias_", names(bias_beta))
-        c(bias_beta, bias_dispersion)
+        out <- c(bias_beta, bias_dispersion)
+        names(out) <- paste0("bias_", vnames)
+        out
     }
 
     return(list(score = score,
