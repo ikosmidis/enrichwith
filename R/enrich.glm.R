@@ -92,7 +92,7 @@
     out <- list()
     out$option <- c('auxiliary functions', 'score vector', 'mle of dispersion', 'expected information', 'observed information', 'first-order bias')
     ## Provide the descriptions of the enrichment options
-    out$description <- c('various likelihood-based quantities as functions of the model parameters', 'gradient of the log-likelihood at the mle', 'mle of the dispersion parameter', 'expected information matrix evaluated at the mle', 'observed information matrix evaluated at the mle', 'first term in the expansion of the bias of the mle at the mle')
+    out$description <- c('various likelihood-based quantities (gradient of the log-likelihood, expected and observed information matrix and first term in the expansion of the bias of the mle) as functions of the model parameters', 'gradient of the log-likelihood at the mle', 'mle of the dispersion parameter', 'expected information matrix evaluated at the mle', 'observed information matrix evaluated at the mle', 'first term in the expansion of the bias of the mle at the mle')
     ## Add all as an option
     out$option <- c(out$option, 'all')
     out$description <- c(out$description, 'all available options')
@@ -411,7 +411,7 @@ coef.enriched_glm <- function(object, model = c("mean", "full", "dispersion"), .
 ## ## Call that produced the enrichwith template for the current script:
 ## create_enrichwith_skeleton(class = "glm", option = c("auxiliary functions",
 ##     "score vector", "mle of dispersion", "expected information",
-##     "observed information", "first-order bias"), description = c("various likelihood-based quantities as functions of the model parameters",
+##     "observed information", "first-order bias"), description = c("various likelihood-based quantities (gradient of the log-likelihood, expected and observed information matrix and first term in the expansion of the bias of the mle) as functions of the model parameters",
 ##     "gradient of the log-likelihood at the mle", "mle of the dispersion parameter",
 ##     "expected information matrix evaluated at the mle", "observed information matrix evaluated at the mle",
 ##     "first term in the expansion of the bias of the mle at the mle"),
