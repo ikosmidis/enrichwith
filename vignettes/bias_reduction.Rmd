@@ -2,13 +2,12 @@
 title: "Quasi Fisher scoring for bias reduction using **enrichwith**"
 author: "[Ioannis Kosmidis](http://www.ucl.ac.uk/~ucakiko/)"
 date: "`r Sys.Date()`"
-<!-- bibliography: enrichwith.bib -->
 output: rmarkdown::html_vignette
+bibliography: bias_reduction.bib
 vignette: >
   %\VignetteIndexEntry{enriching glm objects}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
-bibliography: bias_reduction.bib
 ---
 
 # Introduction
