@@ -28,7 +28,7 @@ test_that("implementation of the scores corresponds to that of the observed info
 
 test_that("ML estimate of gamma dispersion from enrichwith is numerically the same to that from MASS::gamma.dispersion", {
     enriched_mod1 <- enrich(mod1, with = "mle of dispersion")
-    expect_equal(enriched_mod1$dispersion_mle,
+    expect_equal(unname(enriched_mod1$dispersion_mle),
                  gamma.dispersion(mod1),
                  tolerance = tol)
 })
