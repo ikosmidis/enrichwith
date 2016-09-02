@@ -13,6 +13,7 @@ Suggests:
     testthat,
     whisker,
     MASS,
+    brglm,
     numDeriv,
     knitr,
     rmarkdown

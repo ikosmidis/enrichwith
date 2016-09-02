@@ -2,7 +2,7 @@
 % Please edit documentation in R/enrich.glm.R
 \name{coef.enriched_glm}
 \alias{coef.enriched_glm}
-\title{Function to extract model coefficients from objects of class \code{\link{enriched_glm}}}
+\title{Function to extract model coefficients from objects of class \code{enriched_glm}}
 \usage{
 \method{coef}{enriched_glm}(object, model = c("mean", "full", "dispersion"),
   ...)
@@ -13,6 +13,6 @@
 \item{model}{either "mean" for the estimates of the parameters in the linear predictor, or "dispersion" for the estimate of the dispersion, or "full" for all estimates}
 }
 \description{
-Function to extract model coefficients from objects of class \code{\link{enriched_glm}}
+Function to extract model coefficients from objects of class \code{enriched_glm}
 }
 
