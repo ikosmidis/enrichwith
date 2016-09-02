@@ -390,8 +390,9 @@
 
 #' Function to extract model coefficients from objects of class \code{enriched_glm}
 #'
-#' @param object an object of class \code{\link{enriched_glm}}
+#' @param object an object of class \code{enriched_glm}
 #' @param model either "mean" for the estimates of the parameters in the linear predictor, or "dispersion" for the estimate of the dispersion, or "full" for all estimates
+#' @param ... currently unused
 #' @export
 coef.enriched_glm <- function(object, model = c("mean", "full", "dispersion"), ...) {
     beta <- object$coefficients

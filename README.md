@@ -87,7 +87,7 @@ cat(format(enriched_link$d3mu.deta), sep = "\n")
 `enriched_link` is now an "enriched" `link-glm` object, which, as per the enrichment options above, has the extra components `d2mu.deta` and `d3mu.deta`, for the calculation of 2nd and 3rd derivatives of the inverse link function with respect to `eta`, respectively.
 
 ## Implementation of enrichment options
-The task of implementing the enrichment options is streamlined into 3 steps:
+The implemention of enrichment options is streamlined into 3 steps:
 
 1. Use `create_enrichwith_skeleton` to produce an enrichwith template.
 2. Edit the `compute_*` functions by adding the specific code that
