@@ -9,7 +9,7 @@
 The enrichwith package provides the \code{\link{enrich}} method to
 enrich list-like R objects with new, relevant components. The
 resulting objects preserve their class, so all methods associated
-to them still apply. The package can also be used to produce
+with them still apply. The package can also be used to produce
 customisable source code templates for the structured
 implementation of methods to compute new components
 }

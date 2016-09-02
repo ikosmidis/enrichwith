@@ -1,0 +1,209 @@
+---
+title: "Quasi Fisher scoring for bias reduction using **enrichwith**"
+author: "[Ioannis Kosmidis](http://www.ucl.ac.uk/~ucakiko/)"
+date: "`r Sys.Date()`"
+<!-- bibliography: enrichwith.bib -->
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{enriching glm objects}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+bibliography: bias_reduction.bib
+---
+
+# Introduction
+
+The **enrichwith** package provides the `enrich` method to enrich
+list-like R objects with new, relevant components. The resulting
+objects preserve their class, so all methods associated with them
+still apply.
+
+This short vignette demonstrates some of the available enrichment
+options for `glm` objects in
+[**enrichwith**](https://github.com/ikosmidis/enrichwith). In
+particular, the enriched `glm` objects are used here to implement a
+quasi Fisher scoring procedure for computing reduced-bias estimates in
+[generalized linear
+models](https://en.wikipedia.org/wiki/Generalized_linear_model) [see
+@kosmidis:10 for a parallel quasi
+[Newton-Raphson](https://en.wikipedia.org/wiki/Newton%27s_method)
+procedure].
+
+------
+
+# Endometrial cancer data
+
+@heinze:02 used a logistic regression model to analyse data from a
+study on endometrial cancer. @agresti:15 [Section 5.7] provide details on the data set. Below, we
+fit a probit regression model with the same linear predictor as the
+logistic regression model in @heinze:02.
+```{r, echo = TRUE, eval = TRUE}
+# Get the data from the online supplmementary material of Agresti (2015)
+endometrial_url <- url("http://www.stat.ufl.edu/~aa/glm/data/Endometrial.dat")
+endometrial <- read.table(endometrial_url, header = TRUE)
+modML <- glm(HG ~ NV + PI + EH, family = binomial("probit"), data = endometrial)
+theta_mle <- coef(modML)
+summary(modML)
+```
+As is the case for the logistic regression model in @heinze:02, the
+maximum likelihood estimate of the parameter for `NV` is actually
+infinite. The reported, apparently finite value is merely due to false
+convergence of the iterative estimation procedure. The same is true
+for the estimated standard error, and, hence the value `r round(coef(summary(modML))["NV", "z value"], 3)` for the $z$-statistic cannot be trusted for inference on the size of the
+effect for `NV`.
+
+For generalized linear models with categorical response models like
+the above, the bias reduction method in @firth:93 has been found to
+result in finite estimates even when the maximum likelihood ones are
+infinite [see, @heinze:02, for logistic regressions; @kosmidis:11, for
+multinomial regressions; @kosmidis:14a, for cumulative link models].
+
+The
+[**brglm**](https://cran.r-project.org/web/packages/brglm/brglm.pdf) R
+package implements one of the variants of the bias reduction method in
+@firth:93 for binomial response generalized linear models and using
+iterative maximum likelihood fits on binomial pseudo-data [see,
+@kosmidis:07, Chapter 5, for details]. The reduced-bias estimates for
+the probit regression on the endometrial data can be computed as
+follows.
+``` {r, echo = TRUE, eval = TRUE, messages = FALSE}
+library("brglm")
+modBR <- brglm(HG ~ NV + PI + EH, family = binomial("probit"), data = endometrial)
+theta_brglm <- coef(modBR)
+summary(modBR)
+```
+The $z$-statistic for `NV` has value `r round(coef(summary(modBR))["NV", "z value"], 3)` when based on the reduced-bias estimates, providing some evidence for the existence of an effect.
+
+In the following, we use **enrichwith** to implement two variants of the bias reduction method via a unifying quasi Fisher scoring estimation procedure.
+
+------
+
+
+# Bias reduction in a nutshell
+
+
+Consider a parametric [statistical
+model](https://en.wikipedia.org/wiki/Statistical_model)
+$\mathcal{P}_\theta$ with unknown parameter $\theta \in \Re^p$ and the
+iteration $$\theta^{(k + 1)} := \theta^{(k)} +
+\left\{i(\theta^{(k)})\right\}^{-1} s(\theta^{(k)}) - c(\theta^{(k)})
+b(\theta^{(k)})$$ where $\theta^{(k)}$ is the value of $\theta$ at the
+$k$th iteration, $s(\theta)$ is the gradient of the
+log-[likelihood](https://en.wikipedia.org/wiki/Likelihood_function)
+for $\mathcal{P}_\theta$, $i(\theta)$ is the [expected
+information](https://en.wikipedia.org/wiki/Fisher_information) matrix,
+and $b(\theta)$ is the $O(n^{-1})$ term in the expansion of the
+[bias](https://en.wikipedia.org/wiki/Bias_of_an_estimator) of the
+[maximum likelihood
+estimator](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation)
+of $\theta$ [see, for example, @cox:68].
+
+The above iteration defines a *quasi* Fisher scoring estimation
+procedure in general, and reduces to exact [Fisher
+scoring](https://en.wikipedia.org/wiki/Scoring_algorithm) for maximum
+likelihood estimation when $c(\theta^{(k)}) = 0_p$, where $0_p$ is a
+vector of $p$ zeros.
+
+For either $c(\theta) = I_p$ or $c(\theta) =
+\left\{i(\theta)\right\}^{-1} j(\theta)$, where $I_p$ is the $p \times
+p$ identity matrix and $j(\theta)$ is the [observed
+information](https://en.wikipedia.org/wiki/Observed_information),
+$\theta^{(\infty)}$ (if it exists) is a reduced-bias estimate, in the
+sense that it corresponds an estimator with bias of smaller asymptotic
+order than that of the maximum likelihood estimator [see, @firth:93;
+@kosmidis:10]. The **brglm** estimates correspond to $c(\theta) = I_p$.
+
+The asymptotic distribution of the reduced-bias estimators is the same
+to that of the maximum likelihood estimator [see, @firth:93 for
+details]. So, the reduced-bias estimates can be readily used to
+calculate $z$-statistics.
+
+------
+
+# Implementation using **enrichwith**
+
+For implementing the iteration for bias reduction, we need functions that can compute the gradient of the log-likelihood, the observed and expected information matrix, and $b(\theta)$ at arbitrary values of $\theta$.
+
+The **enrichwith** package can produce those functions for `glm` objects through the `auxiliary_functions` enrichment option (to see all available enrichment options for `glm` objects run `get_enrichment_options(modML)`.
+``` {r, echo = TRUE, eval = TRUE}
+enriched_modML <- enrich(modML, with = "auxiliary functions")
+```
+Let's extract those functions from the `enriched_modML` object.
+``` {r, echo = TRUE, eval = TRUE}
+# Extract the ingredients for the quasi Fisher scoring iteration from the enriched glm object
+gradient <- enriched_modML$auxiliary_functions$score # gradient of the log-likelihood
+information <- enriched_modML$auxiliary_functions$information # information matrix
+bias <- enriched_modML$auxiliary_functions$bias # first-order bias
+```
+For the more technically minded, note here that the above functions are specific to `modML` in the sense that they look into a special environment for necessary objects like the model matrix, the model weights, the response vector, and so on.
+
+This stems from the way **enrichwith** has been implemented. In particular, if `create_enrichwith_skeleton` is used, the user/developer can directly implement enrichment options to enrich objects with functions that directly depend on other components in the object to be enriched.
+
+The following code chunk uses `enriched_modML` to implement the quasi Fisher scoring procedure for the analysis of the endometrial cancer data. For `p <- length(theta_mle)` `r p <- length(theta_mle)`, the starting value for the parameter vector is set to `theta_current <- rep(0, p)` `r theta_current <- rep(0, p)`, and the maximum number of iterations to `maxit <- 100` `r maxit <- 100`. As stopping criterion, we use the absolute change in each parameter value with tolerance `epsilon <- 1e-06` `r epsilon <- 1e-06`
+``` {r, echo = TRUE, eval = TRUE}
+# The quasi Fisher scoring iteration using c(theta) = identity
+for (k in seq.int(maxit)) {
+    s_vector <- gradient(theta_current)
+    i_matrix <- information(theta_current, type = "expected")
+    b_vector <- bias(theta_current)
+    step <- solve(i_matrix) %*% s_vector - b_vector
+    theta_current <- theta_current + step
+    # A stopping criterion
+    if (all(abs(step) < epsilon)) {
+        break
+    }
+}
+(theta_e <- drop(theta_current))
+```
+The estimation procedure took `r k` iterations to converge, and, as expected, the estimates are numerically the same to the ones that **brglm** returned.
+``` {r, echo = TRUE, eval = TRUE}
+all.equal(theta_e, theta_brglm, check.attributes = FALSE, tolerance = epsilon)
+```
+
+A set of alternative reduced-bias estimates can be obtained using $c(\theta) = \left\{i(\theta)\right\}^{-1} j(\theta)$. Starting again at `theta_current <- rep(0, p)` `r theta_current <- rep(0, p)`
+``` {r, echo = TRUE, eval = TRUE}
+# The quasi Fisher scoring iteration using c(theta) = solve(i(theta)) %*% j(theta)
+for (k in seq.int(maxit)) {
+    s_vector <- gradient(theta_current)
+    i_matrix <- information(theta_current, type = "expected")
+    j_matrix <- information(theta_current, type = "observed")
+    b_vector <- bias(theta_current)
+    step <- solve(i_matrix) %*% (s_vector - j_matrix %*% b_vector)
+    theta_current <- theta_current + step
+    # A stopping criterion
+    if (all(abs(step) < epsilon)) {
+        break
+    }
+}
+(theta_o <- drop(theta_current))
+```
+The estimation procedure took `r k` iterations to converge.
+
+The maximum likelihood estimates and the estimates from the two variants of the bias reduction method are
+``` {r, echo = TRUE, eval = TRUE}
+round(data.frame(theta_mle, theta_e, theta_o), 3)
+```
+Note that the reduced-bias estimates have shrunk towards zero. This is typical for reduced-bias estimation in binomial-response generalized linear models [see, for example, @cordeiro:91, Section 8; @kosmidis:07, Section 5.2; @kosmidis:14a for shrinkage in cumulative link models].
+
+The corresponding $z$-statistics are
+``` {r, echo = TRUE, eval = TRUE}
+se_theta_mle <- sqrt(diag(solve(information(theta_mle, type = "expected"))))
+se_theta_e <- sqrt(diag(solve(information(theta_e, type = "expected"))))
+se_theta_o <- sqrt(diag(solve(information(theta_o, type = "expected"))))
+round(data.frame(z_mle = theta_mle/se_theta_mle,
+                 z_br_e = theta_e/se_theta_e,
+                 z_br_o = theta_o/se_theta_o), 3)
+```
+The two variants for bias reduction result in slightly different reduced-bias estimates and $z$-statistics, though the $z$-statistics from both variants provide some evidence for the existence of an effect for `NV`.
+
+------
+
+# Notes
+A general family of bias reduction methods is described in @kosmidis:09.
+
+The quasi Fisher scoring iteration that has been described here is at the core of the [**brglm2**](https://github.com/ikosmidis/brglm2) R package, which provides various bias reduction methods for generalized linear models.
+
+------
+
+# References
+
