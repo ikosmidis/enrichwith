@@ -3,7 +3,7 @@ title: "Bias reduction in generalized linear models using **enrichwith**"
 author: "[Ioannis Kosmidis](http://www.ucl.ac.uk/~ucakiko/)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: bias_reduction.bib
+bibliography: bias.bib
 vignette: >
   %\VignetteIndexEntry{enriching glm objects}
   %\VignetteEngine{knitr::rmarkdown}
