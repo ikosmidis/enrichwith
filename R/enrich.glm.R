@@ -338,6 +338,7 @@
                                rpois(nsim * n, lambda = fitted_values)
                            },
                            "inverse.gaussian" = {
+                               SuppDists::rinvGauss(nsim * n, nu = fitted_values, lambda = prior_weights/dispersion)
                            },
 NULL)
         ## Inspired by stats:::simulate.lm
