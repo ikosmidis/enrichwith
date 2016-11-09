@@ -143,9 +143,7 @@
     aic <- family$aic
 
     ## Get x, y, ...
-    y <- object$y ## We do not do model.response here to cover the
-                  ## case where successes and failures are give for a
-                  ## binomial glm
+    y <- object$y
     x <- model.matrix(object)
     nobs <- nobs(object)
     nvar <- ncol(x)
@@ -279,9 +277,85 @@
         out
     }
 
+    simulate <- function(coefs, dispersion = 1, nsim = 1, seed = NULL) {
+        if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
+            runif(1)
+        if (is.null(seed))
+            RNGstate <- get(".Random.seed", envir = .GlobalEnv)
+        else {
+            R.seed <- get(".Random.seed", envir = .GlobalEnv)
+            set.seed(seed)
+            RNGstate <- structure(seed, kind = as.list(RNGkind()))
+            on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
+        }
+        predictors <- drop(x %*% coefs + off)
+        fitted_values <- linkinv(predictors)
+        fitted_names <- names(fitted_values)
+        n <- length(fitted_values)
+        variates <- switch(family$family,
+                           "gaussian" = {
+                               rnorm(nsim * n, mean = fitted_values, sd = dispersion/prior_weights)
+                           },
+                           "Gamma" = {
+                               if (any(prior_weights!= 1)) {
+                                   message("using prior weights in the shape parameters")
+                               }
+                               rgamma(nsim * n, shape = prior_weights/dispersion, scale = fitted_values*dispersion)
+
+                           },
+                           "binomial" = {
+                               if (any(prior_weights %% 1 != 0))
+                                   stop("cannot simulate from non-integer prior.weights")
+                               if (!is.null(mf <- object$model)) {
+                                   y <- model.response(mf)
+                                   if (is.factor(y)) {
+                                       yy <- factor(1 + rbinom(n * nsim, size = 1, prob = fitted_values),
+                                                    labels = levels(y))
+                                       split(yy, rep(seq_len(nsim), each = n))
+                                   }
+                                   else if (is.matrix(y) && ncol(y) == 2) {
+                                       yy <- vector("list", nsim)
+                                       for (i in seq_len(nsim)) {
+                                           Y <- rbinom(n, size = prior_weights, prob = fitted_values)
+                                           YY <- cbind(Y, prior_weights - Y)
+                                           colnames(YY) <- colnames(y)
+                                           yy[[i]] <- YY
+                                       }
+                                       yy
+                                   }
+                                   else rbinom(n * nsim, size = prior_weights, prob = fitted_values)/prior_weights
+                               }
+                               else rbinom(n & nsim, size = prior_weights, prob = fitted_values)/prior_weights
+                           },
+                           "poisson" = {
+                               if (any(prior_weights != 1)) {
+                                   warning("ignoring prior weights")
+                               }
+                               rpois(nsim * n, lambda = fitted_values)
+                           },
+                           "inverse.gaussian" = {
+                           },
+NULL)
+        ## Inspired by stats:::simulate.lm
+        if (!is.list(variates)) {
+            dim(variates) <- c(n, nsim)
+            variates <- as.data.frame(variates)
+        }
+        else {
+            class(variates) <- "data.frame"
+        }
+        names(variates) <-  paste("sim", seq_len(nsim), sep = "_")
+        if (!is.null(fitted_names)) {
+            row.names(variates) <- fitted_names
+        }
+        attr(variates, "seed") <- RNGstate
+        variates
+    }
+
     return(list(score = score,
                 information = information,
-                bias = bias))
+                bias = bias,
+                simulate = simulate))
 
 }
 
@@ -385,7 +459,6 @@
     dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
     object$auxiliary_functions$bias(coef(object, model = "mean"), dispersion_mle)
 }
-
 
 
 #' Function to extract model coefficients from objects of class \code{enriched_glm}
