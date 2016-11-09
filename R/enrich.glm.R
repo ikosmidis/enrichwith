@@ -305,7 +305,6 @@
                                    message("using prior weights in the shape parameters")
                                }
                                rgamma(nsim * n, shape = prior_weights/dispersion, scale = fitted_values*dispersion)
-
                            },
                            "binomial" = {
                                if (any(prior_weights %% 1 != 0))
