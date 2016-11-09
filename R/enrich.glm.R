@@ -15,8 +15,12 @@
 #' @details
 #'
 #' The auxiliary functions consist of the score functions, the
-#' expected or observed information and the first-order bias of the
-#' maximum likelihood estimator as functions of the model parameters.
+#' expected or observed information, the first-order bias of the
+#' maximum likelihood estimator as functions of the model parameters,
+#' and a \code{simulate} function that takes as input the model
+#' parameters (including the dispersion if any). The result from the
+#' \code{simulate} auxiliary function has the same structure to that
+#' of the \code{\link{simulate}} method for \code{\link{glm}} objects.
 #'
 #' @return
 #'
