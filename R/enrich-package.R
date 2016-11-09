@@ -60,7 +60,7 @@ enrich <- function(object, with, ...) {
 }
 
 #' Generic method for getting available options for the enrichment
-#' objects
+#' of objects
 #'
 #' @aliases print.enrichment_options
 #'
@@ -85,3 +85,11 @@ get_enrichment_options <- function(object, option, all_options) {
     UseMethod("get_enrichment_options")
 }
 
+
+#' Generic method for extracting or computing auxiliary functions for
+#' objects
+#' @param object the object to be enriched or the enriched object
+#' @param ... curretly not used
+get_auxiliary_functions <- function(object, ...) {
+    UseMethod("get_auxiliary_functions")
+}

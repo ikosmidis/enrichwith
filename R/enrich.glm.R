@@ -485,6 +485,22 @@ coef.enriched_glm <- function(object, model = c("mean", "full", "dispersion"), .
            })
 }
 
+#' Function to compute/extract auxiliary functions from objects of
+#' class \code{glm}/\code{enriched_glm}
+#'
+#' @param object an object of class \code{enriched_glm}
+#' @param ... curretly not used
+#' @export
+get_auxiliary_functions.glm <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        enriched_object <- enrich(object, with = "auxiliary functions")
+        enriched_object$auxiliary_functions
+    }
+    else {
+        object$auxiliary_functions
+    }
+}
+
 
 ## ## Call that produced the enrichwith template for the current script:
 ## create_enrichwith_skeleton(class = "glm", option = c("auxiliary functions",

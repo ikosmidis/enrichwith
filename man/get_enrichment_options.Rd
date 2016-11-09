@@ -4,7 +4,7 @@
 \alias{get_enrichment_options}
 \alias{print.enrichment_options}
 \title{Generic method for getting available options for the enrichment
-objects}
+of objects}
 \usage{
 get_enrichment_options(object, option, all_options)
 }
@@ -28,7 +28,7 @@ if \code{all_options = TRUE} then an object of class
 }
 \description{
 Generic method for getting available options for the enrichment
-objects
+of objects
 }
 \details{
 A check is being made whether the requested option is
