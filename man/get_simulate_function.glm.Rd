@@ -5,7 +5,7 @@
 \title{Function to compute/extract a simulate function for response
 vectors from an object of class \code{glm}/\code{enriched_glm}}
 \usage{
-get_simulate_function.glm(object, ...)
+\method{get_simulate_function}{glm}(object, ...)
 }
 \arguments{
 \item{object}{an object of class \code{glm} or\code{enriched_glm}}

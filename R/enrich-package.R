@@ -122,3 +122,12 @@ get_information_function <- function(object, ...) {
 get_bias_function <- function(object, ...) {
     UseMethod("get_bias_function")
 }
+
+#' Generic method for extracting or computing a simulate function for
+#' modelling objects
+#' @param object the object to be enriched or the enriched object
+#' @param ... currently not used
+#'
+get_simulate_function <- function(object, ...) {
+    UseMethod("get_simulate_function")
+}
