@@ -89,7 +89,36 @@ get_enrichment_options <- function(object, option, all_options) {
 #' Generic method for extracting or computing auxiliary functions for
 #' objects
 #' @param object the object to be enriched or the enriched object
-#' @param ... curretly not used
+#' @param ... currently not used
 get_auxiliary_functions <- function(object, ...) {
     UseMethod("get_auxiliary_functions")
+}
+
+#' Generic method for extracting or computing a function that
+#' returns the scores for modelling objects
+#' @param object the object to be enriched or the enriched object
+#' @param ... currently not used
+#'
+get_score_function <- function(object, ...) {
+    UseMethod("get_score_function")
+}
+
+
+#' Generic method for extracting or computing a function that returns
+#' the information matrix for modelling objects
+#' @param object the object to be enriched or the enriched object
+#' @param ... currently not used
+#'
+get_information_function <- function(object, ...) {
+    UseMethod("get_information_function")
+}
+
+
+#' Generic method for extracting or computing a function that returns
+#' the bias for the parameters in modelling objects
+#' @param object the object to be enriched or the enriched object
+#' @param ... currently not used
+#'
+get_bias_function <- function(object, ...) {
+    UseMethod("get_bias_function")
 }

@@ -8,12 +8,15 @@ class \code{glm}/\code{enriched_glm}}
 \method{get_auxiliary_functions}{glm}(object, ...)
 }
 \arguments{
-\item{object}{an object of class \code{enriched_glm}}
+\item{object}{an object of class \code{glm} or\code{enriched_glm}}
 
-\item{...}{curretly not used}
+\item{...}{currently not used}
 }
 \description{
 Function to compute/extract auxiliary functions from objects of
 class \code{glm}/\code{enriched_glm}
+}
+\details{
+See \code{\link{enrich.glm}} for details.
 }
 

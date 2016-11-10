@@ -61,11 +61,11 @@ cML_functions <- get_auxiliary_functions(cML)
 
 # To simulate 2 samples at the maximum likelihood estimator do
 dispersion_mle <- MASS::gamma.dispersion(cML)
-cML_functions$simulate(coefs = coef(cML),
+cML_functions$simulate(coef = coef(cML),
                        dispersion = dispersion_mle,
                        nsim = 2, seed = 123)
 # To simulate 5 samples at c(0.1, 0.1, 0, 0) and dispersion 0.2 do
-cML_functions$simulate(coefs = c(0.1, 0.1, 0, 0),
+cML_functions$simulate(coef = c(0.1, 0.1, 0, 0),
                        dispersion = 0.2,
                        nsim = 5, seed = 123)
 

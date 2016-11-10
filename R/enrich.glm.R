@@ -54,11 +54,11 @@
 #'
 #' # To simulate 2 samples at the maximum likelihood estimator do
 #' dispersion_mle <- MASS::gamma.dispersion(cML)
-#' cML_functions$simulate(coefs = coef(cML),
+#' cML_functions$simulate(coef = coef(cML),
 #'                        dispersion = dispersion_mle,
 #'                        nsim = 2, seed = 123)
 #' # To simulate 5 samples at c(0.1, 0.1, 0, 0) and dispersion 0.2 do
-#' cML_functions$simulate(coefs = c(0.1, 0.1, 0, 0),
+#' cML_functions$simulate(coef = c(0.1, 0.1, 0, 0),
 #'                        dispersion = 0.2,
 #'                        nsim = 5, seed = 123)
 #'
@@ -194,12 +194,18 @@
         off <- rep(0, nobs)
     }
 
-    score <- function(coefs, dispersion = 1) {
-        predictors <- drop(x %*% coefs + off)
+    score <- function(coefficients, dispersion) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
+        predictors <- drop(x %*% coefficients + off)
         fitted_values <- linkinv(predictors)
         d1mus <- d1mu(predictors)
         variances <- variance(fitted_values)
-        ## Score for coefss
+        ## Score for coefficients
         score_beta <- colSums(prior_weights * d1mus * (y - fitted_values) * x / variances)/dispersion
         ## Score for dispersion
         if (family$family %in% c("poisson", "binomial")) {
@@ -218,13 +224,21 @@
         ## Overall score
         out <- c(score_beta, score_dispersion)
         names(out) <- paste0("grad_", vnames)
+        attr(out, "coefficients") <- coefficients
+        attr(out, "dispersion") <- dispersion
         out
     }
 
-    information <- function(coefs, dispersion = 1,
+    information <- function(coefficients, dispersion,
                             type = c("expected", "observed"), QR = FALSE) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
         type <- match.arg(type)
-        predictors <- drop(x %*% coefs + off)
+        predictors <- drop(x %*% coefficients + off)
         fitted_values <- linkinv(predictors)
         d1mus <- d1mu(predictors)
         variances <- variance(fitted_values)
@@ -233,13 +247,13 @@
         if (QR) {
             return(qr(wx))
         }
-        ## expected info coefs-coefs
+        ## expected info coefficients-coefficients
         info_beta <- crossprod(wx) / dispersion
         if (type == "observed") {
             d2mus <- d2mu(predictors)
             d1variances <- d1variance(fitted_values)
             w <- prior_weights * (d2mus / variances - d1mus^2 * d1variances / variances^2) * (y - fitted_values)
-            ## observed info coefs-coefs
+            ## observed info coefficients-coefficients
             info_beta <- info_beta - t(x * w) %*% x / dispersion
         }
         rownames(info_beta) <- colnames(info_beta) <- colnames(x)
@@ -249,9 +263,9 @@
             return(info_beta)
         }
         ## If there is a dispersion parameter then return the
-        ## information on the coefficients and tha dispersion
+        ## information on the coefficients and the dispersion
         else {
-            ## expected info coefs-dispersion
+            ## expected info coefficients-dispersion
             info_cross <- rep(0, ncol(info_beta))
             ## expected info dispersion-dispersion
             zetas <- -prior_weights/dispersion
@@ -259,7 +273,7 @@
             d2afuns[keep] <- d2afun(zetas[keep])
             info_dispe <- sum(prior_weights^2 * d2afuns, na.rm = TRUE) / (2 * dispersion^4)
             if (type == "observed") {
-                ## observed info coefs-dispersion
+                ## observed info coefficients-dispersion
                 info_cross <- info_cross + colSums(prior_weights * d1mus * (y - fitted_values) * x / variances)/dispersion^2
                 ## observed info dispersion-dispersion
                 zetas <- -prior_weights/dispersion
@@ -272,18 +286,26 @@
             out <- rbind(cbind(info_beta, info_cross),
                          c(info_cross, info_dispe))
             colnames(out) <- rownames(out) <- c(colnames(x), "dispersion")
+            attr(out, "coefficients") <- coefficients
+            attr(out, "dispersion") <- dispersion
             out
         }
     }
 
-    bias <- function(coefs, dispersion = 1) {
-        predictors <- drop(x %*% coefs + off)
+    bias <- function(coefficients, dispersion) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
+        predictors <- drop(x %*% coefficients + off)
         fitted_values <- linkinv(predictors)
         d1mus <- d1mu(predictors)
         d2mus <- d2mu(predictors)
         variances <- variance(fitted_values)
         working_weights <- prior_weights * d1mus^2 / variances
-        Qr <- information(coefs, dispersion = dispersion, QR = TRUE)
+        Qr <- information(coefficients, dispersion = dispersion, QR = TRUE)
         Q <- qr.Q(Qr)
         hats <- rowSums(Q * Q)
         ksi <- -0.5 * dispersion * d2mus * hats / (d1mus * sqrt(working_weights))
@@ -312,10 +334,18 @@
         }
         out <- c(bias_beta, bias_dispersion)
         names(out) <- paste0("bias_", vnames)
+        attr(out, "coefficients") <- coefficients
+        attr(out, "dispersion") <- dispersion
         out
     }
 
-    simulate <- function(coefs, dispersion = 1, nsim = 1, seed = NULL) {
+    simulate <- function(coefficients, dispersion, nsim = 1, seed = NULL) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
         if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
             runif(1)
         if (is.null(seed))
@@ -326,7 +356,7 @@
             RNGstate <- structure(seed, kind = as.list(RNGkind()))
             on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
         }
-        predictors <- drop(x %*% coefs + off)
+        predictors <- drop(x %*% coefficients + off)
         fitted_values <- linkinv(predictors)
         fitted_names <- names(fitted_values)
         n <- length(fitted_values)
@@ -387,6 +417,8 @@ NULL)
             row.names(variates) <- fitted_names
         }
         attr(variates, "seed") <- RNGstate
+        attr(variates, "coefficients") <- coefficients
+        attr(variates, "dispersion") <- dispersion
         variates
     }
 
@@ -404,14 +436,7 @@ NULL)
 
 
 `compute_score_mle.glm` <- function(object, ...) {
-    if (object$family$family %in% c("poisson", "binomial")) {
-        dispersion_mle <- 1
-    }
-    else {
-        dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
-    }
-    object <- enrich(object, with = "auxiliary functions")
-    object$auxiliary_functions$score(coef(object, model = "mean"), dispersion_mle)
+    get_score_function(object)()
 }
 
 
@@ -461,9 +486,7 @@ NULL)
 
 
 `compute_expected_information_mle.glm` <- function(object, dispersion = dispersion_mle) {
-    object <- enrich(object, with = "auxiliary functions")
-    dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
-    object$auxiliary_functions$information(coef(object, model = "mean"), dispersion, type = "expected")
+    get_information_function(object)(type = "expected")
 }
 
 
@@ -473,9 +496,7 @@ NULL)
 
 
 `compute_observed_information_mle.glm` <- function(object, dispersion = dispersion_mle) {
-    object <- enrich(object, with = "auxiliary functions")
-    dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
-    object$auxiliary_functions$information(coef(object, model = "mean"), dispersion, type = "observed")
+    get_information_function(object)(type = "observed")
 }
 
 
@@ -485,19 +506,16 @@ NULL)
 
 
 `compute_bias_mle.glm` <- function(object, ...) {
-    ## Write some code to compute the component bias_mle using
-    ## the components of object and any other arguments in ...
-    ## For example
-    cat('component', 'bias_mle', 'for objects of class', 'glm', "\n")
+    get_bias_function(object)()
 }
 
 
 `compute_bias_mle` <- function(object, ...) {
-    object <- enrich(object, with = "auxiliary functions")
-    dispersion_mle <- enrich(object, with = "mle of dispersion")$dispersion_mle
-    object$auxiliary_functions$bias(coef(object, model = "mean"), dispersion_mle)
+    UseMethod('compute_bias_mle')
 }
 
+
+## Other extractor functions
 
 #' Function to extract model coefficients from objects of class \code{enriched_glm}
 #'
@@ -522,8 +540,13 @@ coef.enriched_glm <- function(object, model = c("mean", "full", "dispersion"), .
 #' Function to compute/extract auxiliary functions from objects of
 #' class \code{glm}/\code{enriched_glm}
 #'
-#' @param object an object of class \code{enriched_glm}
-#' @param ... curretly not used
+#' @param object an object of class \code{glm} or\code{enriched_glm}
+#' @param ... currently not used
+#'
+#' @details
+#'
+#' See \code{\link{enrich.glm}} for details.
+#'
 #' @export
 get_auxiliary_functions.glm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
@@ -534,6 +557,147 @@ get_auxiliary_functions.glm <- function(object, ...) {
         object$auxiliary_functions
     }
 }
+
+#' Function to compute/extract a simulate function for response
+#' vectors from an object of class \code{glm}/\code{enriched_glm}
+#'
+#' @param object an object of class \code{glm} or\code{enriched_glm}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted simulate function has arguments
+#' \itemize{
+#'
+#' \item{coefficients}{the regression coefficients at which the
+#' response vectors are simulated. If missing then the maximum
+#' likelihood estimates are used}
+#'
+#' \item{dispersion}{the dispersion parameter at which the response
+#' vectors are simulated. If missing then the maximum likelihood
+#' estimate is used}
+#'
+#' \item{nsim}{number of response vectors to simulate.  Defaults to \code{1}}
+#'
+#' \item{seed}{an object specifying if and how the random number
+#' generator should be initialized ('seeded'). It can be either
+#' \code{NULL} or an integer that will be used in a call to
+#' \code{set.seed} before simulating the response vectors.  If set,
+#' the value is saved as the \code{seed} attribute of the returned
+#' value.  The default, \code{NULL} will not change the random
+#' generator state, and return \code{.Random.seed} as the \code{seed}
+#' attribute, see \code{Value}}
+#'
+#' }
+#'
+#' @export
+get_simulate_function.glm <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$simulate
+    }
+    else {
+        object$auxiliary_functions$simulate
+    }
+}
+
+
+#' Function to compute/extract a function that returns the scores
+#' (derivatives of the log-likelihood) for an object of class
+#' \code{glm}/\code{enriched_glm}
+#'
+#' @param object an object of class \code{glm} or\code{enriched_glm}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted function has arguments
+#' \itemize{
+#'
+#' \item{coefficients}{the regression coefficients at which the scores
+#' are computed. If missing then the maximum likelihood estimates are
+#' used}
+#'
+#' \item{dispersion}{the dispersion parameter at which the score
+#' function is evaluated. If missing then the maximum likelihood
+#' estimate is used}
+#'
+#' }
+#'
+#' @export
+get_score_function.glm <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$score
+    }
+    else {
+        object$auxiliary_functions$score
+    }
+}
+
+#' Function to compute/extract a function that returns the information
+#' matrix for an object of class \code{glm}/\code{enriched_glm}
+#'
+#' @param object an object of class \code{glm} or\code{enriched_glm}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted function has arguments
+#' \itemize{
+#'
+#' \item{coefficients}{the regression coefficients at which the
+#' information matrix is evaluated. If missing then the maximum
+#' likelihood estimates are used}
+#'
+#' \item{dispersion}{the dispersion parameter at which the information
+#' matrix is evaluated. If missing then the maximum likelihood estimate
+#' is used}
+#'
+#' \item{type}{should the function return th 'expected' or 'observed' information? Default is \code{expected}}
+#'
+#' \item{QR}{If \code{TRUE}, then the QR decomposition of the expected information for the coefficients is returned}
+#'
+#' }
+#'
+#' @export
+get_information_function.glm <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$information
+    }
+    else {
+        object$auxiliary_functions$information
+    }
+}
+
+
+#' Function to compute/extract a function that returns the first term
+#' in the expansion of the bias of the MLE for the parameters of an
+#' object of class \code{glm}/\code{enriched_glm}
+#'
+#' @param object an object of class \code{glm} or\code{enriched_glm}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted function has arguments
+#' \itemize{
+#'
+#' \item{coefficients}{the regression coefficients at which the
+#' first-order bias is evacuated. If missing then the maximum
+#' likelihood estimates are used}
+#'
+#' \item{dispersion}{the dispersion parameter at which the first-order
+#' bias is evaluated. If missing then the maximum likelihood estimate
+#' is used}
+#'
+#' }
+#'
+#' @export
+get_bias_function.glm <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$bias
+    }
+    else {
+        object$auxiliary_functions$bias
+    }
+}
+
+
 
 
 ## ## Call that produced the enrichwith template for the current script:

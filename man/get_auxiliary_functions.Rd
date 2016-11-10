@@ -10,7 +10,7 @@ get_auxiliary_functions(object, ...)
 \arguments{
 \item{object}{the object to be enriched or the enriched object}
 
-\item{...}{curretly not used}
+\item{...}{currently not used}
 }
 \description{
 Generic method for extracting or computing auxiliary functions for
