@@ -566,7 +566,7 @@ get_auxiliary_functions.glm <- function(object, ...) {
 #'
 #' @details
 #' The computed/extracted simulate function has arguments
-#' \itemize{
+#' \describe{
 #'
 #' \item{coefficients}{the regression coefficients at which the
 #' response vectors are simulated. If missing then the maximum
@@ -609,7 +609,7 @@ get_simulate_function.glm <- function(object, ...) {
 #'
 #' @details
 #' The computed/extracted function has arguments
-#' \itemize{
+#' \describe{
 #'
 #' \item{coefficients}{the regression coefficients at which the scores
 #' are computed. If missing then the maximum likelihood estimates are
@@ -639,7 +639,7 @@ get_score_function.glm <- function(object, ...) {
 #'
 #' @details
 #' The computed/extracted function has arguments
-#' \itemize{
+#' \describe{
 #'
 #' \item{coefficients}{the regression coefficients at which the
 #' information matrix is evaluated. If missing then the maximum
@@ -675,7 +675,7 @@ get_information_function.glm <- function(object, ...) {
 #'
 #' @details
 #' The computed/extracted function has arguments
-#' \itemize{
+#' \describe{
 #'
 #' \item{coefficients}{the regression coefficients at which the
 #' first-order bias is evacuated. If missing then the maximum

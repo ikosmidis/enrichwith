@@ -18,7 +18,7 @@ matrix for an object of class \code{glm}/\code{enriched_glm}
 }
 \details{
 The computed/extracted function has arguments
-\itemize{
+\describe{
 
 \item{coefficients}{the regression coefficients at which the
 information matrix is evaluated. If missing then the maximum

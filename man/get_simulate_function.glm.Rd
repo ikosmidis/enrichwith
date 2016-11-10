@@ -18,7 +18,7 @@ vectors from an object of class \code{glm}/\code{enriched_glm}
 }
 \details{
 The computed/extracted simulate function has arguments
-\itemize{
+\describe{
 
 \item{coefficients}{the regression coefficients at which the
 response vectors are simulated. If missing then the maximum

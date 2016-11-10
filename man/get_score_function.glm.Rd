@@ -20,7 +20,7 @@ Function to compute/extract a function that returns the scores
 }
 \details{
 The computed/extracted function has arguments
-\itemize{
+\describe{
 
 \item{coefficients}{the regression coefficients at which the scores
 are computed. If missing then the maximum likelihood estimates are

@@ -20,7 +20,7 @@ object of class \code{glm}/\code{enriched_glm}
 }
 \details{
 The computed/extracted function has arguments
-\itemize{
+\describe{
 
 \item{coefficients}{the regression coefficients at which the
 first-order bias is evacuated. If missing then the maximum
