@@ -3,25 +3,22 @@ title: "Bias reduction in generalized linear models using **enrichwith**"
 author: "[Ioannis Kosmidis](http://www.ucl.ac.uk/~ucakiko/)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
-bibliography: bias.bib
+bibliography: enrichwith.bib
 vignette: >
-  %\VignetteIndexEntry{enriching glm objects}
+  %\VignetteIndexEntry{Bias reduction in generalized linear models using enrichwith}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
 
 # Introduction
 
-The **enrichwith** package provides the `enrich` method to enrich
-list-like R objects with new, relevant components. The resulting
-objects preserve their class, so all methods associated with them
-still apply.
+The [**enrichwith**](https://github.com/ikosmidis/enrichwith) package
+provides the `enrich` method to enrich list-like R objects with new,
+relevant components. The resulting objects preserve their class, so
+all methods associated with them still apply.
 
-This vignette demonstrates some of the available enrichment options for
-`glm` objects in
-[**enrichwith**](https://github.com/ikosmidis/enrichwith). In
-particular, the enriched `glm` objects are used here to implement a
-*quasi [Fisher
+This vignette is a short case study demonstrating how enriched `glm`
+objects can be used to implement a *quasi [Fisher
 scoring](https://en.wikipedia.org/wiki/Scoring_algorithm)* procedure
 for computing reduced-bias estimates in [generalized linear
 models](https://en.wikipedia.org/wiki/Generalized_linear_model)
