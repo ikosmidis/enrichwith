@@ -42,6 +42,18 @@ test_that("standard errors from expected information matrix match those from sum
 })
 
 
+test_that("enrichwith handles aliasing correctly",
+{
+    umod1 <- update(mod1, . ~ I(3 * log(u)) + . + I(2 * log(u)))
+    na_coefs <- is.na(coef(umod1))
+    scorefun <- get_score_function(umod1)
+    infofun <- get_information_function(umod1)
+    expect_true(all(is.na(scorefun()[na_coefs])))
+    expect_true(all(is.na(infofun()[na_coefs, ])))
+    expect_true(all(is.na(infofun()[, na_coefs])))
+
+})
+
 ## A Poisson example
 ## Dobson (1990) Page 93: Randomized Controlled Trial :
 counts <- c(18,17,15,20,10,20,25,13,12)
@@ -55,6 +67,5 @@ test_that("expected information matrix from enrich with is equal to that coming 
                  crossprod(qr.R(mod2$qr)),
                  tolerance = 200)
 })
-
 
 
