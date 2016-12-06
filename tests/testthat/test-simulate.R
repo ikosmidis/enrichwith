@@ -8,7 +8,7 @@ tol <- 1e-06
 data(endometrial)
 
 eML <- glm(HG ~ NV + PI + EH, family = binomial("probit"), data = endometrial)
-theta_mle <- coef(modML)
+theta_mle <- coef(eML)
 
 enriched_eML <- enrich(eML, with = "auxiliary functions")
 
@@ -19,7 +19,7 @@ test_that("simulate method and the simulate auxiliary function return the same r
     expect_equal(rowMeans(simu1), rowMeans(simu2), tolerance = tol)
 })
 
-simu1 <- enriched_eML$auxiliary_functions$simulate(coefs = c(0.5, 0, 0, 0), nsim = nsimu, seed = 123)
+simu1 <- enriched_eML$auxiliary_functions$simulate(coefficients = c(0.5, 0, 0, 0), nsim = nsimu, seed = 123)
 test_that("the simulate auxiliary function does the right thing", {
     expect_lt(max(abs(rowMeans(simu1) - pnorm(0.5))), 0.01)
 })
