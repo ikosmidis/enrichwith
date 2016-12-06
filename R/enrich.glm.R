@@ -188,7 +188,11 @@
     off <- model.offset(object$model)
     prior_weights <- weights(object, type = "prior")
     keep <- prior_weights > 0
-    dfResidual <- sum(keep) - object$rank
+    df_residual <- sum(keep) - object$rank
+
+    ## Take care of aliasing
+    na_coefficients <- is.na(coef(object))
+    has_na <- any(na_coefficients)
 
     if (is.null(off)) {
         off <- rep(0, nobs)
@@ -201,7 +205,12 @@
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
-        predictors <- drop(x %*% coefficients + off)
+        if (has_na) {
+            predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
+        }
+        else {
+            predictors <- drop(x %*% coefficients + off)
+        }
         fitted_values <- linkinv(predictors)
         d1mus <- d1mu(predictors)
         variances <- variance(fitted_values)
@@ -221,9 +230,12 @@
             score_dispersion <- sum(devianceResiduals - EdevianceResiduals, na.rm = TRUE) / (2 * dispersion^2)
             vnames <- c(names(score_beta), "dispersion")
         }
+        if (has_na) {
+            score_beta[na_coefficients] <- NA
+        }
         ## Overall score
         out <- c(score_beta, score_dispersion)
-        names(out) <- paste0("grad_", vnames)
+        names(out) <- paste0(vnames)
         attr(out, "coefficients") <- coefficients
         attr(out, "dispersion") <- dispersion
         out
@@ -237,8 +249,13 @@
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
+        if (has_na) {
+            predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
+        }
+        else {
+            predictors <- drop(x %*% coefficients + off)
+        }
         type <- match.arg(type)
-        predictors <- drop(x %*% coefficients + off)
         fitted_values <- linkinv(predictors)
         d1mus <- d1mu(predictors)
         variances <- variance(fitted_values)
@@ -257,6 +274,10 @@
             info_beta <- info_beta - t(x * w) %*% x / dispersion
         }
         rownames(info_beta) <- colnames(info_beta) <- colnames(x)
+        if (has_na) {
+            info_beta[na_coefficients, ] <- NA
+            info_beta[, na_coefficients] <- NA
+        }
         ## If there is no dispersion parameter then return the
         ## information for the coefficients only
         if (family$family %in% c("poisson", "binomial")) {
@@ -282,6 +303,9 @@
                 devianceResiduals <- family$dev.resids(y, fitted_values, prior_weights)
                 EdevianceResiduals <- prior_weights * d1afuns
                 info_dispe <- info_dispe + sum(devianceResiduals - EdevianceResiduals, na.rm = TRUE) / dispersion^3
+            }
+            if (has_na) {
+                info_cross[na_coefficients] <- NA
             }
             out <- rbind(cbind(info_beta, info_cross),
                          c(info_cross, info_dispe))
@@ -315,7 +339,7 @@
             vnames <- names(bias_beta)
         }
         else {
-            if (dfResidual > 0) {
+            if (df_residual > 0) {
                 ## Enrich family object with the the derivatives of the a
                 ## function (see ?enrich.family for details)
                 zetas <- -prior_weights/dispersion
@@ -454,14 +478,14 @@ NULL)
         nobs <- nobs(object)
         prior_weights <- weights(object, type = "prior")
         keep <- prior_weights > 0
-        dfResidual <- sum(keep) - object$rank
+        df_residual <- sum(keep) - object$rank
 
         gradfun <- function(logdispersion) {
             beta <- coef(object, model = "mean")
             object$auxiliary_functions$score(beta, exp(logdispersion))[length(beta) + 1]
         }
 
-        if (dfResidual > 0) {
+        if (df_residual > 0) {
             dispFit <- try(uniroot(f = gradfun, lower = 0.5*log(.Machine$double.eps), upper = 20, tol = 1e-08, maxiter = 10000), silent = FALSE)
             if (inherits(dispFit, "try-error")) {
                 warning("the mle of dispersion could not be calculated")
@@ -485,8 +509,8 @@ NULL)
 }
 
 
-`compute_expected_information_mle.glm` <- function(object, dispersion = dispersion_mle) {
-    get_information_function(object)(type = "expected")
+`compute_expected_information_mle.glm` <- function(object, dispersion) {
+    get_information_function(object)(dispersion = dispersion, type = "expected")
 }
 
 
@@ -495,8 +519,8 @@ NULL)
 }
 
 
-`compute_observed_information_mle.glm` <- function(object, dispersion = dispersion_mle) {
-    get_information_function(object)(type = "observed")
+`compute_observed_information_mle.glm` <- function(object, dispersion = dispersion) {
+    get_information_function(object)(dispersion = dispersion, type = "observed")
 }
 
 
