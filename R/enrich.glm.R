@@ -184,7 +184,6 @@
     y <- object$y
     x <- model.matrix(object)
     nobs <- nobs(object)
-    nvar <- ncol(x)
     off <- model.offset(object$model)
     prior_weights <- weights(object, type = "prior")
     keep <- prior_weights > 0
@@ -193,6 +192,8 @@
     ## Take care of aliasing
     na_coefficients <- is.na(coef(object))
     has_na <- any(na_coefficients)
+
+    nvar <- sum(!na_coefficients)
 
     if (is.null(off)) {
         off <- rep(0, nobs)
@@ -235,11 +236,7 @@
         }
         ## Overall score
         out <- c(score_beta, score_dispersion)
-<<<<<<< HEAD
-        names(out) <- paste0(vnames)
-=======
         names(out) <- vnames
->>>>>>> 7cb2b1310bb59838afaa141a6d2d3a22c48abfa9
         attr(out, "coefficients") <- coefficients
         attr(out, "dispersion") <- dispersion
         out
@@ -327,17 +324,26 @@
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
-        predictors <- drop(x %*% coefficients + off)
+        if (has_na) {
+            predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
+        }
+        else {
+            predictors <- drop(x %*% coefficients + off)
+        }
         fitted_values <- linkinv(predictors)
         d1mus <- d1mu(predictors)
         d2mus <- d2mu(predictors)
         variances <- variance(fitted_values)
         working_weights <- prior_weights * d1mus^2 / variances
         Qr <- information(coefficients, dispersion = dispersion, QR = TRUE)
-        Q <- qr.Q(Qr)
+        inds <- seq.int(Qr$rank)
+        Q <- qr.Q(Qr)[, inds]
         hats <- rowSums(Q * Q)
         ksi <- -0.5 * dispersion * d2mus * hats / (d1mus * sqrt(working_weights))
-        bias_beta <- drop(tcrossprod(ksi %*% Q, solve(qr.R(Qr))))
+        bias_beta <- numeric(ncol(x))
+        names(bias_beta) <- names(coefficients)
+        biases <- drop(tcrossprod(ksi %*% Q, solve(qr.R(Qr)[inds, inds])))
+        bias_beta[names(biases)] <- biases
         if (family$family %in% c("poisson", "binomial")) {
             bias_dispersion <- NULL
             vnames <- names(bias_beta)
@@ -360,8 +366,11 @@
             }
             vnames <- c(names(bias_beta), "dispersion")
         }
+        if (has_na) {
+            bias_beta[na_coefficients] <- NA
+        }
         out <- c(bias_beta, bias_dispersion)
-        names(out) <- paste0("bias_", vnames)
+        names(out) <- vnames
         attr(out, "coefficients") <- coefficients
         attr(out, "dispersion") <- dispersion
         out

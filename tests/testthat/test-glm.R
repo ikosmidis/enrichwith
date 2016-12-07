@@ -44,13 +44,17 @@ test_that("standard errors from expected information matrix match those from sum
 
 test_that("enrichwith handles aliasing correctly",
 {
-    umod1 <- update(mod1, . ~ I(3 * log(u)) + . + I(2 * log(u)))
+
+    umod1 <- update(mod1, . ~ . + I(2 * log(u)) + I(3 * log(u)))
     na_coefs <- is.na(coef(umod1))
     scorefun <- get_score_function(umod1)
     infofun <- get_information_function(umod1)
+    biasfunA <- get_bias_function(umod1)
+    biasfunB <- get_bias_function(mod1)
     expect_true(all(is.na(scorefun()[na_coefs])))
     expect_true(all(is.na(infofun()[na_coefs, ])))
     expect_true(all(is.na(infofun()[, na_coefs])))
+    expect_true(all(biasfunA()[names(biasfunB())] == biasfunB()))
 
 })
 
