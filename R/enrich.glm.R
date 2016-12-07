@@ -567,10 +567,12 @@ coef.enriched_glm <- function(object, model = c("mean", "full", "dispersion"), .
                beta
            },
            dispersion = {
-               object$dispersion
+               object <- enrich(object, with = "mle of dispersion")
+               object$dispersion_mle
            },
            full = {
-               c(beta, object$dispersion)
+               object <- enrich(object, with = "mle of dispersion")
+               c(beta, object$dispersion_mle)
            })
 }
 
