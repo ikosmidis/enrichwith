@@ -1,0 +1,373 @@
+---
+title: "Enriching `glm` objects"
+author: "[Ioannis Kosmidis](http://www.ucl.ac.uk/~ucakiko/)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: enrichwith.bib
+vignette: >
+  %\VignetteIndexEntry{enriching glm objects}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+# Introduction
+
+The [**enrichwith**](https://github.com/ikosmidis/enrichwith) R
+package provides the `enrich` method to enrich list-like R objects
+with new, relevant components. The resulting objects preserve their
+class, so all methods associated with them still apply.
+
+This vignette is a demo of the available enrichment options for `glm`
+objects.
+
+# Clotting data set
+
+The following data set is provided in @mccullagh:89 [Section 8.4] and
+consists of observations on $n = 18$ mean clotting times of blood in
+seconds (`time`) for each combination of nine percentage
+concentrations of normal plasma (`conc`) and two lots of clotting
+agent (`lot`).
+```{r, echo = TRUE, eval = TRUE}
+clotting <- data.frame(conc = c(5,10,15,20,30,40,60,80,100,
+                                5,10,15,20,30,40,60,80,100),
+                       time = c(118, 58, 42, 35, 27, 25, 21, 19, 18,
+                                69, 35, 26, 21, 18, 16, 13, 12, 12),
+                       lot = factor(c(rep(1, 9), rep(2, 9))))
+```
+
+@mccullagh:89 [Section 8.4] fitted a series of nested generalized
+linear models assuming that the times are realisations of independent
+[Gamma](https://en.wikipedia.org/wiki/Gamma_distribution) random
+variables whose mean varies appropriately with concentration and
+lot. In particular, @mccullagh:89 linked the inverse mean of the gamma
+random variables to the linear predictors `~ 1`, `~ log(conc)`, `~
+log(conc) + lot`, `~ log(conc) * lot` and carried out an analysis of
+deviance to conclude that the `~ log(u) * lot` provides the best
+explanation of clotting times. The really close fit of that model to
+the data can be seen in the figure below.
+```{r, echo = TRUE, eval = TRUE}
+library("ggplot2")
+clottingML <- glm(time ~ log(conc) * lot, family = Gamma, data = clotting)
+new_data <- expand.grid(conc = rep(seq(5, 100, length = 50), 2),
+                        lot = factor(rep(c(1, 2), each = 20)))
+alpha <- 0.01
+pr_out <- predict(clottingML, type = "response", se.fit = TRUE)
+new_data <- clotting
+new_data$time <- pr_out$fit
+new_data$type <- "fitted"
+clotting$type <- "observed"
+all_data <- rbind(clotting, new_data)
+new_data <- within(new_data, {
+    low <- pr_out$fit - qnorm(1 - alpha/2) * pr_out$se.fit
+    upp <- pr_out$fit + qnorm(1 - alpha/2) * pr_out$se.fit
+})
+ggplot(all_data) + geom_point(aes(conc, time, col = type), alpha = 0.8) +
+    geom_segment(data = new_data, aes(x = conc, y = low, xend = conc, yend = upp, col = type)) +
+    facet_grid(. ~ lot) + theme(legend.position = "top")
+```
+
+# Key quantities in likelihood inference
+## Score function
+
+The [score function](https://en.wikipedia.org/wiki/Score_(statistics))
+is the gradient of the log-likelihood and is a key object for
+likelihood inference.
+
+The **enrichwith** R package provides methods for the enrichment of
+`glm` objects with the corresponding score function. This can either
+be done by enriching the `glm` object with `auxiliary_functions` and
+then extracting the score function
+```{r, echo = TRUE, eval = TRUE}
+enriched_clottingML <- enrich(clottingML, with = "auxiliary functions")
+scores_clottingML <- enriched_clottingML$auxiliary_functions$score
+```
+or directly using the `get_score_function` convenience method
+```{r, echo = TRUE, eval = TRUE}
+scores_clottingML <- get_score_function(clottingML)
+```
+
+By definition, the score function has to have zero components when evaluated at the
+maximum likelihood estimates (only numerically zero here).
+```{r, echo = TRUE, eval = TRUE}
+scores_clottingML()
+```
+
+## Information matrix
+
+Another key quantity in likelihood inference is the [expected
+information](https://en.wikipedia.org/wiki/Fisher_information).
+
+
+The `auxiliary_functions` enrichment option of the `enrich` method
+enriches a `glm` object with a funciton for the evaluation of the
+expected information.
+```{r, echo = TRUE, eval = TRUE}
+info_clottingML <- enriched_clottingML$auxiliary_functions$information
+```
+and can also be computed directly using the `get_information_function` method
+```{r, echo = TRUE, eval = TRUE}
+info_clottingML <- get_information_function(clottingML)
+```
+
+One of the uses of the expected information is the calculation of
+standard errors for the model parameters. The `stats::summary.glm`
+function already does that for `glm` objects, estimating the
+dispersion parameter (if any) using Pearson residuals.
+```{r, echo = TRUE, eval = TRUE}
+summary_clottingML <- summary(clottingML)
+```
+
+Duly, `info_clottingML` returns (numerically) the same standard errors
+as the `summary` method does.
+```{r, echo = TRUE, eval = TRUE}
+summary_std_errors <- coef(summary_clottingML)[, "Std. Error"]
+einfo <- info_clottingML(dispersion = summary_clottingML$dispersion)
+all.equal(sqrt(diag(solve(einfo)))[1:4], summary_std_errors, tolerance = 1e-05)
+```
+
+Another estimate of the standard errors results by the [observed
+information](https://en.wikipedia.org/wiki/Observed_information),
+which is the negative [Hessian
+matrix](https://en.wikipedia.org/wiki/Hessian_matrix) of the
+log-likelihood.
+
+At least at the time of writting the current vignette, there appears
+to be no general implementation of the observed information for `glm`
+objects. I guess the reason for that is the dependence of the observed
+information on higher-order derivatives of the inverse link and
+variance functions, which are not readily available in base R.
+
+**erichwith** provides options for the enrichment of `link-glm` and
+`family` objects with such derivatives (see `?enrich.link-glm` and
+`?enrich.family` for details), and, based on those allows the
+enrichment of `glm` objects with a function to compute the observed
+information.
+
+The observed and the expected information for the regression
+parameters coincide for GLMs with cacnonical link, like `clottingML`
+```{r, echo = TRUE, eval = TRUE}
+oinfo <- info_clottingML(dispersion = summary_clottingML$dispersion, type = "observed")
+all.equal(oinfo[1:4, 1:4], einfo[1:4, 1:4])
+```
+which is not generally true for a `glm` with a non-canonical link, as
+seen below.
+```{r, echo = TRUE, eval = TRUE}
+clottingML_log <- update(clottingML, family = Gamma("log"))
+summary_clottingML_log <- summary(clottingML_log)
+info_clottingML_log <- get_information_function(clottingML_log)
+einfo_log <- info_clottingML_log(dispersion = summary_clottingML_log$dispersion, type = "expected")
+oinfo_log <- info_clottingML_log(dispersion = summary_clottingML_log$dispersion, type = "observed")
+round(einfo_log, 3)
+round(oinfo_log, 3)
+```
+
+## Score tests
+
+We can now use `scores_clottingML` and `info_clottingML` to carry out
+[a score test](https://en.wikipedia.org/wiki/Score_test) to compare
+nested models.
+
+If $l_\psi(\psi, \lambda)$ is the gradient of the log-likelihood with
+respect to $\psi$ evaluated at $\psi$ and $\lambda$, $i^{\psi\psi}(\psi,
+\lambda)$ is the $(\psi, \psi)$ block of the inverse of the expected
+information matrix, and $\hat\lambda_\psi$ is the maximum likelihood
+estimator of $\lambda$ for fixed $\psi$, then, assuming that the model
+is adequate
+\[
+l_\psi(\psi, \hat\lambda_\psi)^\top i^{\psi\psi}(\psi,\hat\lambda_\psi) l_\psi(\psi, \hat\lambda_\psi)
+\]
+has an asymptotic $\chi^2_{dim(\psi)}$ distribution.
+
+The following code chunk computes the maximum likelihood esitmates
+when the parameters for `lot` and `log(conc):lot` are fixed to zero
+($\hat\lambda\psi$ for $\psi = 0$ above), along with the score and
+expected information matrix evaluated at them
+($l(\psi,\hat\lambda_\psi) and $i(\psi,\hat\lambda_\psi)$, above).
+```{r, echo = TRUE, eval = TRUE}
+clottingML_nested <- update(clottingML, . ~ log(conc))
+enriched_clottingML_nested <- enrich(clottingML_nested, with = "mle of dispersion")
+coef_full <- coef(clottingML)
+coef_hypothesis <- structure(rep(0, length(coef_full)), names = names(coef_full))
+coef_hypothesis_short <- coef(enriched_clottingML_nested, model = "mean")
+coef_hypothesis[names(coef_hypothesis_short)] <- coef_hypothesis_short
+disp_hypothesis <- coef(enriched_clottingML_nested, model = "dispersion")
+scores <- scores_clottingML(coef_hypothesis, disp_hypothesis)
+info <- info_clottingML(coef_hypothesis, disp_hypothesis)
+```
+The object `enriched_clottingML_nested` inherits from `enriched_glm`,
+`glm` and `lm`, and, as illustrated above, **enrichwith** provdes a
+corresponding `coef` method to extract the estimates for the mean
+regression parameters and/or the estimate for the dispersion
+parameter.
+
+The score statiistic is then
+```{r, echo = TRUE, eval = TRUE}
+(score_statistic <- drop(scores%*%solve(info)%*%scores))
+```
+which gives a p-value of
+```{r, echo = TRUE, eval = TRUE}
+pchisq(score_statistic, 2, lower.tail = FALSE)
+```
+
+For comparison, the Wald statistic for the same hypothesis is
+```{r, echo = TRUE, eval = TRUE}
+coef_full[3:4]%*%solve(solve(info)[3:4, 3:4])%*%coef_full[3:4]
+```
+and the log-likelihood ratio statistic is
+```{r, echo = TRUE, eval = TRUE}
+(deviance(clottingML_nested) - deviance(clottingML))/disp_hypothesis
+```
+which is close to the score statistic
+
+
+## Simulating from `glm` objects at parameter values
+
+**enrichwith** also provides the `get_simulate_function` method for
+`glm` or `lm` objects. The `get_simulate_function` computes a function
+to simulate response vectors at /arbitraty/ values of the model
+parameters, which can be useful when setting up simulation
+experinments and for various inferential procedures (e.g. indirect
+inference).
+
+For example, the following code chunk simulates three response vectors
+at the maximum likelihood esitmates of the parameters for `clottingML`.
+```{r, echo = TRUE, eval = TRUE}
+simulate_clottingML <- get_simulate_function(clottingML)
+simulate_clottingML(nsim = 3, seed = 123)
+```
+The result is the same to what the `simulate` method returns
+```{r, echo = TRUE, eval = TRUE}
+simulate(clottingML, nsim = 3, seed = 123)
+```
+but `simulate_clottingML` can also be used to simulate at any given
+parameter value
+```{r, echo = TRUE, eval = TRUE}
+coefficients <- c(0, 0.01, 0, 0.01)
+dispersion <- 0.001
+samples <- simulate_clottingML(coefficients = coefficients, dispersion = dispersion, nsim = 100000, seed = 123)
+```
+The empirical means and variances based on `samples` agree with the   exact means and variances at `coefficients` and `dispersion`
+```{r, echo = TRUE, eval = TRUE}
+means <- 1/(model.matrix(clottingML) %*% coefficients)
+variances <- dispersion * means^2
+max(abs(rowMeans(samples) - means))
+max(abs(apply(samples, 1, var) - variances))
+```
+
+
+# Power calculation
+
+The `simulate_clotting` function can be used here to estimate the
+[power](https://en.wikipedia.org/wiki/Statistical_power) (or
+sensitivity) of the hypothesis test for including the interaction term
+in the gamma regression model with predictor `~ log(conc) * lot`.
+
+The function `pvalues` uses the various enrichment options for `glm`
+objects to compute p-values based on the score, likelihood ratio and
+Wald tests from simulated data sets on a range of values for the
+coefficient in the interaction term `log(conc):lot`.
+```{r, echo = TRUE, eval = TRUE, cache = TRUE}
+compute_pvalues <- function(n, parameter, coefficients, dispersion, nsimu = 100, verbose = FALSE) {
+    require("plyr")
+    require("doMC")
+    ## Concentration grid
+    conc <- seq(5, 100, length.out = n)
+    ## A data frame that sets the design. What the response is does
+    ## not matter here
+    clotting_temp <- data.frame(conc = rep(conc, 2),
+                                lot = factor(c(rep(1, n), rep(2, n))),
+                                time = rgamma(2 * n, 2, 2))
+    ## Fit a dummy GLM and then get a simulate method out of it
+    clotting_temp_ML<- glm(time ~ log(conc) * lot, family = Gamma, data = clotting_temp)
+    simulate_clotting <- get_simulate_function(clotting_temp_ML)
+    pvalues_out <- NULL
+    for (which in seq.int(length(parameter))) {
+        if (verbose) {
+            cat("setting", which, "out of", length(parameter), "\n")
+        }
+        parameter_setting <- coefficients
+        parameter_setting[4] <- parameter[which]
+        simu_samples <- simulate_clotting(parameter_setting,
+                                          dispersion = dispersion,
+                                          nsim = nsimu,
+                                          seed = 123)
+        results <- adply(simu_samples, 2, function(response) {
+        clotting_temp$response <- unlist(response)
+        ## Fit the full model for the current response vector and enrich it
+        cfit <-  enrich(update(clotting_temp_ML, response ~ .), with = "auxiliary functions")
+        ## Fit the nested model
+        cfit_nested <- update(cfit, . ~ log(conc) + lot)
+        enriched_cfit_nested <- enrich(cfit_nested, with = "mle of dispersion")
+        coef_full <- coef(cfit)
+        ## Prepare the vectors of the constrained estimates
+        coef_hypothesis <- structure(rep(0, length(coef_full)), names = names(coef_full))
+        coef_hypothesis_short <- coef(enriched_cfit_nested, model = "mean")
+        coef_hypothesis[names(coef_hypothesis_short)] <- coef_hypothesis_short
+        disp_hypothesis <- coef(enriched_cfit_nested, model = "dispersion")
+        ## Compute score and information of the full mode at the constrained estimates
+        scores <- get_score_function(cfit)(coef_hypothesis, disp_hypothesis)
+        info <- get_information_function(cfit)(coef_hypothesis, disp_hypothesis)
+        ## Compute statistics
+        score_statistic <- drop(scores%*%solve(info)%*%scores)
+        lr_statistic <- (deviance(cfit_nested) - deviance(cfit))/disp_hypothesis
+        wald_statistic <- coef_full[4]%*%solve(solve(info)[4, 4])%*%coef_full[4]
+        ## power
+        data.frame(pvalues = c(pchisq(score_statistic, 1, lower.tail = FALSE),
+                               pchisq(lr_statistic, 1, lower.tail = FALSE),
+                               pchisq(wald_statistic, 1, lower.tail = FALSE)),
+                   statistics = c(score_statistic, lr_statistic, wald_statistic),
+                   method = factor(c("score", "lr", "wald")))
+        }, .parallel = TRUE)
+        pvalues_out <- rbind(pvalues_out, data.frame(results, parameter = parameter[which], sample_size = n))
+    }
+    pvalues_out
+}
+```
+
+The following code chunk estimates the power of the test for a range
+of resolutions, when the parameters for the main effects and the
+dispersion parameter are fixed to their values in the maximum
+likelihood fit in `enriched_clottingML`.
+```{r, echo = TRUE, eval = TRUE, cache = TRUE}
+library("dplyr")
+registerDoMC(2)
+
+nsimu <- 500
+coefficients <- coef(enriched_clottingML, "mean")
+dispersion <- coef(enriched_clottingML, "dispersion")
+parameters <- seq(0, 0.002, length = 20)
+
+## Compute pvalues for each resolution of percentage concentration
+pvalues <- NULL
+for (n in c(9, 18, 36, 72)) {
+    set.seed(123)
+    pvalues <- rbind(pvalues, compute_pvalues(n, parameters, coefficients, dispersion, nsimu))
+}
+
+## Compute power for each combination of parameter, method and sample size
+power_values_1 <- data.frame(pvalues %>%
+                             group_by(parameter, method, sample_size) %>%
+                             summarize(power = mean(pvalues < 0.01)),
+                             alpha = 0.01)
+power_values_5 <- data.frame(pvalues %>%
+                             group_by(parameter, method, sample_size) %>%
+                             summarize(power = mean(pvalues < 0.05)),
+                             alpha = 0.05)
+power_values <- rbind(power_values_1, power_values_5)
+
+## Plot the power curves
+ggplot(power_values) + geom_line(aes(x = parameter, y = power, col = sample_size, group = sample_size)) + facet_grid(method ~ alpha)
+```
+
+
+# Links to other resources
+
+The vignette
+[bias](https://cran.r-project.org/web/packages/enrichwith/vignettes/bias.html)
+of **enrichwith** describes how to use the `auxiliary_functions` to
+reduce the bias of the maximum likelihood estimator for generalized
+linear models.
+
+# References
+
+
