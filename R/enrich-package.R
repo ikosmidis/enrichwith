@@ -90,6 +90,7 @@ get_enrichment_options <- function(object, option, all_options) {
 #' objects
 #' @param object the object to be enriched or the enriched object
 #' @param ... currently not used
+#' @export
 get_auxiliary_functions <- function(object, ...) {
     UseMethod("get_auxiliary_functions")
 }
@@ -98,7 +99,7 @@ get_auxiliary_functions <- function(object, ...) {
 #' returns the scores for modelling objects
 #' @param object the object to be enriched or the enriched object
 #' @param ... currently not used
-#'
+#' @export
 get_score_function <- function(object, ...) {
     UseMethod("get_score_function")
 }
@@ -108,7 +109,7 @@ get_score_function <- function(object, ...) {
 #' the information matrix for modelling objects
 #' @param object the object to be enriched or the enriched object
 #' @param ... currently not used
-#'
+#' @export
 get_information_function <- function(object, ...) {
     UseMethod("get_information_function")
 }
@@ -118,7 +119,7 @@ get_information_function <- function(object, ...) {
 #' the bias for the parameters in modelling objects
 #' @param object the object to be enriched or the enriched object
 #' @param ... currently not used
-#'
+#' @export
 get_bias_function <- function(object, ...) {
     UseMethod("get_bias_function")
 }
@@ -127,7 +128,7 @@ get_bias_function <- function(object, ...) {
 #' modelling objects
 #' @param object the object to be enriched or the enriched object
 #' @param ... currently not used
-#'
+#' @export
 get_simulate_function <- function(object, ...) {
     UseMethod("get_simulate_function")
 }
