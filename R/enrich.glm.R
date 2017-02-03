@@ -161,6 +161,9 @@
         object <- update(object, model = TRUE)
     }
 
+    ## Extract formula
+    formula <- formula(cML)
+
     ## Enrich link-glm and family objects
     link <- enrich(make.link(object$family$link), with = "all")
     family <- enrich(object$family, with = "all")
@@ -459,10 +462,139 @@ NULL)
         variates
     }
 
+    ## data should have a response
+    dmodel <- function(data, coefficients, dispersion, log = FALSE) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
+
+        ## FIXME: CONTRASTS?
+
+        mf <- model.frame(formula = formula, data = data)
+        new_x <- model.matrix(object = formula, data = mf, terms = terms)
+        new_y <- model.response(mf)
+        new_off <- model.offset(mf)
+        if (is.null(new_off)) {
+            new_off <- rep(0, nrow(mf))
+        }
+
+
+        ## FIXME: Need proper definition of the weights!
+        new_prior_weights <- rep(1, nrow(mf))
+
+
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
+        if (has_na) {
+            predictors <- drop(new_x[, !na_coefficients] %*% coefficients[!na_coefficients] + new_off)
+        }
+        else {
+
+            predictors <- drop(new_x %*% coefficients + new_off)
+        }
+
+        fitted_values <- linkinv(predictors)
+        d1mus <- d1mu(predictors)
+        variances <- variance(fitted_values)
+
+        dfun <- switch(family$family,
+                       "gaussian" = {
+                           dnorm(new_y, mean = fitted_values, sd = dispersion/new_prior_weights)
+                       },
+                       "Gamma" = {
+                           if (any(new_prior_weights!= 1)) {
+                               message("using prior weights in the shape parameters")
+                           }
+                           dgamma(new_y, shape = new_prior_weights/dispersion, scale = fitted_values*dispersion)
+                       },
+                       "binomial" = {
+                           ## FIXME: first two cases of binomial
+                           if (any(new_prior_weights %% 1 != 0))
+                               stop("cannot simulate from non-integer prior.weights")
+                           if (!is.null(mf <- object$model)) {
+                               y <- model.response(mf)
+                               if (is.factor(y)) {
+                                   yy <- factor(1 + rbinom(n * nsim, size = 1, prob = fitted_values),
+                                                labels = levels(y))
+                                   split(yy, rep(seq_len(nsim), each = n))
+                               }
+                               else if (is.matrix(y) && ncol(y) == 2) {
+                                   yy <- vector("list", nsim)
+                                   for (i in seq_len(nsim)) {
+                                       Y <- rbinom(n, size = new_prior_weights, prob = fitted_values)
+                                       YY <- cbind(Y, new_prior_weights - Y)
+                                       colnames(YY) <- colnames(y)
+                                       yy[[i]] <- YY
+                                   }
+                                   yy
+                               }
+                               else dbinom(new_y, size = new_prior_weights, prob = fitted_values)
+                           }
+                           else rbinom(n & nsim, size = new_prior_weights, prob = fitted_values)/new_prior_weights
+                       },
+                       "poisson" = {
+                           if (any(new_prior_weights != 1)) {
+                                   warning("ignoring prior weights")
+                           }
+                           dpois(new_y, lambda = fitted_values)
+                       },
+                       "inverse.gaussian" = {
+                           SuppDists::dinvGauss(new_y, nu = fitted_values, lambda = new_prior_weights/dispersion)
+                       },
+                       NULL)
+        attr(dfun, "coefficients") <- coefficients
+        attr(dfun, "dispersion") <- dispersion
+        dfun
+    }
+
+    ## data should have a response
+    pmodel <- function(data, coefficients, dispersion, lower.tail = TRUE, log.p = FALSE) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
+
+        ## output an function that takes as input a data frame and returns densities
+    }
+
+    ## any response in the data is ignored
+    qmodel <- function(p, data, coefficients, dispersion, lower.tail = TRUE, log.p = FALSE) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
+
+        ## output an function that takes as input a data frame and returns densities
+
+    }
+
+    ## any response in the data is ignored
+    rmodel <- function(n, data, coefficients, dispersion, nsim = 1, seed = NULL) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
+
+    }
+
     return(list(score = score,
                 information = information,
                 bias = bias,
-                simulate = simulate))
+                simulate = simulate,
+                dmodel = dmodel))
 
 }
 
@@ -497,7 +629,6 @@ NULL)
             beta <- coef(object, model = "mean")
             object$auxiliary_functions$score(beta, exp(logdispersion))[length(beta) + 1]
         }
-
         if (df_residual > 0) {
             dispFit <- try(uniroot(f = gradfun, lower = 0.5*log(.Machine$double.eps), upper = 20, tol = 1e-08, maxiter = 10000), silent = FALSE)
             if (inherits(dispFit, "try-error")) {
