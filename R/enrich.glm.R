@@ -162,7 +162,7 @@
     }
 
     ## Extract formula
-    formula <- formula(cML)
+    formula <- formula(object)
 
     ## Enrich link-glm and family objects
     link <- enrich(make.link(object$family$link), with = "all")
