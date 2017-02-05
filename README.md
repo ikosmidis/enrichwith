@@ -14,22 +14,25 @@ devtools::install_github("ikosmidis/enrichwith")
 
 Suppose you developed a piece of statistical methodology that relies
 on a component that a list-like R object `object_x` of a certain class
-could potentially have but doesn't.
+could potentially have but doesn't. You can definitely write your own function to compute what you need and use it in your work. However, others that might need will then have to go through the process of getting your, perhaps specific, code and adapt in their needs and codebase.
+
+The main objectives of **enrichwith** is to allow users and developers to directly use the enrichment options that other developers have provided, minimising the need of adapting source code of others.
 
 The aim of **enrichwith** is to:
 
 * produce customisable source code templates for the structured implementation of methods to compute new components
 * provide generic methods for the easy enrichment of the object with those components
+* provide some template enrichment options for some core R objects, including objects of class `lm`, `glm`, `link-glm` and `family`
 
 Specifically, once the methods for the components have been
 implemented, `object_x` can be enriched with the components
-corresponding to the option `enrichment_option` through the following simple call.
+corresponding to the option `enrichment_option` through the following simple call
 
 ``` r
 enrich(object_x, with = enrichment_option)
 ```
 
-The main objectives of **enrichwith** is to allow users and developers to directly use the enrichment options that other developers have provided, minimising the need of adapting source code of others.
+that is inspired by [Donald Knuth's](https://en.wikipedia.org/wiki/Donald_Knuth) [literare programing](https://en.wikipedia.org/wiki/Literate_programming) paradigm
 
 ## Example
 Objects of class `link-glm` have as components functions to compute the link function (`linkfun`), the inverse link function (`linkinv`), and the 1st derivative of the link function (`mu.eta`).
