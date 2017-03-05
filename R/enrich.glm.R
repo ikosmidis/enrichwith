@@ -202,7 +202,7 @@
         off <- rep(0, nobs)
     }
 
-    score <- function(coefficients, dispersion) {
+    score <- function(coefficients, dispersion, contributions = FALSE) {
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -219,11 +219,12 @@
         d1mus <- d1mu(predictors)
         variances <- variance(fitted_values)
         ## Score for coefficients
-        score_beta <- colSums(prior_weights * d1mus * (y - fitted_values) * x / variances)/dispersion
+        ## score_beta <- colSums(prior_weights * d1mus * (y - fitted_values) * x / variances)/dispersion
+        score_beta <- prior_weights * d1mus * (y - fitted_values) * x / variances /dispersion
         ## Score for dispersion
         if (family$family %in% c("poisson", "binomial")) {
             score_dispersion <- NULL
-            vnames <- names(score_beta)
+            vnames <- colnames(score_beta)
         }
         else {
             zetas <- -prior_weights/dispersion
@@ -231,15 +232,18 @@
             d1afuns[keep] <- d1afun(zetas[keep])
             devianceResiduals <- family$dev.resids(y, fitted_values, prior_weights)
             EdevianceResiduals <- prior_weights * d1afuns
-            score_dispersion <- sum(devianceResiduals - EdevianceResiduals, na.rm = TRUE) / (2 * dispersion^2)
-            vnames <- c(names(score_beta), "dispersion")
+            ## score_dispersion <- sum(devianceResiduals - EdevianceResiduals, na.rm = TRUE) / (2 * dispersion^2)
+            score_dispersion <- (devianceResiduals - EdevianceResiduals) / (2 * dispersion^2)
+            vnames <- c(colnames(score_beta), "dispersion")
         }
         if (has_na) {
-            score_beta[na_coefficients] <- NA
+            score_beta[, na_coefficients] <- NA
         }
         ## Overall score
-        out <- c(score_beta, score_dispersion)
-        names(out) <- vnames
+        out <- cbind(score_beta, score_dispersion)
+        colnames(out) <- vnames
+
+        out <- if (contributions) out else colSums(out)
         attr(out, "coefficients") <- coefficients
         attr(out, "dispersion") <- dispersion
         out
@@ -481,10 +485,8 @@ NULL)
             new_off <- rep(0, nrow(mf))
         }
 
-
         ## FIXME: Need proper definition of the weights!
         new_prior_weights <- rep(1, nrow(mf))
-
 
         if (missing(coefficients)) {
             coefficients <- coef(object)
