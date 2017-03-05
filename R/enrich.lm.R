@@ -138,7 +138,7 @@
         off <- rep(0, nobs)
     }
 
-    score <- function(coefficients, dispersion) {
+    score <- function(coefficients, dispersion, contributions = FALSE) {
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -149,13 +149,16 @@
         ## Residuals
         resid <- y - fitted_values
         ## Score for coefficients
-        score_beta <- colSums(prior_weights * resid * x)/dispersion
+        ## score_beta <- colSums(prior_weights * resid * x)/dispersion
+        score_beta <- prior_weights * resid * x / dispersion
         ## Score for dispersion
-        score_dispersion <- - nobs/(2 * dispersion) + sum(prior_weights * resid^2)/(2*dispersion^2)
-        vnames <- c(names(score_beta), "dispersion")
+        ## score_dispersion <- - nobs/(2 * dispersion) + sum(prior_weights * resid^2)/(2*dispersion^2)
+        score_dispersion <- - 1/(2 * dispersion) + prior_weights * resid^2 / (2 * dispersion^2)
+        vnames <- c(colnames(score_beta), "dispersion")
         ## Overall score
-        out <- c(score_beta, score_dispersion)
-        names(out) <- vnames
+        out <- cbind(score_beta, score_dispersion)
+        colnames(out) <- vnames
+        out <- if (contributions) out else colSums(out)
         attr(out, "coefficients") <- coefficients
         attr(out, "dispersion") <- dispersion
         out
