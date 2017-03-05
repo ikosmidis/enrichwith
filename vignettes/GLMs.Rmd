@@ -99,7 +99,7 @@ information](https://en.wikipedia.org/wiki/Fisher_information).
 
 
 The `auxiliary_functions` enrichment option of the `enrich` method
-enriches a `glm` object with a funciton for the evaluation of the
+enriches a `glm` object with a function for the evaluation of the
 expected information.
 ```{r, echo = TRUE, eval = TRUE}
 info_clottingML <- enriched_clottingML$auxiliary_functions$information
@@ -137,14 +137,14 @@ objects. I guess the reason for that is the dependence of the observed
 information on higher-order derivatives of the inverse link and
 variance functions, which are not readily available in base R.
 
-**erichwith** provides options for the enrichment of `link-glm` and
+**enrichwith** provides options for the enrichment of `link-glm` and
 `family` objects with such derivatives (see `?enrich.link-glm` and
 `?enrich.family` for details), and, based on those allows the
 enrichment of `glm` objects with a function to compute the observed
 information.
 
 The observed and the expected information for the regression
-parameters coincide for GLMs with cacnonical link, like `clottingML`
+parameters coincide for GLMs with canonical link, like `clottingML`
 ```{r, echo = TRUE, eval = TRUE}
 oinfo <- info_clottingML(dispersion = summary_clottingML$dispersion, type = "observed")
 all.equal(oinfo[1:4, 1:4], einfo[1:4, 1:4])
@@ -178,7 +178,7 @@ l_\psi(\psi, \hat\lambda_\psi)^\top i^{\psi\psi}(\psi,\hat\lambda_\psi) l_\psi(\
 \]
 has an asymptotic $\chi^2_{dim(\psi)}$ distribution.
 
-The following code chunk computes the maximum likelihood esitmates
+The following code chunk computes the maximum likelihood estimates
 when the parameters for `lot` and `log(conc):lot` are fixed to zero
 ($\hat\lambda\psi$ for $\psi = 0$ above), along with the score and
 expected information matrix evaluated at them
@@ -195,7 +195,7 @@ scores <- scores_clottingML(coef_hypothesis, disp_hypothesis)
 info <- info_clottingML(coef_hypothesis, disp_hypothesis)
 ```
 The object `enriched_clottingML_nested` inherits from `enriched_glm`,
-`glm` and `lm`, and, as illustrated above, **enrichwith** provdes a
+`glm` and `lm`, and, as illustrated above, **enrichwith** provides a
 corresponding `coef` method to extract the estimates for the mean
 regression parameters and/or the estimate for the dispersion
 parameter.
@@ -224,13 +224,12 @@ which is close to the score statistic
 
 **enrichwith** also provides the `get_simulate_function` method for
 `glm` or `lm` objects. The `get_simulate_function` computes a function
-to simulate response vectors at /arbitraty/ values of the model
-parameters, which can be useful when setting up simulation
-experinments and for various inferential procedures (e.g. indirect
-inference).
+to simulate response vectors at /arbitrary/ values of the model
+parameters, which can be useful when setting up simulation experiments
+and for various inferential procedures (e.g. indirect inference).
 
 For example, the following code chunk simulates three response vectors
-at the maximum likelihood esitmates of the parameters for `clottingML`.
+at the maximum likelihood estimates of the parameters for `clottingML`.
 ```{r, echo = TRUE, eval = TRUE}
 simulate_clottingML <- get_simulate_function(clottingML)
 simulate_clottingML(nsim = 3, seed = 123)
@@ -369,5 +368,3 @@ reduce the bias of the maximum likelihood estimator for generalized
 linear models.
 
 # References
-
-
