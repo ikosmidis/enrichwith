@@ -475,6 +475,7 @@ NULL)
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
+
         contr <- attr(model.matrix(object), "contrasts")
         mf <- model.frame(formula = formula, data = data)
         new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
@@ -484,9 +485,10 @@ NULL)
             new_off <- rep(0, nrow(mf))
         }
 
-        ## Need to take care of the weights!
-        new_prior_weights <- rep(1, nrow(mf))
-
+        new_prior_weights <- with(data, eval(object$call$weights))
+        if (is.null(new_prior_weights)) {
+            new_prior_weights <- rep(1, nrow(mf))
+        }
 
         if (missing(coefficients)) {
             coefficients <- coef(object)
@@ -520,11 +522,17 @@ NULL)
                            if (is.matrix(new_y) && ncol(new_y)) {
                                new_prior_weights <- rowSums(new_y)
                                new_y <- new_y[, 1]
+                               dbinom(new_y, size = new_prior_weights, prob = fitted_values, log = log)
                            }
-                           if (is.factor(new_y)) {
-                               new_y <- as.numeric(new_y) - 1
+                           else {
+                               if (is.factor(new_y)) {
+                                   new_y <- as.numeric(new_y) - 1
+                                   dbinom(new_y, size = 1, prob = fitted_values, log = log)
+                               }
+                               else {
+                                   dbinom(new_y*new_prior_weights, size = new_prior_weights, prob = fitted_values, log = log)
+                               }
                            }
-                           dbinom(new_y, size = new_prior_weights, prob = fitted_values, log = log)
                        },
                        "poisson" = {
                            if (any(new_prior_weights != 1)) {
@@ -558,8 +566,10 @@ NULL)
             new_off <- rep(0, nrow(mf))
         }
 
-        ## Need to take care of the weights!
-        new_prior_weights <- rep(1, nrow(mf))
+        new_prior_weights <- with(data, eval(object$call$weights))
+        if (is.null(new_prior_weights)) {
+            new_prior_weights <- rep(1, nrow(mf))
+        }
 
         if (missing(coefficients)) {
             coefficients <- coef(object)
@@ -593,11 +603,17 @@ NULL)
                            if (is.matrix(new_y) && ncol(new_y)) {
                                new_prior_weights <- rowSums(new_y)
                                new_y <- new_y[, 1]
+                               pbinom(new_y, size = new_prior_weights, prob = fitted_values, log.p = log.p)
                            }
-                           if (is.factor(new_y)) {
-                               new_y <- as.numeric(new_y) - 1
+                           else {
+                               if (is.factor(new_y)) {
+                                   new_y <- as.numeric(new_y) - 1
+                                   pbinom(new_y, size = 1, prob = fitted_values, log.p = log.p)
+                               }
+                               else {
+                                   pbinom(new_y*new_prior_weights, size = new_prior_weights, prob = fitted_values, log.p = log.p)
+                               }
                            }
-                           pbinom(new_y, size = new_prior_weights, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
                        },
                        "poisson" = {
                            if (any(new_prior_weights != 1)) {
@@ -636,8 +652,10 @@ NULL)
             new_off <- rep(0, nrow(mf))
         }
 
-        ## Need to take care of the weights!
-        new_prior_weights <- rep(1, nrow(mf))
+        new_prior_weights <- with(data, eval(object$call$weights))
+        if (is.null(new_prior_weights)) {
+            new_prior_weights <- rep(1, nrow(mf))
+        }
 
         if (missing(coefficients)) {
             coefficients <- coef(object)
@@ -668,14 +686,21 @@ NULL)
                            if (any(new_prior_weights %% 1 != 0)) {
                                stop("cannot simulate from non-integer prior.weights")
                            }
+
                            if (is.matrix(new_y) && ncol(new_y)) {
                                new_prior_weights <- rowSums(new_y)
                                new_y <- new_y[, 1]
+                               qbinom(p, size = new_prior_weights, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
                            }
-                           if (is.factor(new_y)) {
-                               new_y <- as.numeric(new_y) - 1
+                           else {
+                               if (is.factor(new_y)) {
+                                   new_y <- as.numeric(new_y) - 1
+                                   qbinom(p, size = 1, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
+                               }
+                               else {
+                                   qbinom(p, size = new_prior_weights, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
+                               }
                            }
-                           qbinom(p, size = new_prior_weights, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
                        },
                        "poisson" = {
                            if (any(new_prior_weights != 1)) {
