@@ -78,6 +78,7 @@ The **enrichwith** R package provides methods for the enrichment of
 be done by enriching the `glm` object with `auxiliary_functions` and
 then extracting the score function
 ```{r, echo = TRUE, eval = TRUE}
+library("enrichwith")
 enriched_clottingML <- enrich(clottingML, with = "auxiliary functions")
 scores_clottingML <- enriched_clottingML$auxiliary_functions$score
 ```

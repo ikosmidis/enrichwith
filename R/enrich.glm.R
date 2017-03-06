@@ -380,7 +380,6 @@
         if (has_na) {
             bias_beta[na_coefficients] <- NA
         }
-
         out <- c(bias_beta, bias_dispersion)
         names(out) <- vnames
         attr(out, "coefficients") <- coefficients
