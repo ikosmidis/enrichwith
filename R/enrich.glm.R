@@ -404,6 +404,7 @@
         fitted_values <- linkinv(predictors)
         fitted_names <- names(fitted_values)
         n <- length(fitted_values)
+
         variates <- switch(family$family,
                            "gaussian" = {
                                rnorm(nsim * n, mean = fitted_values, sd = dispersion/prior_weights)
@@ -436,16 +437,16 @@
                                    }
                                    else rbinom(n * nsim, size = prior_weights, prob = fitted_values)/prior_weights
                                }
-                               else rbinom(n & nsim, size = prior_weights, prob = fitted_values)/prior_weights
+                               else rbinom(n * nsim, size = prior_weights, prob = fitted_values)/prior_weights
                            },
                            "poisson" = {
                                if (any(prior_weights != 1)) {
                                    warning("ignoring prior weights")
                                }
-                               rpois(nsim * n, lambda = fitted_values)
+                               rpois(n * nsim, lambda = fitted_values)
                            },
                            "inverse.gaussian" = {
-                               SuppDists::rinvGauss(nsim * n, nu = fitted_values, lambda = prior_weights/dispersion)
+                               SuppDists::rinvGauss(n * nsim, nu = fitted_values, lambda = prior_weights/dispersion)
                            },
 NULL)
         ## Inspired by stats:::simulate.lm
@@ -474,19 +475,18 @@ NULL)
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
-
-        ## FIXME: CONTRASTS?
-
+        contr <- attr(model.matrix(object), "contrasts")
         mf <- model.frame(formula = formula, data = data)
-        new_x <- model.matrix(object = formula, data = mf, terms = terms)
+        new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
         new_y <- model.response(mf)
         new_off <- model.offset(mf)
         if (is.null(new_off)) {
             new_off <- rep(0, nrow(mf))
         }
 
-        ## FIXME: Need proper definition of the weights!
+        ## Need to take care of the weights!
         new_prior_weights <- rep(1, nrow(mf))
+
 
         if (missing(coefficients)) {
             coefficients <- coef(object)
@@ -498,57 +498,42 @@ NULL)
             predictors <- drop(new_x[, !na_coefficients] %*% coefficients[!na_coefficients] + new_off)
         }
         else {
-
             predictors <- drop(new_x %*% coefficients + new_off)
         }
-
         fitted_values <- linkinv(predictors)
         d1mus <- d1mu(predictors)
         variances <- variance(fitted_values)
-
         dfun <- switch(family$family,
                        "gaussian" = {
-                           dnorm(new_y, mean = fitted_values, sd = dispersion/new_prior_weights)
+                           dnorm(new_y, mean = fitted_values, sd = dispersion/new_prior_weights, log = log)
                        },
                        "Gamma" = {
                            if (any(new_prior_weights!= 1)) {
                                message("using prior weights in the shape parameters")
                            }
-                           dgamma(new_y, shape = new_prior_weights/dispersion, scale = fitted_values*dispersion)
+                           dgamma(new_y, shape = new_prior_weights/dispersion, scale = fitted_values*dispersion, log = log)
                        },
                        "binomial" = {
-                           ## FIXME: first two cases of binomial
-                           if (any(new_prior_weights %% 1 != 0))
+                           if (any(new_prior_weights %% 1 != 0)) {
                                stop("cannot simulate from non-integer prior.weights")
-                           if (!is.null(mf <- object$model)) {
-                               y <- model.response(mf)
-                               if (is.factor(y)) {
-                                   yy <- factor(1 + rbinom(n * nsim, size = 1, prob = fitted_values),
-                                                labels = levels(y))
-                                   split(yy, rep(seq_len(nsim), each = n))
-                               }
-                               else if (is.matrix(y) && ncol(y) == 2) {
-                                   yy <- vector("list", nsim)
-                                   for (i in seq_len(nsim)) {
-                                       Y <- rbinom(n, size = new_prior_weights, prob = fitted_values)
-                                       YY <- cbind(Y, new_prior_weights - Y)
-                                       colnames(YY) <- colnames(y)
-                                       yy[[i]] <- YY
-                                   }
-                                   yy
-                               }
-                               else dbinom(new_y, size = new_prior_weights, prob = fitted_values)
                            }
-                           else rbinom(n & nsim, size = new_prior_weights, prob = fitted_values)/new_prior_weights
+                           if (is.matrix(new_y) && ncol(new_y)) {
+                               new_prior_weights <- rowSums(new_y)
+                               new_y <- new_y[, 1]
+                           }
+                           if (is.factor(new_y)) {
+                               new_y <- as.numeric(new_y) - 1
+                           }
+                           dbinom(new_y, size = new_prior_weights, prob = fitted_values, log = log)
                        },
                        "poisson" = {
                            if (any(new_prior_weights != 1)) {
                                    warning("ignoring prior weights")
                            }
-                           dpois(new_y, lambda = fitted_values)
+                           dpois(new_y, lambda = fitted_values, log = log)
                        },
                        "inverse.gaussian" = {
-                           SuppDists::dinvGauss(new_y, nu = fitted_values, lambda = new_prior_weights/dispersion)
+                           SuppDists::dinvGauss(new_y, nu = fitted_values, lambda = new_prior_weights/dispersion, log = log)
                        },
                        NULL)
         attr(dfun, "coefficients") <- coefficients
@@ -564,24 +549,152 @@ NULL)
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
+        contr <- attr(model.matrix(object), "contrasts")
+        mf <- model.frame(formula = formula, data = data)
+        new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
+        new_y <- model.response(mf)
+        new_off <- model.offset(mf)
+        if (is.null(new_off)) {
+            new_off <- rep(0, nrow(mf))
+        }
 
-        ## output an function that takes as input a data frame and returns densities
-    }
+        ## Need to take care of the weights!
+        new_prior_weights <- rep(1, nrow(mf))
 
-    ## any response in the data is ignored
-    qmodel <- function(p, data, coefficients, dispersion, lower.tail = TRUE, log.p = FALSE) {
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
-
-        ## output an function that takes as input a data frame and returns densities
-
+        if (has_na) {
+            predictors <- drop(new_x[, !na_coefficients] %*% coefficients[!na_coefficients] + new_off)
+        }
+        else {
+            predictors <- drop(new_x %*% coefficients + new_off)
+        }
+        fitted_values <- linkinv(predictors)
+        d1mus <- d1mu(predictors)
+        variances <- variance(fitted_values)
+        pfun <- switch(family$family,
+                       "gaussian" = {
+                           pnorm(new_y, mean = fitted_values, sd = dispersion/new_prior_weights, lower.tail = lower.tail, log.p = log.p)
+                       },
+                       "Gamma" = {
+                           if (any(new_prior_weights!= 1)) {
+                               message("using prior weights in the shape parameters")
+                           }
+                           pgamma(new_y, shape = new_prior_weights/dispersion, scale = fitted_values*dispersion, lower.tail = lower.tail, log.p = log.p)
+                       },
+                       "binomial" = {
+                           if (any(new_prior_weights %% 1 != 0)) {
+                               stop("cannot simulate from non-integer prior.weights")
+                           }
+                           if (is.matrix(new_y) && ncol(new_y)) {
+                               new_prior_weights <- rowSums(new_y)
+                               new_y <- new_y[, 1]
+                           }
+                           if (is.factor(new_y)) {
+                               new_y <- as.numeric(new_y) - 1
+                           }
+                           pbinom(new_y, size = new_prior_weights, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
+                       },
+                       "poisson" = {
+                           if (any(new_prior_weights != 1)) {
+                                   warning("ignoring prior weights")
+                           }
+                           ppois(new_y, lambda = fitted_values, log = log)
+                       },
+                       "inverse.gaussian" = {
+                           SuppDists::pinvGauss(new_y, nu = fitted_values, lambda = new_prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)
+                       },
+                       NULL)
+        attr(pfun, "coefficients") <- coefficients
+        attr(pfun, "dispersion") <- dispersion
+        pfun
     }
 
+
     ## any response in the data is ignored
+    qmodel <- function(p, data, coefficients, dispersion, lower.tail = TRUE, log.p = FALSE) {
+        if (length(p) != nrow(data)) {
+            stop("length(q) must be equal to nrow(data)")
+        }
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
+        ## output an function that takes as input a data frame and returns densities
+        contr <- attr(model.matrix(object), "contrasts")
+        mf <- model.frame(formula = formula, data = data)
+        new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
+        new_y <- model.response(mf)
+        new_off <- model.offset(mf)
+        if (is.null(new_off)) {
+            new_off <- rep(0, nrow(mf))
+        }
+
+        ## Need to take care of the weights!
+        new_prior_weights <- rep(1, nrow(mf))
+
+        if (missing(coefficients)) {
+            coefficients <- coef(object)
+        }
+        if (missing(dispersion)) {
+            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        }
+        if (has_na) {
+            predictors <- drop(new_x[, !na_coefficients] %*% coefficients[!na_coefficients] + new_off)
+        }
+        else {
+            predictors <- drop(new_x %*% coefficients + new_off)
+        }
+        fitted_values <- linkinv(predictors)
+        d1mus <- d1mu(predictors)
+        variances <- variance(fitted_values)
+        qfun <- switch(family$family,
+                       "gaussian" = {
+                           qnorm(p, mean = fitted_values, sd = dispersion/new_prior_weights, lower.tail = lower.tail, log.p = log.p)
+                       },
+                       "Gamma" = {
+                           if (any(new_prior_weights!= 1)) {
+                               message("using prior weights in the shape parameters")
+                           }
+                           qgamma(p, shape = new_prior_weights/dispersion, scale = fitted_values*dispersion, lower.tail = lower.tail, log.p = log.p)
+                       },
+                       "binomial" = {
+                           if (any(new_prior_weights %% 1 != 0)) {
+                               stop("cannot simulate from non-integer prior.weights")
+                           }
+                           if (is.matrix(new_y) && ncol(new_y)) {
+                               new_prior_weights <- rowSums(new_y)
+                               new_y <- new_y[, 1]
+                           }
+                           if (is.factor(new_y)) {
+                               new_y <- as.numeric(new_y) - 1
+                           }
+                           qbinom(p, size = new_prior_weights, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
+                       },
+                       "poisson" = {
+                           if (any(new_prior_weights != 1)) {
+                                   warning("ignoring prior weights")
+                           }
+                           qpois(p, lambda = fitted_values, log = log)
+                       },
+                       "inverse.gaussian" = {
+                           SuppDists::qinvGauss(p, nu = fitted_values, lambda = new_prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)
+                       },
+                       NULL)
+        attr(qfun, "coefficients") <- coefficients
+        attr(qfun, "dispersion") <- dispersion
+        qfun
+    }
+
+
+    ## any response in the data is ignored
+    ## To be implemented at a later release
     rmodel <- function(n, data, coefficients, dispersion, nsim = 1, seed = NULL) {
         if (missing(coefficients)) {
             coefficients <- coef(object)
@@ -589,14 +702,15 @@ NULL)
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
-
     }
 
     return(list(score = score,
                 information = information,
                 bias = bias,
                 simulate = simulate,
-                dmodel = dmodel))
+                dmodel = dmodel,
+                pmodel = pmodel,
+                qmodel = qmodel))
 
 }
 

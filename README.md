@@ -14,32 +14,54 @@ devtools::install_github("ikosmidis/enrichwith")
 
 Suppose you developed a piece of statistical methodology that relies
 on a component that a list-like R object `object_x` of a certain class
-could potentially have but doesn't. You can definitely write your own function to compute what you need and use it in your work. However, others that might need will then have to go through the process of getting your, perhaps specific, code and adapt in their needs and codebase.
+could potentially have but doesn't.
 
-The main objectives of **enrichwith** is to allow users and developers to directly use the enrichment options that other developers have provided, minimising the need of adapting source code of others.
+You could write your own function to compute what you need and use it
+in your work. However, others that might need will then have to go
+through the process of getting your code and adapt in their needs and
+codebase.
+
+The main objective of **enrichwith** is to allow users and developers
+to directly use the enrichment options that other developers have
+provided, minimising the need of adapting source code of others.
 
 The aim of **enrichwith** is to:
 
-* produce customisable source code templates for the structured implementation of methods to compute new components
-* provide generic methods for the easy enrichment of the object with those components
-* provide some template enrichment options for some core R objects, including objects of class `lm`, `glm`, `link-glm` and `family`
+* produce customisable source code templates for the structured
+  implementation of methods to compute new components
+
+* provide generic methods for the easy enrichment of the object with
+  those components
+
+* provide some enrichment options for some core R objects, including
+  objects of class `lm`, `glm`, `link-glm` and `family`
 
 Specifically, once the methods for the components have been
 implemented, `object_x` can be enriched with the components
-corresponding to the option `enrichment_option` through the following simple call
+corresponding to the option `enrichment_option` through the following
+simple call
 
 ``` r
 enrich(object_x, with = enrichment_option)
 ```
 
-that is inspired by [Donald Knuth's](https://en.wikipedia.org/wiki/Donald_Knuth) [literare programing](https://en.wikipedia.org/wiki/Literate_programming) paradigm
+that is inspired by [Donald
+Knuth's](https://en.wikipedia.org/wiki/Donald_Knuth) [literare
+programing](https://en.wikipedia.org/wiki/Literate_programming)
+paradigm
 
 ## Example
-Objects of class `link-glm` have as components functions to compute the link function (`linkfun`), the inverse link function (`linkinv`), and the 1st derivative of the link function (`mu.eta`).
 
-**enrichwith** comes with a built-in template with the methods for the enrichment of `link-glm` objects with the 2nd and 3rd derivatives of the inverse link function.
+Objects of class `link-glm` have as components functions to compute
+the link function (`linkfun`), the inverse link function (`linkinv`),
+and the 1st derivative of the link function (`mu.eta`).
 
-The `get_enrichment_options` method can be used to check what enrichment options are available for objects of class `link-glm`.
+**enrichwith** comes with a built-in template with the methods for the
+enrichment of `link-glm` objects with the 2nd and 3rd derivatives of
+the inverse link function.
+
+The `get_enrichment_options` method can be used to check what
+enrichment options are available for objects of class `link-glm`.
 ``` r
 library("enrichwith")
 standard_link <- make.link("probit")
@@ -70,8 +92,9 @@ get_enrichment_options(standard_link)
 # 2 d3mu.deta compute_d3mu.deta
 ```
 
-According to the result of `get_enrichment_options`, the object `standard_link` can be enriched with the 2nd and 3rd derivative of the inverse
-link function through the option "inverse link derivatives".
+According to the result of `get_enrichment_options`, the object
+`standard_link` can be enriched with the 2nd and 3rd derivative of the
+inverse link function through the option "inverse link derivatives".
 ``` r
 enriched_link <- enrich(standard_link, with = "inverse link derivatives")
 class(enriched_link)
@@ -87,7 +110,10 @@ cat(format(enriched_link$d3mu.deta), sep = "\n")
 #     (eta^2 - 1) * pmax(dnorm(eta), .Machine$double.eps)
 # }
 ```
-`enriched_link` is now an "enriched" `link-glm` object, which, as per the enrichment options above, has the extra components `d2mu.deta` and `d3mu.deta`, for the calculation of 2nd and 3rd derivatives of the inverse link function with respect to `eta`, respectively.
+`enriched_link` is now an "enriched" `link-glm` object, which, as per
+the enrichment options above, has the extra components `d2mu.deta` and
+`d3mu.deta`, for the calculation of 2nd and 3rd derivatives of the
+inverse link function with respect to `eta`, respectively.
 
 ## Implementation of enrichment options
 The implemention of enrichment options is streamlined into 3 steps:
@@ -112,4 +138,3 @@ object, and so on) is taken care of by the methods in **enrichwith**.
 Developers can either put their **enrichwith** templates in their
 packages or are welcome to contribute their template to
 **enrichwith**, particularly if that extends core R objects.
-
