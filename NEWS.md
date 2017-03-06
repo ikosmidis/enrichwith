@@ -1,13 +1,22 @@
 # enrichwith 0.3
 
-* Added enrich capabilities for `lm` objects
-* New vignette for enriching `glm` objects
-* Minor codebase improvements
+## Bug fixes
 * Took care of aliasing in bias calculations
 * Names of score and bias components do not get a prefix anymore
-* Fixed bug on argument of expected info mle and in testing the simulation methods
-* various documentation improvements
-* added the get_*_function convenience methods (e.g. get_score_function, get_information_function, get_bias_function)
+* Fixed a bug on argument of information function (part of the "auxiliary functions" enrichment option)
+* Fixed a bug when testing the simulation methods
+
+## New functionality
+* Provide enrich capabilities for `lm` objects
+* Score functions (?get_score_function) now accept `contributions = TRUE` for getting score contributions
+* Provide the get_*_function convenience methods (e.g. get_score_function, get_information_function, get_bias_function)
+* Provide the dmodel, pmodel, qmodel auxiliary functions for glm objects, to compute d, p, q based on a supplied data frame
+
+## Other improvements, updates and additions
+* Various codebase improvements
+* Various documentation improvements
+* New vignette for enriching `glm` objects
+* Updated README file
 
 # enrichwith 0.2
 
