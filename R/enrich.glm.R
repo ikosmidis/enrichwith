@@ -984,8 +984,6 @@ get_bias_function.glm <- function(object, ...) {
 }
 
 
-
-
 ## ## ## Call that produced the enrichwith template for the current script:
 ## create_enrichwith_skeleton(class = "glm", option = c("auxiliary functions",
 ##     "score vector", "mle of dispersion", "expected information",

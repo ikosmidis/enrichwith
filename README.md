@@ -2,6 +2,71 @@
 
 Methods to enrich list-like R objects with extra components
 
+## Rationale
+
+When I develop a piece of statistical methodology it is not uncommon
+that it depends on functionality or quantities that a list-like core R
+object `object_x` of a certain class could have but doesn't. An
+example is objects of class `link-glm` which only provide up to the
+the first derivatives of the link function. It is also not uncommon
+that the functionality or quantities that I need are hard-coded in
+another package in the R ecosystem.  Prominent examples include
+implementations of gradients of the log-likelihood and information
+matrices for specific model classes.
+
+In such cases, I either contact the developers and ask them to provide
+a generic which I can then use, or copy some of the code and adopt it
+to what I'm doing. Both options can be rather time-consuming, and
+particularly the latter is rarely bug-free.
+
+I believe that
+
+* users and developers should have direct access to useful
+  functionality and quantities in the R ecosystem, epsecially if these include implementations of complex statistical quantities
+
+* quantities and functionality that are specific to a list-like `object_x` should be components of `object_x`
+
+The above motivated me to develop the **enrichwith** R package that
+allows `object_x` to be enriched with components corresponding to the
+option `enrichment_option` through the following simple call
+
+``` r
+enrich(object_x, with = enrichment_option)
+```
+
+The call is inspired by [Donald
+Knuth's](https://en.wikipedia.org/wiki/Donald_Knuth) [literare
+programing](https://en.wikipedia.org/wiki/Literate_programming)
+paradigm.
+
+## Purpose and objective
+
+The main objective of **enrichwith** is to allow users and developers
+to directly use the enrichment options that other developers have
+provided, through a *clean interface*, minimising the need to adopt
+source code of others.
+
+The purpose of **enrichwith** is to provide:
+
+* *useful enrichment options* for core R objects, including objects of
+  class `lm`, `glm`, `link-glm` and `family` (see, for example,
+  `?enrich.glm`)
+
+* methods for producing *customisable source code templates* for the
+  structured implementation of methods to compute new components (see
+  `?enrichwith` and `?create_enrichwith_skeleton`)
+
+* generic methods for the *easy enrichment* of the object with those
+  components (see, for example, `?enrich` and
+  `?get_enrichment_options`)
+
+## Vignettes
+
+The vignettes illustrate the **enrichwith** functionality through
+comprehensive, step-by-step case studies. These also include
+illustrations from recent research of mine on methods for statistical
+learning and inference.
+
 ## Installation
 Get the development version from github with
 
@@ -10,51 +75,11 @@ Get the development version from github with
 devtools::install_github("ikosmidis/enrichwith")
 ```
 
-## Aim and objective
-
-Suppose you developed a piece of statistical methodology that relies
-on a component that a list-like R object `object_x` of a certain class
-could potentially have but doesn't.
-
-You could write your own function to compute what you need and use it
-in your work. However, others that might need will then have to go
-through the process of getting your code and adapt in their needs and
-codebase.
-
-The main objective of **enrichwith** is to allow users and developers
-to directly use the enrichment options that other developers have
-provided, minimising the need of adapting source code of others.
-
-The aim of **enrichwith** is to:
-
-* produce customisable source code templates for the structured
-  implementation of methods to compute new components
-
-* provide generic methods for the easy enrichment of the object with
-  those components
-
-* provide some enrichment options for some core R objects, including
-  objects of class `lm`, `glm`, `link-glm` and `family`
-
-Specifically, once the methods for the components have been
-implemented, `object_x` can be enriched with the components
-corresponding to the option `enrichment_option` through the following
-simple call
-
-``` r
-enrich(object_x, with = enrichment_option)
-```
-
-that is inspired by [Donald
-Knuth's](https://en.wikipedia.org/wiki/Donald_Knuth) [literare
-programing](https://en.wikipedia.org/wiki/Literate_programming)
-paradigm
-
 ## Example
 
 Objects of class `link-glm` have as components functions to compute
 the link function (`linkfun`), the inverse link function (`linkinv`),
-and the 1st derivative of the link function (`mu.eta`).
+and the 1st derivative of the inverse link function (`mu.eta`).
 
 **enrichwith** comes with a built-in template with the methods for the
 enrichment of `link-glm` objects with the 2nd and 3rd derivatives of
@@ -98,7 +123,7 @@ inverse link function through the option "inverse link derivatives".
 ``` r
 enriched_link <- enrich(standard_link, with = "inverse link derivatives")
 class(enriched_link)
-# [1] "link-glm"
+# [1] "enriched_link-glm" "link-glm"
 cat(format(enriched_link$d2mu.deta), sep = "\n")
 # function (eta)
 # {
@@ -115,26 +140,3 @@ the enrichment options above, has the extra components `d2mu.deta` and
 `d3mu.deta`, for the calculation of 2nd and 3rd derivatives of the
 inverse link function with respect to `eta`, respectively.
 
-## Implementation of enrichment options
-The implemention of enrichment options is streamlined into 3 steps:
-
-1. Use `create_enrichwith_skeleton` to produce an enrichwith template.
-2. Edit the `compute_*` functions by adding the specific code that
-   calculates the components.
-3. Finalise the documentation and/or include more examples.
-
-The first step results in a template that includes all necessary
-functions to carry out the enrichment. The second step is where the
-user edits that template and implements the calculation of the
-components that the object will be enriched with. Specifically, each
-`compute_*` function takes as input the object to be enriched and
-returns the corresponding new component to be added to the object.
-
-Everything else (for example, mapping between the enrichment options
-and the components that the enriched object will have, checks that an
-enrichment option exists, listing enrichment options, enriching the
-object, and so on) is taken care of by the methods in **enrichwith**.
-
-Developers can either put their **enrichwith** templates in their
-packages or are welcome to contribute their template to
-**enrichwith**, particularly if that extends core R objects.
