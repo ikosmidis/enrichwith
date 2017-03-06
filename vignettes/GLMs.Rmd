@@ -327,7 +327,7 @@ The following code chunk estimates the power of the test for a range
 of resolutions, when the parameters for the main effects and the
 dispersion parameter are fixed to their values in the maximum
 likelihood fit in `enriched_clottingML`.
-```{r, echo = TRUE, eval = TRUE, cache = TRUE}
+```{r, echo = TRUE, eval = FALSE, cache = TRUE}
 library("dplyr")
 registerDoMC(2)
 
@@ -368,3 +368,4 @@ reduce the bias of the maximum likelihood estimator for generalized
 linear models.
 
 # References
+

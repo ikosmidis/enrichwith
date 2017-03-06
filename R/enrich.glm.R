@@ -348,7 +348,11 @@
         hats <- rowSums(Q * Q)
         ksi <- -0.5 * dispersion * d2mus * hats / (d1mus * sqrt(working_weights))
         bias_beta <- numeric(ncol(x))
-        names(bias_beta) <- names(coefficients)
+        coefnames <- names(coefficients)
+        if (is.null(coefnames)) {
+            coefnames <- colnames(x)
+        }
+        names(bias_beta) <- coefnames
         biases <- drop(tcrossprod(ksi %*% Q, solve(qr.R(Qr)[inds, inds])))
         bias_beta[names(biases)] <- biases
         if (family$family %in% c("poisson", "binomial")) {
@@ -376,6 +380,7 @@
         if (has_na) {
             bias_beta[na_coefficients] <- NA
         }
+
         out <- c(bias_beta, bias_dispersion)
         names(out) <- vnames
         attr(out, "coefficients") <- coefficients
