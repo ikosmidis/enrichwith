@@ -3,7 +3,7 @@ context("implementation of *model auxiliary functions")
 ## Tolerance for comparisons
 tolerance <- 1e-05
 
-data("lizards")
+data("lizards", package = "brglm")
 
 model1 <- glm(formula = grahami/(grahami + opalinus) ~ height + diameter + light + time, family = binomial(logit), weights = (grahami + opalinus), data = lizards)
 model2 <- glm(formula = cbind(grahami, opalinus) ~ height + diameter + light + time, family = binomial(logit), data = lizards)

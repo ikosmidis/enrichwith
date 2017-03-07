@@ -13,8 +13,12 @@ Suggests:
     testthat,
     whisker,
     MASS,
+    SuppDists,
     brglm,
     numDeriv,
+    ggplot2,
+    plyr,
+    doMC,
     knitr,
     rmarkdown
 VignetteBuilder: knitr

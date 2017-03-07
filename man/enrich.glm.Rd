@@ -79,10 +79,10 @@ mod <- glm(1 ~ 1, weights = 10, family = binomial())
 enriched_mod <- enrich(mod, with = "auxiliary functions")
 biasfun <- enriched_mod$auxiliary_functions$bias
 probabilities <- seq(1e-02, 1 - 1e-02, length = 100)
-biases <- Vectorize(biasfun)(qlogis(probabilities))[1,]
+biases <- Vectorize(biasfun)(qlogis(probabilities))
 plot(probabilities, biases, type = "l", ylim = c(-0.5, 0.5),
      xlab = expression(pi), ylab = "first-order bias")
-abline(h = 0, lty = 2)
+abline(h = 0, lty = 2); abline(v = 0.5, lty = 2)
 title("First-order bias of the MLE of the log-odds", sub = "m = 10")
 }
 }

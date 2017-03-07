@@ -29,12 +29,6 @@
 #' components and their descriptions.
 #'
 #' @export
-#' @examples
-#'
-#' \dontrun{
-#'
-#' }
-#'
 `enrich.lm` <- function(object, with = "all", ...) {
     if (is.null(with)) {
         return(object)
@@ -212,8 +206,6 @@
         names(bias_beta) <- names(coefficients)
 
         if (df_residual > 0) {
-            ## Enrich family object with the the derivatives of
-            ## the a function (see ?enrich.family for details)
             bias_dispersion <- -nvar/nobs * dispersion
         }
         else {
@@ -244,53 +236,10 @@
             on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
         }
         predictors <- drop(x %*% coefficients + off)
-        fitted_values <- linkinv(predictors)
+        fitted_values <- predictors
         fitted_names <- names(fitted_values)
         n <- length(fitted_values)
-        variates <- switch(family$family,
-                           "gaussian" = {
-                               rnorm(nsim * n, mean = fitted_values, sd = dispersion/prior_weights)
-                           },
-                           "Gamma" = {
-                               if (any(prior_weights!= 1)) {
-                                   message("using prior weights in the shape parameters")
-                               }
-                               rgamma(nsim * n, shape = prior_weights/dispersion, scale = fitted_values*dispersion)
-                           },
-                           "binomial" = {
-                               if (any(prior_weights %% 1 != 0))
-                                   stop("cannot simulate from non-integer prior.weights")
-                               if (!is.null(mf <- object$model)) {
-                                   y <- model.response(mf)
-                                   if (is.factor(y)) {
-                                       yy <- factor(1 + rbinom(n * nsim, size = 1, prob = fitted_values),
-                                                    labels = levels(y))
-                                       split(yy, rep(seq_len(nsim), each = n))
-                                   }
-                                   else if (is.matrix(y) && ncol(y) == 2) {
-                                       yy <- vector("list", nsim)
-                                       for (i in seq_len(nsim)) {
-                                           Y <- rbinom(n, size = prior_weights, prob = fitted_values)
-                                           YY <- cbind(Y, prior_weights - Y)
-                                           colnames(YY) <- colnames(y)
-                                           yy[[i]] <- YY
-                                       }
-                                       yy
-                                   }
-                                   else rbinom(n * nsim, size = prior_weights, prob = fitted_values)/prior_weights
-                               }
-                               else rbinom(n & nsim, size = prior_weights, prob = fitted_values)/prior_weights
-                           },
-                           "poisson" = {
-                               if (any(prior_weights != 1)) {
-                                   warning("ignoring prior weights")
-                               }
-                               rpois(nsim * n, lambda = fitted_values)
-                           },
-                           "inverse.gaussian" = {
-                               SuppDists::rinvGauss(nsim * n, nu = fitted_values, lambda = prior_weights/dispersion)
-                           },
-NULL)
+        variates <- rnorm(nsim * n, mean = fitted_values, sd = sqrt(dispersion/prior_weights))
         ## Inspired by stats:::simulate.lm
         if (!is.list(variates)) {
             dim(variates) <- c(n, nsim)
@@ -333,38 +282,15 @@ NULL)
 
 
 `compute_dispersion_mle.lm` <- function(object, ...) {
-    if (object$family$family %in% c("poisson", "binomial")) {
-        dispersion_mle <- 1
+    prior_weights <- weights(object)
+    nobs <- nobs(object)
+    if (is.null(prior_weights)) {
+        prior_weights <- rep(1, nobs)
     }
-    else {
-        object <- enrich(object, with = "auxiliary functions")
-        nobs <- nobs(object)
-        prior_weights <- weights(object, type = "prior")
-        keep <- prior_weights > 0
-        df_residual <- sum(keep) - object$rank
-
-        gradfun <- function(logdispersion) {
-            beta <- coef(object, model = "mean")
-            object$auxiliary_functions$score(beta, exp(logdispersion))[length(beta) + 1]
-        }
-
-        if (df_residual > 0) {
-            dispFit <- try(uniroot(f = gradfun, lower = 0.5*log(.Machine$double.eps), upper = 20, tol = 1e-08, maxiter = 10000), silent = FALSE)
-            if (inherits(dispFit, "try-error")) {
-                warning("the mle of dispersion could not be calculated")
-                dispersion_mle <- NA
-            }
-            else {
-                dispersion_mle <- exp(dispFit$root)
-            }
-        }
-        else {
-            ## if the model is saturated dispersion_mle is NA
-            dispersion_mle <- NA
-    }
-        names(dispersion_mle) <- "dispersion"
-        dispersion_mle
-    }
+    keep <- prior_weights > 0
+    df_residual <- sum(keep) - object$rank
+    disp <- sum(prior_weights * residuals(object)^2)/nobs
+    disp
 }
 
 `compute_dispersion_mle` <- function(object, ...) {
@@ -372,7 +298,7 @@ NULL)
 }
 
 
-`compute_expected_information_mle.lm` <- function(object, dispersion = dispersion_mle) {
+`compute_expected_information_mle.lm` <- function(object, dispersion) {
     get_information_function(object)(type = "expected")
 }
 
@@ -382,7 +308,7 @@ NULL)
 }
 
 
-`compute_observed_information_mle.lm` <- function(object, dispersion = dispersion_mle) {
+`compute_observed_information_mle.lm` <- function(object, dispersion) {
     get_information_function(object)(type = "observed")
 }
 

@@ -72,10 +72,10 @@
 #' enriched_mod <- enrich(mod, with = "auxiliary functions")
 #' biasfun <- enriched_mod$auxiliary_functions$bias
 #' probabilities <- seq(1e-02, 1 - 1e-02, length = 100)
-#' biases <- Vectorize(biasfun)(qlogis(probabilities))[1,]
+#' biases <- Vectorize(biasfun)(qlogis(probabilities))
 #' plot(probabilities, biases, type = "l", ylim = c(-0.5, 0.5),
 #'      xlab = expression(pi), ylab = "first-order bias")
-#' abline(h = 0, lty = 2)
+#' abline(h = 0, lty = 2); abline(v = 0.5, lty = 2)
 #' title("First-order bias of the MLE of the log-odds", sub = "m = 10")
 #' }
 `enrich.glm` <- function(object, with = "all", ...) {
@@ -344,16 +344,22 @@
         working_weights <- prior_weights * d1mus^2 / variances
         Qr <- information(coefficients, dispersion = dispersion, QR = TRUE)
         inds <- seq.int(Qr$rank)
-        Q <- qr.Q(Qr)[, inds]
-        hats <- rowSums(Q * Q)
+        Q <- qr.Q(Qr)[, inds, drop = FALSE]
+        if (all(dim(Q) == c(1, 1))) {
+            hats <- 1
+        }
+        else {
+            hats <- rowSums(Q * Q)
+        }
         ksi <- -0.5 * dispersion * d2mus * hats / (d1mus * sqrt(working_weights))
+
         bias_beta <- numeric(ncol(x))
         coefnames <- names(coefficients)
         if (is.null(coefnames)) {
             coefnames <- colnames(x)
         }
         names(bias_beta) <- coefnames
-        biases <- drop(tcrossprod(ksi %*% Q, solve(qr.R(Qr)[inds, inds])))
+        biases <- drop(tcrossprod(ksi %*% Q, solve(qr.R(Qr)[inds, inds, drop = FALSE])))
         bias_beta[names(biases)] <- biases
         if (family$family %in% c("poisson", "binomial")) {
             bias_dispersion <- NULL
@@ -411,7 +417,7 @@
 
         variates <- switch(family$family,
                            "gaussian" = {
-                               rnorm(nsim * n, mean = fitted_values, sd = dispersion/prior_weights)
+                               rnorm(nsim * n, mean = fitted_values, sd = sqrt(dispersion/prior_weights))
                            },
                            "Gamma" = {
                                if (any(prior_weights!= 1)) {
@@ -511,7 +517,7 @@ NULL)
         variances <- variance(fitted_values)
         dfun <- switch(family$family,
                        "gaussian" = {
-                           dnorm(new_y, mean = fitted_values, sd = dispersion/new_prior_weights, log = log)
+                           dnorm(new_y, mean = fitted_values, sd = sqrt(dispersion/new_prior_weights), log = log)
                        },
                        "Gamma" = {
                            if (any(new_prior_weights!= 1)) {
@@ -592,7 +598,7 @@ NULL)
         variances <- variance(fitted_values)
         pfun <- switch(family$family,
                        "gaussian" = {
-                           pnorm(new_y, mean = fitted_values, sd = dispersion/new_prior_weights, lower.tail = lower.tail, log.p = log.p)
+                           pnorm(new_y, mean = fitted_values, sd = sqrt(dispersion/new_prior_weights), lower.tail = lower.tail, log.p = log.p)
                        },
                        "Gamma" = {
                            if (any(new_prior_weights!= 1)) {
@@ -623,7 +629,7 @@ NULL)
                            if (any(new_prior_weights != 1)) {
                                    warning("ignoring prior weights")
                            }
-                           ppois(new_y, lambda = fitted_values, log = log)
+                           ppois(new_y, lambda = fitted_values, log.p = log.p)
                        },
                        "inverse.gaussian" = {
                            SuppDists::pinvGauss(new_y, nu = fitted_values, lambda = new_prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)
@@ -678,7 +684,7 @@ NULL)
         variances <- variance(fitted_values)
         qfun <- switch(family$family,
                        "gaussian" = {
-                           qnorm(p, mean = fitted_values, sd = dispersion/new_prior_weights, lower.tail = lower.tail, log.p = log.p)
+                           qnorm(p, mean = fitted_values, sd = sqrt(dispersion/new_prior_weights), lower.tail = lower.tail, log.p = log.p)
                        },
                        "Gamma" = {
                            if (any(new_prior_weights!= 1)) {
@@ -710,7 +716,7 @@ NULL)
                            if (any(new_prior_weights != 1)) {
                                    warning("ignoring prior weights")
                            }
-                           qpois(p, lambda = fitted_values, log = log)
+                           qpois(p, lambda = fitted_values, log.p = log.p)
                        },
                        "inverse.gaussian" = {
                            SuppDists::qinvGauss(p, nu = fitted_values, lambda = new_prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)

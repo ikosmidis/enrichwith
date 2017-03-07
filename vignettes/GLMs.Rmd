@@ -48,8 +48,6 @@ the data can be seen in the figure below.
 ```{r, echo = TRUE, eval = TRUE}
 library("ggplot2")
 clottingML <- glm(time ~ log(conc) * lot, family = Gamma, data = clotting)
-new_data <- expand.grid(conc = rep(seq(5, 100, length = 50), 2),
-                        lot = factor(rep(c(1, 2), each = 20)))
 alpha <- 0.01
 pr_out <- predict(clottingML, type = "response", se.fit = TRUE)
 new_data <- clotting
@@ -63,7 +61,7 @@ new_data <- within(new_data, {
 })
 ggplot(all_data) + geom_point(aes(conc, time, col = type), alpha = 0.8) +
     geom_segment(data = new_data, aes(x = conc, y = low, xend = conc, yend = upp, col = type)) +
-    facet_grid(. ~ lot) + theme(legend.position = "top")
+    facet_grid(. ~ lot) + theme_bw() + theme(legend.position = "top")
 ```
 
 # Key quantities in likelihood inference
