@@ -361,7 +361,7 @@ ggplot(power_values) + geom_line(aes(x = parameter, y = power, col = sample_size
 # Links to other resources
 
 The vignette
-[bias](https://cran.r-project.org/web/packages/enrichwith/vignettes/bias.html)
+[bias](https://CRAN.R-project.org/package=enrichwith/vignettes/bias.html)
 of **enrichwith** describes how to use the `auxiliary_functions` to
 reduce the bias of the maximum likelihood estimator for generalized
 linear models.
