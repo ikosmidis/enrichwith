@@ -37,4 +37,3 @@ get_enrichment_options.lm(option = "all")
 get_enrichment_options.lm(all_options = TRUE)
 }
 }
-

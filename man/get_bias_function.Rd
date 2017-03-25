@@ -16,4 +16,3 @@ get_bias_function(object, ...)
 Generic method for extracting or computing a function that returns
 the bias for the parameters in modelling objects
 }
-

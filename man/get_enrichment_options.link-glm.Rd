@@ -4,7 +4,7 @@
 \alias{get_enrichment_options.link-glm}
 \title{Available options for the enrichment objects of class link-glm}
 \usage{
-\method{get_enrichment_options}{`link-glm`}(object, option,
+\method{get_enrichment_options}{link-glm}(object, option,
   all_options = missing(option))
 }
 \arguments{
@@ -35,4 +35,3 @@ A check is being made whether the requested option is
 `get_enrichment_options.link-glm`(all_options = TRUE)
 }
 }
-

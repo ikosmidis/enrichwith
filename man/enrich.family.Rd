@@ -34,13 +34,14 @@ and \code{\link[stats]{poisson}}. \code{\link[stats]{family}}
 objects specify particular characteristics of distributions from
 the exponential family. Such distributions have probability mass or
 density function of the form \deqn{f(y; \theta, \phi) =
-\exp\left\{\frac{y\theta - b(\theta) + c_1(y)}{\phi/m} - a(-m/\phi)
-+ c_2(y)\right\} \quad y \in Y \subset \Re\,, \theta \in \Theta
-\subset \Re\, , \phi > 0}{f(y, theta, phi) = exp((y * theta -
-b(theta) + c_1(y))/(phi/m) - a(-m/phi) + c_2(y))} where \eqn{m >
-0}{m > 0} is an observation weight, and \eqn{a(.)}{a(.)},
-\eqn{b(.)}{b(.)}, \eqn{c_1(.)}{c_1(.)} and \eqn{c_2(.)}{c_2(.)} are
-sufficiently smooth, real-valued functions.
+\exp\left\{\frac{y\theta - b(\theta) - c_1(y)}{\phi/m} -
+\frac{1}{2}a\left(-\frac{m}{\phi}\right) + c_2(y)\right\} \quad y
+\in Y \subset \Re\,, \theta \in \Theta \subset \Re\, , \phi >
+0}{f(y, theta, phi) = exp((y * theta - b(theta) - c_1(y))/(phi/m) -
+a(-m/phi)/2 - c_2(y))} where \eqn{m > 0}{m > 0} is an observation
+weight, and \eqn{a(.)}{a(.)}, \eqn{b(.)}{b(.)},
+\eqn{c_1(.)}{c_1(.)} and \eqn{c_2(.)}{c_2(.)} are sufficiently
+smooth, real-valued functions.
 
 The expected value and the variance of such distributions is
 \eqn{\mu = b'(\theta)}{mu = b'(theta)} and \eqn{\phi V(\mu)/m}{phi * V(mu)/m},
@@ -98,4 +99,3 @@ glm.D93 <- glm(counts ~ outcome + treatment, family = enrich(poisson()))
 anova(glm.D93)
 summary(glm.D93)
 }
-

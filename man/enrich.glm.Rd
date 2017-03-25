@@ -86,4 +86,3 @@ abline(h = 0, lty = 2); abline(v = 0.5, lty = 2)
 title("First-order bias of the MLE of the log-odds", sub = "m = 10")
 }
 }
-
