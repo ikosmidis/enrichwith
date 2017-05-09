@@ -78,7 +78,6 @@ In the following, we use **enrichwith** to implement two variants of the bias re
 
 # Quasi Fisher scoring for bias reduction
 
-
 Consider a parametric [statistical
 model](https://en.wikipedia.org/wiki/Statistical_model)
 $\mathcal{P}_\theta$ with unknown parameter $\theta \in \Re^p$ and the

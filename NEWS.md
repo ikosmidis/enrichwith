@@ -1,4 +1,13 @@
-# enrichwith 0.3
+# enrichwith 0.04
+
+## Bug fixes
+
+## New functionality
+
+## Other improvements, updates and additions
+* Fixed typos in `?enrich.family`
+
+# enrichwith 0.03
 
 ## Bug fixes
 * Took care of aliasing in bias calculations
@@ -18,7 +27,7 @@
 * New vignette for enriching `glm` objects
 * Updated README file
 
-# enrichwith 0.2
+# enrichwith 0.02
 
 * Fixed an issue with the example in ?enrich.glm
 * Minor codebase improvements
@@ -26,7 +35,7 @@
 * More detailed descriptions for the enrichment options for `glm` objects
 * Included a vignette on how bias-reduction for GLMs can be implemented using enriched `glm` objects
 
-# enrichwith 0.1
+# enrichwith 0.01
 
 * First release
 
