@@ -36,4 +36,3 @@ parameters (including the dispersion if any). The result from the
 \code{simulate} auxiliary function has the same structure to that
 of the \code{\link{simulate}} method for \code{\link{lm}} objects.
 }
-

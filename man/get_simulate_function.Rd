@@ -16,4 +16,3 @@ get_simulate_function(object, ...)
 Generic method for extracting or computing a simulate function for
 modelling objects
 }
-
