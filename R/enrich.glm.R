@@ -1101,7 +1101,7 @@ get_dmodel_function.glm <- function(object, ...) {
 #' likelihood estimate is used}
 #'
 #' \item{log.p}{logical; if \code{TRUE}, the logarithm of the
-#' distribution function is returned} }
+#' distribution function is returned}
 #'
 #' \item{lower.tail}{logical; if \code{TRUE} (default), probabilities
 #' are P[X <= x] otherwise, P[X > x]
@@ -1142,7 +1142,7 @@ get_pmodel_function.glm <- function(object, ...) {
 #' likelihood estimate is used}
 #'
 #' \item{log.p}{logical; if \code{TRUE}, the logarithm of the
-#' probabilities is used} }
+#' probabilities is used}
 #'
 #' \item{lower.tail}{logical; if \code{TRUE} (default), probabilities
 #' are P[X <= x] otherwise, P[X > x]

@@ -4,7 +4,7 @@
 \alias{enrich.link-glm}
 \title{Enrich objects of class \code{\link[=make.link]{link-glm}}}
 \usage{
-\method{enrich}{link-glm}(object, with = "all", ...)
+\method{enrich}{`link-glm`}(object, with = "all", ...)
 }
 \arguments{
 \item{object}{an object of class \code{\link[=make.link]{link-glm}}}
