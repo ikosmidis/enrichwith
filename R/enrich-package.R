@@ -139,7 +139,7 @@ get_simulate_function <- function(object, ...) {
 #' @param ... currently not used
 #' @export
 get_dmodel_function <- function(object, ...) {
-    UseMethod("get_simulate_function")
+    UseMethod("get_dmodel_function")
 }
 
 #' Generic method for extracting or computing a pmodel function for
@@ -148,7 +148,7 @@ get_dmodel_function <- function(object, ...) {
 #' @param ... currently not used
 #' @export
 get_pmodel_function <- function(object, ...) {
-    UseMethod("get_simulate_function")
+    UseMethod("get_pmodel_function")
 }
 
 #' Generic method for extracting or computing a qmodel function for
@@ -157,5 +157,5 @@ get_pmodel_function <- function(object, ...) {
 #' @param ... currently not used
 #' @export
 get_qmodel_function <- function(object, ...) {
-    UseMethod("get_simulate_function")
+    UseMethod("get_qmodel_function")
 }
