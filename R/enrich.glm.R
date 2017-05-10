@@ -1,7 +1,7 @@
 #' Enrich objects of class \code{\link{glm}}
 #'
 #' Enrich objects of class \code{\link{glm}} with any or all of a set
-#' auxiliary functions, the maximum likelihood estimate of the
+#' of auxiliary functions, the maximum likelihood estimate of the
 #' dispersion parameter, the expected or observed information at the
 #' maximum likelihood estimator, and the first term in the expansion
 #' of the bias of the maximum likelihood estimator.
@@ -14,18 +14,21 @@
 #'
 #' @details
 #'
-#' The auxiliary functions consist of the score functions, the
-#' expected or observed information, the first-order bias of the
-#' maximum likelihood estimator as functions of the model parameters,
-#' and a \code{simulate} function that takes as input the model
-#' parameters (including the dispersion if any). The result from the
-#' \code{simulate} auxiliary function has the same structure to that
-#' of the \code{\link{simulate}} method for \code{\link{glm}} objects.
+#' The \code{auxiliary_functions} component consists of any or all of the following functions:
+#' \itemize{
+#' \item \code{score}: the log-likelihood derivatives as a function of the model parameters; see \code{\link{get_score_function.glm}}
+#' \item \code{information}: the expected or observed information as a function of the model parameters; see \code{\link{get_information_function.glm}}
+#' \item \code{bias}: the first-order term in the expansion of the bias of the maximum likelihood estimator as a function of the model parameters; see \code{\link{get_bias_function.glm}}
+#' \item \code{simulate}: a \code{\link{simulate}} function for \code{\link{glm}} objects that can simulate variates from the model at user-supplied parameter values for the regression parameters and the dispersion (default is the maximum likelihood estimates); see \code{\link{get_simulate_function.glm}}
+#' \item \code{dmodel}: computes densities or probability mass functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_dmodel_function.glm}}
+#' \item \code{pmodel}: computes distribution functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_pmodel_function.glm}}
+#' \item \code{qmodel}: computes quantile functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_qmodel_function.glm}}
+#' }
 #'
 #' @return
 #'
 #' The object \code{object} of class \code{\link{glm}} with extra
-#' components. \code{get_enrichment_options.glm()} returns the
+#' components. See \code{get_enrichment_options.glm()} for the
 #' components and their descriptions.
 #'
 #' @export
@@ -414,7 +417,6 @@
         fitted_values <- linkinv(predictors)
         fitted_names <- names(fitted_values)
         n <- length(fitted_values)
-
         variates <- switch(family$family,
                            "gaussian" = {
                                rnorm(nsim * n, mean = fitted_values, sd = sqrt(dispersion/prior_weights))
@@ -485,21 +487,28 @@ NULL)
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
-
+        if (missing(data)) {
+            mf <- object$model
+        }
+        else  {
+            mf <- model.frame(formula = formula, data = data)
+        }
         contr <- attr(model.matrix(object), "contrasts")
-        mf <- model.frame(formula = formula, data = data)
         new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
         new_y <- model.response(mf)
         new_off <- model.offset(mf)
         if (is.null(new_off)) {
             new_off <- rep(0, nrow(mf))
         }
-
-        new_prior_weights <- with(data, eval(object$call$weights))
+        if (missing(data)) {
+            new_prior_weights <- model.weights(mf)
+        }
+        else {
+            new_prior_weights <- with(data, eval(object$call$weights))
+        }
         if (is.null(new_prior_weights)) {
             new_prior_weights <- rep(1, nrow(mf))
         }
-
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -568,19 +577,27 @@ NULL)
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
         contr <- attr(model.matrix(object), "contrasts")
-        mf <- model.frame(formula = formula, data = data)
+        if (missing(data)) {
+            mf <- object$model
+        }
+        else  {
+            mf <- model.frame(formula = formula, data = data)
+        }
         new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
         new_y <- model.response(mf)
         new_off <- model.offset(mf)
         if (is.null(new_off)) {
             new_off <- rep(0, nrow(mf))
         }
-
-        new_prior_weights <- with(data, eval(object$call$weights))
+        if (missing(data)) {
+            new_prior_weights <- model.weights(mf)
+        }
+        else {
+            new_prior_weights <- with(data, eval(object$call$weights))
+        }
         if (is.null(new_prior_weights)) {
             new_prior_weights <- rep(1, nrow(mf))
         }
-
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -643,9 +660,6 @@ NULL)
 
     ## any response in the data is ignored
     qmodel <- function(p, data, coefficients, dispersion, lower.tail = TRUE, log.p = FALSE) {
-        if (length(p) != nrow(data)) {
-            stop("length(q) must be equal to nrow(data)")
-        }
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -654,19 +668,30 @@ NULL)
         }
         ## output an function that takes as input a data frame and returns densities
         contr <- attr(model.matrix(object), "contrasts")
-        mf <- model.frame(formula = formula, data = data)
+        if (missing(data)) {
+            mf <- object$model
+        }
+        else  {
+            mf <- model.frame(formula = formula, data = data)
+        }
+        if (length(p) != nrow(mf)) {
+            stop("length(p) must be equal to nrow(data)")
+        }
         new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
         new_y <- model.response(mf)
         new_off <- model.offset(mf)
         if (is.null(new_off)) {
             new_off <- rep(0, nrow(mf))
         }
-
-        new_prior_weights <- with(data, eval(object$call$weights))
+        if (missing(data)) {
+            new_prior_weights <- model.weights(mf)
+        }
+        else {
+            new_prior_weights <- with(data, eval(object$call$weights))
+        }
         if (is.null(new_prior_weights)) {
             new_prior_weights <- rep(1, nrow(mf))
         }
-
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -686,7 +711,7 @@ NULL)
                        "gaussian" = {
                            qnorm(p, mean = fitted_values, sd = sqrt(dispersion/new_prior_weights), lower.tail = lower.tail, log.p = log.p)
                        },
-                       "Gamma" = {
+                       "Gamma" = {c
                            if (any(new_prior_weights!= 1)) {
                                message("using prior weights in the shape parameters")
                            }
@@ -696,7 +721,6 @@ NULL)
                            if (any(new_prior_weights %% 1 != 0)) {
                                stop("cannot simulate from non-integer prior.weights")
                            }
-
                            if (is.matrix(new_y) && ncol(new_y)) {
                                new_prior_weights <- rowSums(new_y)
                                new_y <- new_y[, 1]
@@ -1019,6 +1043,120 @@ get_bias_function.glm <- function(object, ...) {
 }
 
 
+#' Function to compute/extract a \code{dmodel} function
+#'
+#' @param object an object of class \code{glm} or\code{enriched_glm}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted function has arguments
+#' \describe{
+#'
+#' \item{data}{a data frame with observations at which to compute
+#' densities. If missing then densities are computed at the model
+#' frame extracted from the object (see \code{\link{glm}})}
+#'
+#' \item{coefficients}{the regression coefficients at which the
+#' densities are computed. If missing then the maximum likelihood
+#' estimates are used}
+#'
+#' \item{dispersion}{the dispersion parameter at which the densities
+#' function is computed. If missing then the maximum likelihood
+#' estimate is used}
+#'
+#' \item{log}{logical; if \code{TRUE}, the logarithm of the density is
+#' returned}
+#' }
+#'
+#' @export
+get_dmodel_function.glm <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$dmodel
+    }
+    else {
+        object$auxiliary_functions$dmodel
+    }
+}
+
+#' Function to compute/extract a \code{pmodel} function
+#'
+#' @param object an object of class \code{glm} or\code{enriched_glm}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted function has arguments
+#' \describe{
+#'
+#' \item{data}{a data frame with observations at which to compute the
+#' distribution function. If missing then probabilities are computed
+#' at the model frame extracted from the object (see
+#' \code{\link{glm}})}
+#'
+#' \item{coefficients}{the regression coefficients at which the
+#' distribution function are computed. If missing then the maximum
+#' likelihood estimates are used}
+#'
+#' \item{dispersion}{the dispersion parameter at which the
+#' distribution function is computed. If missing then the maximum
+#' likelihood estimate is used}
+#'
+#' \item{log.p}{logical; if \code{TRUE}, the logarithm of the
+#' distribution function is returned} }
+#'
+#' \item{lower.tail}{logical; if \code{TRUE} (default), probabilities
+#' are P[X <= x] otherwise, P[X > x]
+#' }
+#'
+#' @export
+get_pmodel_function.glm <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$pmodel
+    }
+    else {
+        object$auxiliary_functions$pmodel
+    }
+}
+
+#' Function to compute/extract a \code{qmodel} function
+#'
+#' @param object an object of class \code{glm} or\code{enriched_glm}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted function has arguments
+#' \describe{
+#'
+#' \item{p}{a vector of probabilities with \code{length(p)} equal to
+#' \code{nrow(data)} at which to evaluate quantiles}
+#'
+#' \item{data}{a data frame with observations at which to compute the
+#' quantiles. If missing then quantiles are computed at the model
+#' frame extracted from the object (see \code{\link{glm}})}
+#'
+#' \item{coefficients}{the regression coefficients at which the
+#' quantiles are computed. If missing then the maximum likelihood
+#' estimates are used}
+#'
+#' \item{dispersion}{the dispersion parameter at which the
+#' quantiles are computed. If missing then the maximum
+#' likelihood estimate is used}
+#'
+#' \item{log.p}{logical; if \code{TRUE}, the logarithm of the
+#' probabilities is used} }
+#'
+#' \item{lower.tail}{logical; if \code{TRUE} (default), probabilities
+#' are P[X <= x] otherwise, P[X > x]
+#' }
+#'
+#' @export
+get_qmodel_function.glm <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$qmodel
+    }
+    else {
+        object$auxiliary_functions$qmodel
+    }
+}
 
 
 ## ## ## Call that produced the enrichwith template for the current script:
