@@ -14,4 +14,28 @@
 \description{
 Function to compute/extract a \code{pmodel} function
 }
+\details{
+The computed/extracted function has arguments
+\describe{
+
+\item{data}{a data frame with observations at which to compute the
+distribution function. If missing then probabilities are computed
+at the model frame extracted from the object (see
+\code{\link{glm}})}
+
+\item{coefficients}{the regression coefficients at which the
+distribution function are computed. If missing then the maximum
+likelihood estimates are used}
+
+\item{dispersion}{the dispersion parameter at which the
+distribution function is computed. If missing then the maximum
+likelihood estimate is used}
+
+\item{log.p}{logical; if \code{TRUE}, the logarithm of the
+distribution function is returned}
+
+\item{lower.tail}{logical; if \code{TRUE} (default), probabilities
+are P[X <= x] otherwise, P[X > x]}
+}
+}
 

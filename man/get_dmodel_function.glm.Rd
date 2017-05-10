@@ -32,6 +32,7 @@ estimate is used}
 
 \item{log}{logical; if \code{TRUE}, the logarithm of the density is
 returned}
+
 }
 }
 

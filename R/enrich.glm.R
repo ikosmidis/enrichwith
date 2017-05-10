@@ -1066,6 +1066,7 @@ get_bias_function.glm <- function(object, ...) {
 #'
 #' \item{log}{logical; if \code{TRUE}, the logarithm of the density is
 #' returned}
+#'
 #' }
 #'
 #' @export
@@ -1104,7 +1105,7 @@ get_dmodel_function.glm <- function(object, ...) {
 #' distribution function is returned}
 #'
 #' \item{lower.tail}{logical; if \code{TRUE} (default), probabilities
-#' are P[X <= x] otherwise, P[X > x]
+#' are P[X <= x] otherwise, P[X > x]}
 #' }
 #'
 #' @export
@@ -1145,7 +1146,8 @@ get_pmodel_function.glm <- function(object, ...) {
 #' probabilities is used}
 #'
 #' \item{lower.tail}{logical; if \code{TRUE} (default), probabilities
-#' are P[X <= x] otherwise, P[X > x]
+#' are P[X <= x] otherwise, P[X > x]}
+#'
 #' }
 #'
 #' @export
