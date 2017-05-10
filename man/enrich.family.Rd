@@ -99,3 +99,4 @@ glm.D93 <- glm(counts ~ outcome + treatment, family = enrich(poisson()))
 anova(glm.D93)
 summary(glm.D93)
 }
+

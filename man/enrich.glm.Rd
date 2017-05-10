@@ -17,24 +17,27 @@ enrich \code{object} with}
 }
 \value{
 The object \code{object} of class \code{\link{glm}} with extra
-components. \code{get_enrichment_options.glm()} returns the
+components. See \code{get_enrichment_options.glm()} for the
 components and their descriptions.
 }
 \description{
 Enrich objects of class \code{\link{glm}} with any or all of a set
-auxiliary functions, the maximum likelihood estimate of the
+of auxiliary functions, the maximum likelihood estimate of the
 dispersion parameter, the expected or observed information at the
 maximum likelihood estimator, and the first term in the expansion
 of the bias of the maximum likelihood estimator.
 }
 \details{
-The auxiliary functions consist of the score functions, the
-expected or observed information, the first-order bias of the
-maximum likelihood estimator as functions of the model parameters,
-and a \code{simulate} function that takes as input the model
-parameters (including the dispersion if any). The result from the
-\code{simulate} auxiliary function has the same structure to that
-of the \code{\link{simulate}} method for \code{\link{glm}} objects.
+The \code{auxiliary_functions} component consists of any or all of the following functions:
+\itemize{
+\item \code{score}: the log-likelihood derivatives as a function of the model parameters; see \code{\link{get_score_function.glm}}
+\item \code{information}: the expected or observed information as a function of the model parameters; see \code{\link{get_information_function.glm}}
+\item \code{bias}: the first-order term in the expansion of the bias of the maximum likelihood estimator as a function of the model parameters; see \code{\link{get_bias_function.glm}}
+\item \code{simulate}: a \code{\link{simulate}} function for \code{\link{glm}} objects that can simulate variates from the model at user-supplied parameter values for the regression parameters and the dispersion (default is the maximum likelihood estimates); see \code{\link{get_simulate_function.glm}}
+\item \code{dmodel}: computes densities or probability mass functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_dmodel_function.glm}}
+\item \code{pmodel}: computes distribution functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_pmodel_function.glm}}
+\item \code{qmodel}: computes quantile functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_qmodel_function.glm}}
+}
 }
 \examples{
 
@@ -86,3 +89,4 @@ abline(h = 0, lty = 2); abline(v = 0.5, lty = 2)
 title("First-order bias of the MLE of the log-odds", sub = "m = 10")
 }
 }
+

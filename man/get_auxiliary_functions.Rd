@@ -16,3 +16,4 @@ get_auxiliary_functions(object, ...)
 Generic method for extracting or computing auxiliary functions for
 objects
 }
+

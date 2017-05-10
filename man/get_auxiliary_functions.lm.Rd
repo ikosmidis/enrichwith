@@ -19,3 +19,4 @@ class \code{lm}/\code{enriched_lm}
 \details{
 See \code{\link{enrich.lm}} for details.
 }
+

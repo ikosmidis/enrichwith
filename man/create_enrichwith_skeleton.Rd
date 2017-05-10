@@ -54,3 +54,4 @@ Create an enrichwith skeleton file for the structured
 implementation of methods to compute new components for objects of
 a specific class
 }
+

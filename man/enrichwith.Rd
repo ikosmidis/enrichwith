@@ -47,3 +47,4 @@ Developers can either put their enrichwith templates in their
 packages or are welcome to contribute their template to enrichwith,
 particularly if that extends core R objects.
 }
+

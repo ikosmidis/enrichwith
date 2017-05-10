@@ -36,3 +36,4 @@ str(elogit)
 elogit$d2mu.deta
 elogit$d3mu.deta
 }
+

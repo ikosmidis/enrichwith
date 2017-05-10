@@ -19,3 +19,4 @@ class \code{glm}/\code{enriched_glm}
 \details{
 See \code{\link{enrich.glm}} for details.
 }
+

@@ -16,3 +16,4 @@ enrich(object, with, ...)
 \description{
 Generic method for enriching objects
 }
+
