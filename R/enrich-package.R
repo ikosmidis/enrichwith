@@ -132,3 +132,30 @@ get_bias_function <- function(object, ...) {
 get_simulate_function <- function(object, ...) {
     UseMethod("get_simulate_function")
 }
+
+#' Generic method for extracting or computing a dmodel function for
+#' modelling objects
+#' @param object the object to be enriched or the enriched object
+#' @param ... currently not used
+#' @export
+get_dmodel_function <- function(object, ...) {
+    UseMethod("get_simulate_function")
+}
+
+#' Generic method for extracting or computing a pmodel function for
+#' modelling objects
+#' @param object the object to be enriched or the enriched object
+#' @param ... currently not used
+#' @export
+get_pmodel_function <- function(object, ...) {
+    UseMethod("get_simulate_function")
+}
+
+#' Generic method for extracting or computing a qmodel function for
+#' modelling objects
+#' @param object the object to be enriched or the enriched object
+#' @param ... currently not used
+#' @export
+get_qmodel_function <- function(object, ...) {
+    UseMethod("get_simulate_function")
+}
