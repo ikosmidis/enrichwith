@@ -17,4 +17,3 @@
 \description{
 Function to extract model coefficients from objects of class \code{enriched_lm}
 }
-

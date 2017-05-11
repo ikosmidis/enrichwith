@@ -16,4 +16,3 @@ get_qmodel_function(object, ...)
 Generic method for extracting or computing a qmodel function for
 modelling objects
 }
-

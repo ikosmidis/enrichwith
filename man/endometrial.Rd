@@ -40,4 +40,3 @@ endometrial
 Histology grade and risk factors for 79 cases of endometrial cancer
 }
 \keyword{datasets}
-

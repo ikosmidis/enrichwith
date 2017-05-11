@@ -16,4 +16,3 @@ get_dmodel_function(object, ...)
 Generic method for extracting or computing a dmodel function for
 modelling objects
 }
-

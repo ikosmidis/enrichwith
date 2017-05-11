@@ -38,4 +38,3 @@ distribution function is returned}
 are P[X <= x] otherwise, P[X > x]}
 }
 }
-

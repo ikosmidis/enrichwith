@@ -41,4 +41,3 @@ attribute, see \code{Value}}
 
 }
 }
-

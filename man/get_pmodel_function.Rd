@@ -16,4 +16,3 @@ get_pmodel_function(object, ...)
 Generic method for extracting or computing a pmodel function for
 modelling objects
 }
-

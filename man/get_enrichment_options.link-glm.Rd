@@ -35,4 +35,3 @@ A check is being made whether the requested option is
 `get_enrichment_options.link-glm`(all_options = TRUE)
 }
 }
-
