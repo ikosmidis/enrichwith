@@ -295,6 +295,18 @@ ggplot(data = new_data) +
 
 The dashed vertical lines are the observed values of time for the `(conc, lot)` combinations in the figure.
 
+# `enriched_glm`
+**enrichwith** provides a wrapper to the `glm` interface that results directly in `enriched_glm` objects that carry all the components described above. For example,
+```{r, echo = TRUE, eval = TRUE}
+enriched_clottingML <- enriched_glm(time ~ log(conc) * lot, family = Gamma, data = clotting)
+names(enriched_clottingML$auxiliary_functions)
+enriched_clottingML$score_mle
+enriched_clottingML$expected_information_mle
+enriched_clottingML$observed_information_mle
+enriched_clottingML$bias_mle
+enriched_clottingML$dispersion_mle
+```
+
 # Links to other resources
 
 The vignette
