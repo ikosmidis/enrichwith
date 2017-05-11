@@ -1,2 +1,5 @@
 ^README\.Rmd$
 ^README-.*\.png$
+tests/
+inst/TODO.org
+inst/temporary
