@@ -1,3 +1,13 @@
+# enrichwith 0.05
+
+## Bug fixes
+
+## New functionality
+
+## Other improvements, updates and additions
+* Added d,p,q in the vignette
+* Documentation updates
+
 # enrichwith 0.04
 
 ## Bug fixes

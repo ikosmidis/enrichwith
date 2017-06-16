@@ -1,3 +1,5 @@
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/enrichwith)](https://cran.r-project.org/package=enrichwith)
+
 # enrichwith
 
 Methods to enrich list-like R objects with extra components
