@@ -5,7 +5,7 @@
 ## New functionality
 
 ## Other improvements, updates and additions
-* Added d,p,q in the vignette
+* Added d,p,q and enriched_glm in the vignette
 * Documentation updates
 
 # enrichwith 0.04
