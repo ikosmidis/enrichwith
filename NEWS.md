@@ -1,6 +1,7 @@
 # enrichwith 0.05
 
 ## Bug fixes
+* Fixed bug when passing a vector of options in the `with` argument of `enrich` methods
 
 ## New functionality
 
