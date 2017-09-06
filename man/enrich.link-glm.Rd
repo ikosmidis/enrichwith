@@ -4,13 +4,12 @@
 \alias{enrich.link-glm}
 \title{Enrich objects of class \code{\link[=make.link]{link-glm}}}
 \usage{
-\method{enrich}{`link-glm`}(object, with = "all", ...)
+\method{enrich}{link-glm}(object, with = "all", ...)
 }
 \arguments{
 \item{object}{an object of class \code{\link[=make.link]{link-glm}}}
 
-\item{with}{a character vector with the names of the components to
-enrich \code{object} with.}
+\item{with}{a character vector with enrichment options for \code{object}}
 
 \item{...}{extra arguments to be passed to the \code{compute_*}
 functions}

@@ -9,8 +9,7 @@
 \arguments{
 \item{object}{an object of class \code{\link{family}}}
 
-\item{with}{a character vector with the names of the components to
-enrich \code{object} with}
+\item{with}{a character vector with enrichment options for \code{object}}
 
 \item{...}{extra arguments to be passed to the \code{compute_*}
 functions}

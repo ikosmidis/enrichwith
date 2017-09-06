@@ -5,8 +5,7 @@
 #'
 #'
 #' @param object an object of class {{class}}
-#' @param with a character vector with the names of the components to
-#'     enrich \code{object} with
+#' @param with a character vector of options for the enrichment of \code{object}
 #' @param ... extra arguments to be passed to the
 #'     \code{compute_*} functions
 #'

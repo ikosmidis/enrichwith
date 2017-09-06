@@ -7,8 +7,7 @@
 #' of the bias of the maximum likelihood estimator.
 #'
 #' @param object an object of class lm
-#' @param with a character vector with the names of the components to
-#'     enrich \code{object} with
+#' @param with a character vector of options for the enrichment of \code{object}
 #' @param ... extra arguments to be passed to the
 #'     \code{compute_*} functions
 #'
@@ -87,7 +86,7 @@
     out$description <- c(out$description, 'all available options')
     out$component <- list('auxiliary_functions', 'score_mle', 'dispersion_mle', 'expected_information_mle', 'observed_information_mle', 'bias_mle')
     out$component[[length(out$component) + 1]] <- unique(unlist(out$component))
-    names(out$component) <- out$option
+    names(out$component) <- names(out$description) <- out$option
     out$compute_function <- lapply(out$component, function(z) paste0('compute_', z))
     class(out) <- 'enrichment_options'
     if (all_options) {
@@ -99,7 +98,7 @@
     }
 
     out <- list(option = option,
-                description = out$description[out$option == option],
+                description = out$description[option],
                 component = out$component[option],
                 compute_function = out$compute_function[option])
     class(out) <- 'enrichment_options'

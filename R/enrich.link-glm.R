@@ -5,8 +5,7 @@
 #' further derivatives of \code{linkinv} with respect to \code{eta}.
 #'
 #' @param object an object of class \code{\link[=make.link]{link-glm}}
-#' @param with a character vector with the names of the components to
-#'     enrich \code{object} with.
+#' @param with a character vector with enrichment options for \code{object}
 #' @param ... extra arguments to be passed to the \code{compute_*}
 #'     functions
 #'
@@ -83,7 +82,7 @@
     out$description <- c(out$description, 'all available options')
     out$component <- list('d2mu.deta', 'd3mu.deta', c('d2mu.deta', 'd3mu.deta'))
     out$component[[length(out$component) + 1]] <- unique(unlist(out$component))
-    names(out$component) <- out$option
+    names(out$component) <- names(out$description) <- out$option
     out$compute_function <- lapply(out$component, function(z) paste0('compute_', z))
     class(out) <- 'enrichment_options'
     if (all_options) {
@@ -95,7 +94,7 @@
     }
 
     out <- list(option = option,
-                description = out$description[out$option == option],
+                description = out$description[option],
                 component = out$component[option],
                 compute_function = out$compute_function[option])
     class(out) <- 'enrichment_options'

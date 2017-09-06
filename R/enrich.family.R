@@ -4,8 +4,7 @@
 #' mathematical functions
 #'
 #' @param object an object of class \code{\link{family}}
-#' @param with a character vector with the names of the components to
-#'     enrich \code{object} with
+#' @param with a character vector with enrichment options for \code{object}
 #' @param ... extra arguments to be passed to the \code{compute_*}
 #'     functions
 #'
@@ -146,7 +145,7 @@
     out$description <- c(out$description, 'all available options')
     out$component <- list('d1variance', 'd2variance', 'd1afun', 'd2afun', 'd3afun', c('d1variance', 'd2variance'), c('d1afun', 'd2afun', 'd3afun'))
     out$component[[length(out$component) + 1]] <- unique(unlist(out$component))
-    names(out$component) <- out$option
+    names(out$component) <- names(out$description) <- out$option
     out$compute_function <- lapply(out$component, function(z) paste0('compute_', z))
     class(out) <- 'enrichment_options'
     if (all_options) {
@@ -158,7 +157,7 @@
     }
 
     out <- list(option = option,
-                description = out$description[out$option == option],
+                description = out$description[option],
                 component = out$component[option],
                 compute_function = out$compute_function[option])
     class(out) <- 'enrichment_options'
