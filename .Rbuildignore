@@ -3,3 +3,4 @@
 tests/
 inst/TODO.org
 inst/temporary
+^\.travis\.yml$
