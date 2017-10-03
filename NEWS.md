@@ -2,6 +2,7 @@
 
 ## Bug fixes
 * Fixed bug when passing a vector of options in the `with` argument of `enrich` methods
+* Fixed a bug that would return wrong results if the `bias` function was passed a named vectors
 
 ## New functionality
 

@@ -38,7 +38,37 @@
 #' \item The \code{enrich.class} function
 #'
 #' }
-
+#' @examples
+#' \dontrun{
+#' # Set the directory where the skeleton is placed
+#' my_path <- "~/Downloads"
+#' # This is the call that created the enrichment skeleton for glms
+#' # that ships with the package
+#' create_enrichwith_skeleton(class = "glm",
+#'       option = c("auxiliary functions", "score vector",
+#'        "mle of dispersion", "expected information",
+#'        "observed information", "first-order bias"),
+#'       description = c("various likelihood-based quantities
+#'         (gradient of the log-likelihood, expected and observed
+#'         information matrix and first term in the expansion of
+#'         the bias of the mle) and a simulate method as functions
+#'         of the model parameters",
+#'        "gradient of the log-likelihood at the mle",
+#'        "mle of the dispersion parameter",
+#'        "expected information matrix evaluated at the mle",
+#'        "observed information matrix evaluated at the mle",
+#'        "first term in the expansion of the bias of the mle
+#'         at the mle"),
+#'       component = list("auxiliary_functions", "score_mle",
+#'                        "dispersion_mle",
+#'                        "expected_information_mle",
+#'                        "observed_information_mle",
+#'                        "bias_mle"),
+#'       path = my_path,
+#'       attempt_rename = FALSE)
+#'
+#' }
+#' @export
 create_enrichwith_skeleton <- function(class,
                                       option,
                                       description,

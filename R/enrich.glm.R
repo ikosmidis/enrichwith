@@ -356,10 +356,10 @@
         ksi <- -0.5 * dispersion * d2mus * hats / (d1mus * sqrt(working_weights))
 
         bias_beta <- numeric(ncol(x))
-        coefnames <- names(coefficients)
-        if (is.null(coefnames)) {
-            coefnames <- colnames(x)
-        }
+        ## coefnames <- names(coefficients)
+        ## if (is.null(coefnames)) {
+        coefnames <- colnames(x)
+        ## }
         names(bias_beta) <- coefnames
         biases <- drop(tcrossprod(ksi %*% Q, solve(qr.R(Qr)[inds, inds, drop = FALSE])))
         bias_beta[names(biases)] <- biases
