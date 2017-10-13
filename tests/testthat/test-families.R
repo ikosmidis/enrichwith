@@ -54,4 +54,9 @@ for (fam in families) {
         expect_equal(grad(cfam$d2afun, zetas), cfam$d3afun(zetas), tolerance = tol)
     })
 
+
+    test_that(paste("d4afun is correctly implemented for", fam$family), {
+        expect_equal(grad(cfam$d3afun, zetas), cfam$d4afun(zetas), tolerance = tol)
+    })
+
 }

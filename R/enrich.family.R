@@ -23,7 +23,7 @@
 #' \frac{1}{2}a\left(-\frac{m}{\phi}\right) + c_2(y)\right\} \quad y
 #' \in Y \subset \Re\,, \theta \in \Theta \subset \Re\, , \phi >
 #' 0}{f(y, theta, phi) = exp((y * theta - b(theta) - c_1(y))/(phi/m) -
-#' a(-m/phi)/2 - c_2(y))} where \eqn{m > 0}{m > 0} is an observation
+#' a(-m/phi)/2 + c_2(y))} where \eqn{m > 0}{m > 0} is an observation
 #' weight, and \eqn{a(.)}{a(.)}, \eqn{b(.)}{b(.)},
 #' \eqn{c_1(.)}{c_1(.)} and \eqn{c_2(.)}{c_2(.)} are sufficiently
 #' smooth, real-valued functions.
@@ -41,7 +41,10 @@
 #'
 #' \item \code{variance}: \eqn{V(.)}{V(.)}
 #'
-#' \item \code{dev.resids}: \eqn{-2\left\{y c_1'(\mu) - y c_1'(y) -
+#' \item \code{dev.resids}: \eqn{−2 m {y \theta − b('theta) − c1 (y)}}
+#'
+#'
+#' \eqn{-2\left\{y c_1'(\mu) - y c_1'(y) -
 #' b(c_1'(\mu)) + b(c'_1(y))\right\}}{-2(y c_1'(mu) - y c_1'(y) -
 #' b(c'(mu)) + b(c'(y)))}
 #'
@@ -50,6 +53,10 @@
 #' where \eqn{\delta}{delta} is \code{1} if the family has a dispersion
 #' parameter and \code{0} else
 #' }
+#'
+#' The only \code{family} object deviating from the above definitions
+#' is \code{Gamma} where \code{Gamma()$dev.resids} implements \eqn{q_i - 2m_i}
+#' instead of \eqn{q_i}.
 #'
 #' The \code{\link{quasi}} families differ from the other families in
 #' that the variance function is not determined by the family but may
@@ -137,13 +144,13 @@
     ## List the enrichment options that you would like to make
     ## available for objects of class
     out <- list()
-    out$option <- c('d1variance', 'd2variance', 'd1afun', 'd2afun', 'd3afun', 'variance derivatives', 'function a derivatives')
+    out$option <- c('d1variance', 'd2variance', 'd1afun', 'd2afun', 'd3afun', 'd4fun', 'variance derivatives', 'function a derivatives')
     ## Provide the descriptions of the enrichment options
-    out$description <- c('1st derivative of the variance function', '2nd derivative of the variance function', '1st derivative of the a function', '2nd derivative of the a function', '3rd derivative of the a function', '1st and 2nd derivative of the variance function', '1st, 2nd and 3rd derivative of the a function')
+    out$description <- c('1st derivative of the variance function', '2nd derivative of the variance function', '1st derivative of the a function', '2nd derivative of the a function', '3rd derivative of the a function', '4th derivative of the a function', '1st and 2nd derivative of the variance function', '1st, 2nd and 3rd derivative of the a function')
     ## Add all as an option
     out$option <- c(out$option, 'all')
     out$description <- c(out$description, 'all available options')
-    out$component <- list('d1variance', 'd2variance', 'd1afun', 'd2afun', 'd3afun', c('d1variance', 'd2variance'), c('d1afun', 'd2afun', 'd3afun'))
+    out$component <- list('d1variance', 'd2variance', 'd1afun', 'd2afun', 'd3afun', 'd4afun', c('d1variance', 'd2variance'), c('d1afun', 'd2afun', 'd3afun'))
     out$component[[length(out$component) + 1]] <- unique(unlist(out$component))
     names(out$component) <- names(out$description) <- out$option
     out$compute_function <- lapply(out$component, function(z) paste0('compute_', z))
@@ -319,17 +326,31 @@
            })
 }
 
-
 `compute_d3afun` <- function(object, ...) {
     UseMethod('compute_d3afun')
 }
 
 
+`compute_d4afun.family` <- function(object, ...) {
+    family <- object$family
+    switch(family,
+           "gaussian" = function(zeta) {
+                6/zeta^4
+    },
+    "Gamma" = function(zeta) {
+                2 * psigamma(-zeta, 3) + 4/zeta^3
+    },
+    "inverse.gaussian" = function(zeta) {
+                6/zeta^4
+    })
+}
 
 
+`compute_d4afun` <- function(object, ...) {
+    UseMethod('compute_d4afun')
+}
 
-
-## ## Call that produced the enrichwith template for the current script:
+## ## Call that produced the initial enrichwith template for the current script:
 ## create_enrichwith_skeleton(class = "family", option = c("d1variance",
 ##     "d2variance", "d1afun", "d2afun", "d3afun", "variance derivatives",
 ##     "function a derivatives"), description = c("1st derivative of the variance function",
