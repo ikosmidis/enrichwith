@@ -1,6 +1,17 @@
 # enrichwith 0.05
 
 ## Bug fixes
+
+## New functionality
+* `enrich.family` can return 4th derivatives of the a function and other characteristics of the exponential family
+
+## Other improvements, updates and additions
+* Documentation updates
+* Added vignette for `enrich.family` including a description of the exponential family
+
+# enrichwith 0.05
+
+## Bug fixes
 * Fixed bug when passing a vector of options in the `with` argument of `enrich` methods
 * Fixed a bug that would return wrong results if the `bias` function was passed a named vectors
 
