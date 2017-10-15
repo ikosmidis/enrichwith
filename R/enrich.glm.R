@@ -232,6 +232,7 @@
             zetas <- -prior_weights/dispersion
             d1afuns <- rep(NA, nobs)
             d1afuns[keep] <- d1afun(zetas[keep])
+            if (family$family == "Gamma") d1afuns <- d1afuns - 2
             devianceResiduals <- family$dev.resids(y, fitted_values, prior_weights)
             EdevianceResiduals <- prior_weights * d1afuns
             ## score_dispersion <- sum(devianceResiduals - EdevianceResiduals, na.rm = TRUE) / (2 * dispersion^2)
@@ -310,6 +311,7 @@
                 zetas <- -prior_weights/dispersion
                 d1afuns <- rep(NA, nobs)
                 d1afuns[keep] <- d1afun(zetas[keep])
+                if (family$family == "Gamma") d1afuns <- d1afuns - 2
                 devianceResiduals <- family$dev.resids(y, fitted_values, prior_weights)
                 EdevianceResiduals <- prior_weights * d1afuns
                 info_dispe <- info_dispe + sum(devianceResiduals - EdevianceResiduals, na.rm = TRUE) / dispersion^3
