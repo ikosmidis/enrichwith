@@ -10,15 +10,14 @@
 #'
 #' @details
 #'
-#' \code{\link{family}} objects specify the details of the models used
-#' by functions such as \code{\link[stats]{glm}}. The families
-#' implemented in the \code{stats} package include
+#' \code{\link[stats]{family}} objects specify characteristics of the
+#' models used by functions such as \code{\link[stats]{glm}}. The
+#' families implemented in the \code{stats} package include
 #' \code{\link[stats]{binomial}}, \code{\link[stats]{gaussian}},
 #' \code{\link[stats]{Gamma}}, \code{\link[stats]{inverse.gaussian}},
-#' and \code{\link[stats]{poisson}}. \code{\link[stats]{family}}
-#' objects specify particular characteristics of distributions from
-#' the exponential family. Such distributions have probability mass or
-#' density function of the form \deqn{f(y; \theta, \phi) =
+#' and \code{\link[stats]{poisson}}, which are all special cases of
+#' the exponential family of distributions that have probability mass
+#' or density function of the form \deqn{f(y; \theta, \phi) =
 #' \exp\left\{\frac{y\theta - b(\theta) - c_1(y)}{\phi/m} -
 #' \frac{1}{2}a\left(-\frac{m}{\phi}\right) + c_2(y)\right\} \quad y
 #' \in Y \subset \Re\,, \theta \in \Theta \subset \Re\, , \phi >
@@ -28,60 +27,33 @@
 #' \eqn{c_1(.)}{c_1(.)} and \eqn{c_2(.)}{c_2(.)} are sufficiently
 #' smooth, real-valued functions.
 #'
-#' The expected value and the variance of such distributions is
-#' \eqn{\mu = b'(\theta)}{mu = b'(theta)} and \eqn{\phi V(\mu)/m}{phi * V(mu)/m},
-#' respectively, where \eqn{V(\mu)}{V(mu)} is called the variance
-#' function. The parameter \eqn{\phi}{phi} is called a dispersion
-#' parameter.
+#' The current implementation of \code{\link[stats]{family}} objects
+#' includes the variance function (\code{variance}), the deviance
+#' residuals (\code{dev.resids}), and the Akaike information criterion
+#' (\code{aic}). See, also \code{\link{family}}.
 #'
-#' Characteristics of the exponential family that are already
-#' implemented in \code{\link[stats]{family}} objects include:
+#' The \code{enrich} method can further enrich exponential
+#' \code{\link{family}} distributions with \eqn{\theta}{theta} in
+#' terms of \eqn{\mu}{mu} (\code{theta}), the functions
+#' \eqn{b(\theta)}{b(theta)} (\code{bfun}), \eqn{c_1(y)}{c_1(y)}
+#' (\code{c1fun}), \eqn{c_2(y)}{c_2(y)} (\code{c2fun}),
+#' \eqn{a(\zeta)}{a(zeta)} (\code{fun}), the first two derivatives of
+#' \eqn{V(\mu)}{V(mu)} (\code{d1variance} and \code{d2variance},
+#' respectively), and the first four derivatives of
+#' \eqn{a(\zeta)}{a(zeta)} (\code{d1afun}, \code{d2afun},
+#' \code{d3afun}, \code{d4afun}, respectively).
 #'
-#' \itemize{
+#' See \code{\link{enrich.link-glm}} for the enrichment of
+#' \code{\link[=make.link]{link-glm}} objects.
 #'
-#' \item \code{variance}: \eqn{V(.)}{V(.)}
-#'
-#' \item \code{dev.resids}: \eqn{−2 m {y \theta − b('theta) − c1 (y)}}
-#'
-#'
-#' \eqn{-2\left\{y c_1'(\mu) - y c_1'(y) -
-#' b(c_1'(\mu)) + b(c'_1(y))\right\}}{-2(y c_1'(mu) - y c_1'(y) -
-#' b(c'(mu)) + b(c'(y)))}
-#'
-#' \item \code{aic}: \eqn{-2\sum_{i = 1}^n \left\{\log f(y_i; \theta,
-#' \phi)\right\} + 2\delta}{-2*sum(log f(y, theta, phi)) + 2*delta}
-#' where \eqn{\delta}{delta} is \code{1} if the family has a dispersion
-#' parameter and \code{0} else
-#' }
-#'
-#' The only \code{family} object deviating from the above definitions
-#' is \code{Gamma} where \code{Gamma()$dev.resids} implements \eqn{q_i - 2m_i}
-#' instead of \eqn{q_i}.
-#'
-#' The \code{\link{quasi}} families differ from the other families in
-#' that the variance function is not determined by the family but may
-#' be supplied by the user. Also, the \code{\link{quasibinomial}} and
-#' \code{\link{quasipoisson}} families differ from the
-#' \code{\link{binomial}} and \code{\link{poisson}} families only in
-#' that the dipsersion parameter is estimated to account for
-#' overdispersion.
-#'
-#' For \code{\link[stats]{quasi}}, \code{dev.resid} is \eqn{m(y -
-#' \mu)^2}{m*(y - mu)^2} . For \code{\link[stats]{quasibinomial}} and
-#' \code{\link[stats]{quasipoisson}}, \code{dev.resid} is the same as
-#' for \code{\link[stats]{quasibinomial}} and
-#' \code{\link{quasipoisson}}, respectively.  The \code{aic} is
-#' \code{NA} for all \code{quasi} families. See
-#' \code{\link[stats]{quasi}} for more details.
-#'
-#' The \code{enrich} method can enrich \code{\link{family}} family
-#' objects with extra characteristics of the family and of the chosen
-#' link function. See \code{\link{enrich.link-glm}} for the enrichment
-#' of \code{\link[=make.link]{link-glm}} objects.
+#' The \code{\link[stats]{quasi}} families are enriched with
+#' \code{d1variance} and \code{d2variance}.
 #'
 #' @return The object \code{object} of class \code{\link{family}} with
 #'     extra components. \code{get_enrichment_options.family()}
 #'     returns the components and their descriptions.
+#'
+#' @seealso \code{\link{enrich.link-glm}}, \code{\link{make.link}}
 #'
 #' @export
 #' @examples
@@ -144,13 +116,13 @@
     ## List the enrichment options that you would like to make
     ## available for objects of class
     out <- list()
-    out$option <- c('d1variance', 'd2variance', 'd1afun', 'd2afun', 'd3afun', 'd4fun', 'variance derivatives', 'function a derivatives')
+    out$option <- c('theta', 'bfun', 'c1fun', 'c2fun', 'd1variance', 'd2variance', 'afun', 'd1afun', 'd2afun', 'd3afun', 'd4fun', 'variance derivatives', 'function a derivatives')
     ## Provide the descriptions of the enrichment options
-    out$description <- c('1st derivative of the variance function', '2nd derivative of the variance function', '1st derivative of the a function', '2nd derivative of the a function', '3rd derivative of the a function', '4th derivative of the a function', '1st and 2nd derivative of the variance function', '1st, 2nd and 3rd derivative of the a function')
+    out$description <- c('natural parameter', 'cumulant transform', 'c1 function', 'c2 function', '1st derivative of the variance function', '2nd derivative of the variance function', 'a function', '1st derivative of the a function', '2nd derivative of the a function', '3rd derivative of the a function', '4th derivative of the a function', '1st and 2nd derivative of the variance function', '1st, 2nd and 3rd derivative of the a function')
     ## Add all as an option
     out$option <- c(out$option, 'all')
     out$description <- c(out$description, 'all available options')
-    out$component <- list('d1variance', 'd2variance', 'd1afun', 'd2afun', 'd3afun', 'd4afun', c('d1variance', 'd2variance'), c('d1afun', 'd2afun', 'd3afun'))
+    out$component <- list('theta', 'bfun', 'c1fun', 'c2fun', 'd1variance', 'd2variance', 'afun', 'd1afun', 'd2afun', 'd3afun', 'd4afun', c('d1variance', 'd2variance'), c('d1afun', 'd2afun', 'd3afun'))
     out$component[[length(out$component) + 1]] <- unique(unlist(out$component))
     names(out$component) <- names(out$description) <- out$option
     out$compute_function <- lapply(out$component, function(z) paste0('compute_', z))
@@ -169,6 +141,132 @@
                 compute_function = out$compute_function[option])
     class(out) <- 'enrichment_options'
     out
+}
+
+
+`compute_theta.family` <- function(object, ...) {
+    family <- object$family
+    switch(family,
+           "poisson" = function(mu) {
+        log(mu)
+    },
+    "quasipoisson" = function(mu) {
+        log(mu)
+    },
+    "gaussian" = function(mu) {
+        mu
+    },
+    "binomial" = function(mu) {
+        log(mu/(1 - mu))
+    },
+    "quasibinomial" = function(mu) {
+        log(mu/(1 - mu))
+    },
+    "Gamma" = function(mu) {
+        -1/mu
+    },
+    "inverse.gaussian" = function(mu) {
+        -1/2*mu^2
+    })
+}
+
+`compute_theta` <- function(object, ...) {
+    UseMethod('compute_theta')
+}
+
+
+`compute_bfun.family` <- function(object, ...) {
+    family <- object$family
+    switch(family,
+           "poisson" = function(theta) {
+        exp(theta)
+    },
+    "quasipoisson" = function(theta) {
+        exp(theta)
+    },
+    "gaussian" = function(theta) {
+        theta^2/2
+    },
+    "binomial" = function(theta) {
+        log(1 + exp(theta))
+    },
+    "quasibinomial" = function(theta) {
+        log(1 + exp(theta))
+    },
+    "Gamma" = function(theta) {
+        -log(-theta)
+    },
+    "inverse.gaussian" = function(theta) {
+        -sqrt(-2*theta)
+    })
+}
+
+`compute_bfun` <- function(object, ...) {
+    UseMethod('compute_bfun')
+}
+
+
+
+`compute_c1fun.family` <- function(object, ...) {
+    family <- object$family
+    switch(family,
+           "poisson" = function(y) {
+        0
+    },
+    "quasipoisson" = function(y) {
+        0
+    },
+    "gaussian" = function(y) {
+        y^2/2
+    },
+    "binomial" = function(y) {
+        0
+    },
+    "quasibinomial" = function(y) {
+        0
+    },
+    "Gamma" = function(y) {
+        -log(y)
+    },
+    "inverse.gaussian" = function(y) {
+        1/(2*y)
+    })
+}
+
+`compute_c1fun` <- function(object, ...) {
+    UseMethod('compute_c1fun')
+}
+
+
+
+`compute_c2fun.family` <- function(object, ...) {
+    family <- object$family
+    switch(family,
+           "poisson" = function(y) {
+        -log(gamma(y+1))
+    },
+    "quasipoisson" = function(y) {
+        -log(gamma(y+1))
+    },
+    "gaussian" = function(y) {
+        -log(2*pi)/2
+    },
+    "binomial" = function(y, m) {
+        log(choose(m, m * y))
+    },
+    "quasibinomial" = function(y, m) {
+        log(choose(m, m * y))
+    },
+    "Gamma" = function(y) {
+        -log(y)
+    },
+    "inverse.gaussian" = function(y) {
+        -0.5 * log(2 * pi * y^3)
+    })
+}
+
+`compute_c2fun` <- function(object, ...) {
+    UseMethod('compute_c2fun')
 }
 
 
@@ -271,19 +369,63 @@
     UseMethod('compute_d2variance')
 }
 
+`compute_afun.family` <- function(object, ...) {
+    family <- object$family
+    switch(family,
+           "gaussian" = function(zeta) {
+        -log(-zeta)
+    },
+    "Gamma" = function(zeta) {
+        2*log(gamma(-zeta)) + 2*zeta*log(-zeta)
+    },
+    "inverse.gaussian" = function(zeta) {
+        -log(-zeta)
+    },
+    "poisson" = function(zeta) {
+        0
+    },
+    "quasipoisson" = function(zeta) {
+        0
+    },
+    "binomial" = function(zeta) {
+        0
+    },
+    "quasibinomial" = function(zeta) {
+        0
+    })
+}
+
+
+`compute_afun` <- function(object, ...) {
+    UseMethod('compute_afun')
+}
+
 
 `compute_d1afun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
            "gaussian" = function(zeta) {
-               -1/zeta
-           },
-           "Gamma" = function(zeta) {
-               -2*psigamma(-zeta, 0) + 2*log(-zeta)
-           },
-           "inverse.gaussian" = function(zeta) {
-               -1/zeta
-           })
+        -1/zeta
+    },
+    "Gamma" = function(zeta) {
+        -2*psigamma(-zeta, 0) + 2*log(-zeta) + 2
+        ## this is the expectation of dev.resids + 2, because of the way dev.resids is implemented
+    },
+    "inverse.gaussian" = function(zeta) {
+        -1/zeta
+    },
+    "poisson" = function(zeta) {
+        0
+    },
+    "quasipoisson" = function(zeta) {
+        0
+    },
+    "binomial" = function(zeta) {
+        0
+    },
+    "quasibinomial" = function(zeta) {
+        0
+    })
 }
 
 
@@ -296,14 +438,26 @@
     family <- object$family
     switch(family,
            "gaussian" = function(zeta) {
-               1/zeta^2
-           },
+        1/zeta^2
+    },
            "Gamma" = function(zeta) {
-               2*psigamma(-zeta, 1) + 2/zeta
-           },
+        2*psigamma(-zeta, 1) + 2/zeta
+    },
            "inverse.gaussian" = function(zeta) {
-               1/zeta^2
-           })
+        1/zeta^2
+    },
+    "poisson" = function(zeta) {
+        0
+    },
+    "quasipoisson" = function(zeta) {
+        0
+    },
+    "binomial" = function(zeta) {
+        0
+    },
+    "quasibinomial" = function(zeta) {
+        0
+    })
 }
 
 
@@ -316,14 +470,26 @@
     family <- object$family
     switch(family,
            "gaussian" = function(zeta) {
-               -2/zeta^3
-           },
-           "Gamma" = function(zeta) {
-               -2*psigamma(-zeta, 2) - 2/zeta^2
-           },
-           "inverse.gaussian" = function(zeta) {
-               -2/zeta^3
-           })
+        -2/zeta^3
+    },
+    "Gamma" = function(zeta) {
+        -2*psigamma(-zeta, 2) - 2/zeta^2
+    },
+    "inverse.gaussian" = function(zeta) {
+        -2/zeta^3
+    },
+    "poisson" = function(zeta) {
+        0
+    },
+    "quasipoisson" = function(zeta) {
+        0
+    },
+    "binomial" = function(zeta) {
+        0
+    },
+    "quasibinomial" = function(zeta) {
+        0
+    })
 }
 
 `compute_d3afun` <- function(object, ...) {
@@ -335,13 +501,25 @@
     family <- object$family
     switch(family,
            "gaussian" = function(zeta) {
-                6/zeta^4
+        6/zeta^4
     },
     "Gamma" = function(zeta) {
-                2 * psigamma(-zeta, 3) + 4/zeta^3
+        2 * psigamma(-zeta, 3) + 4/zeta^3
     },
     "inverse.gaussian" = function(zeta) {
-                6/zeta^4
+        6/zeta^4
+    },
+    "poisson" = function(zeta) {
+        0
+    },
+    "quasipoisson" = function(zeta) {
+        0
+    },
+    "binomial" = function(zeta) {
+        0
+    },
+    "quasibinomial" = function(zeta) {
+        0
     })
 }
 
