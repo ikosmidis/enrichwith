@@ -40,6 +40,8 @@
 #' packages or are welcome to contribute their template to enrichwith,
 #' particularly if that extends core R objects.
 #'
+#' @seealso \code{\link{enrich.glm}} and \code{\link{enriched_glm}}, \code{\link{enrich.family}}, \code{\link{`enrich.link.glm`}}, \code{\link{enrich.betareg}}
+#'
 #' @docType package
 #' @name enrichwith
 #' @import stats
@@ -53,6 +55,8 @@ NULL
 #' @param object the object to be enriched
 #' @param with a character vector with enrichment options for \code{object}
 #' @param ... Arguments to be passed to other methods
+#'
+#' @seealso \code{\link{enrich.glm}}, \code{\link{enriched_glm}}, \code{\link{enrich.family}}, \code{\link{`enrich.link.glm`}}, \code{\link{enrich.betareg}}
 #'
 #' @export
 enrich <- function(object, with, ...) {
@@ -80,6 +84,9 @@ enrich <- function(object, with, ...) {
 #' @details A check is being made whether the requested option is
 #'     available. No check is being made on whether the functions that
 #'     produce the components exist.
+#'
+#' @seealso \code{\link{enrich.glm}}, \code{\link{enrich.family}}, \code{\link{`enrich.link.glm`}}, \code{\link{enrich.betareg}}
+#'
 #' @export
 get_enrichment_options <- function(object, option, all_options) {
     UseMethod("get_enrichment_options")

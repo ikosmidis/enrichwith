@@ -35,3 +35,6 @@ A check is being made whether the requested option is
     available. No check is being made on whether the functions that
     produce the components exist.
 }
+\seealso{
+\code{\link{enrich.glm}}, \code{\link{enrich.family}}, \code{\link{`enrich.link.glm`}}, \code{\link{enrich.betareg}}
+}

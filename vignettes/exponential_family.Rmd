@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: enrichwith.bib
 vignette: >
-  %\VignetteIndexEntry{exponential family of distributions}
+  %\VignetteIndexEntry{enriching family objects}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -81,11 +81,12 @@ inverse.gaussian()$aic
 
 # Enrichment options for `family` objects
 The **enrichwith** R package provides methods for the enrichment of
-`family` objects with a function that links $\theta$ with $\mu$, the
-function $b(\theta)$, the first two derivatives of $V(\mu)$,
-$a(\zeta)$ and its first four derivatives, and $c_1(y)$ and
-$c_2(y)$. To illustrate, let's write a function that reconstructs the
-densitities and probability mass functions from the components that result from enrichment
+`family` objects with a function that links the natural parameter
+$\theta$ with $\mu$, the function $b(\theta)$, the first two
+derivatives of $V(\mu)$, $a(\zeta)$ and its first four derivatives,
+and $c_1(y)$ and $c_2(y)$. To illustrate, let's write a function that
+reconstructs the densitities and probability mass functions from the
+components that result from enrichment
 ```{r, echo = TRUE, eval = TRUE}
 dens <- function(y, m = 1, mu, phi, family) {
     object <- enrich(family)
