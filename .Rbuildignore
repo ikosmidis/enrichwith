@@ -3,4 +3,5 @@
 tests/
 inst/TODO.org
 inst/temporary
+inst/enrich_family.gif
 ^\.travis\.yml$
