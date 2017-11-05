@@ -1,9 +1,10 @@
-# enrichwith 0.06
+# enrichwith 0.1
 
 ## Bug fixes
 
 ## New functionality
 * `enrich.family` can return 4th derivatives of the a function and other characteristics of the exponential family
+* `enrich` method for `betareg` objects (enrichment options with scores, information, bias and simulate)
 
 ## Other improvements, updates and additions
 * Documentation updates
