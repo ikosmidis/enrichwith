@@ -80,7 +80,9 @@ Get the development version from github with
 devtools::install_github("ikosmidis/enrichwith")
 ```
 
-## Example
+## Examples
+
+### `link-glm` objects
 
 Objects of class `link-glm` have as components functions to compute
 the link function (`linkfun`), the inverse link function (`linkinv`),
@@ -144,4 +146,8 @@ cat(format(enriched_link$d3mu.deta), sep = "\n")
 the enrichment options above, has the extra components `d2mu.deta` and
 `d3mu.deta`, for the calculation of 2nd and 3rd derivatives of the
 inverse link function with respect to `eta`, respectively.
+
+### `family` objects
+
+![](https://raw.githubusercontent.com/ikosmidis/enrichwith/master/inst/enrich_family.gif)
 
