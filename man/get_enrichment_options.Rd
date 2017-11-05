@@ -36,5 +36,5 @@ A check is being made whether the requested option is
     produce the components exist.
 }
 \seealso{
-\code{\link{enrich.glm}}, \code{\link{enrich.family}}, \code{\link{`enrich.link.glm`}}, \code{\link{enrich.betareg}}
+\code{\link{enrich.glm}}, \code{\link{enrich.family}}, \code{\link{enrich.link.glm}}, \code{\link{enrich.betareg}}
 }

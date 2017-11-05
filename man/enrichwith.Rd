@@ -48,5 +48,5 @@ packages or are welcome to contribute their template to enrichwith,
 particularly if that extends core R objects.
 }
 \seealso{
-\code{\link{enrich.glm}} and \code{\link{enriched_glm}}, \code{\link{enrich.family}}, \code{\link{`enrich.link.glm`}}, \code{\link{enrich.betareg}}
+\code{\link{enrich.glm}} and \code{\link{enriched_glm}}, \code{\link{enrich.family}}, \code{\link{enrich.link.glm}}, \code{\link{enrich.betareg}}
 }

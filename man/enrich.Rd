@@ -17,5 +17,5 @@ enrich(object, with, ...)
 Generic method for enriching objects
 }
 \seealso{
-\code{\link{enrich.glm}}, \code{\link{enriched_glm}}, \code{\link{enrich.family}}, \code{\link{`enrich.link.glm`}}, \code{\link{enrich.betareg}}
+\code{\link{enrich.glm}}, \code{\link{enriched_glm}}, \code{\link{enrich.family}}, \code{\link{enrich.link.glm}}, \code{\link{enrich.betareg}}
 }
