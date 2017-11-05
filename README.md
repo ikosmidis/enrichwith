@@ -1,4 +1,7 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/enrichwith)](https://cran.r-project.org/package=enrichwith)
+[![Travis-CI Build Status](https://travis-ci.org/ikosmidis/enrichwith.svg?branch=master)](https://travis-ci.org/ikosmidis/enrichwith)
+[![Coverage Status](https://img.shields.io/codecov/c/github/ikosmidis/enrichwith/master.svg)](https://codecov.io/github/ikosmidis/enrichwith?branch=master)
+
 
 # enrichwith
 
