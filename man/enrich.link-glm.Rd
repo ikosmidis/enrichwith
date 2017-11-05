@@ -31,9 +31,6 @@ the \code{\link{power}} family of links.
 }
 \examples{
 
-# Available enrichment options
-`get_enrichment_options.link-glm`()
-
 # Example
 elogit <- enrich(make.link("logit"), with = "inverse link derivatives")
 str(elogit)

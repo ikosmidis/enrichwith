@@ -1,4 +1,4 @@
-# enrichwith 0.05
+# enrichwith 0.06
 
 ## Bug fixes
 
