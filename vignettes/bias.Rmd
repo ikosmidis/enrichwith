@@ -36,8 +36,7 @@ fit a probit regression model with the same linear predictor as the
 logistic regression model in @heinze:02.
 ```{r, echo = TRUE, eval = TRUE}
 # Get the data from the online supplmementary material of Agresti (2015)
-endometrial_url <- url("http://www.stat.ufl.edu/~aa/glm/data/Endometrial.dat")
-endometrial <- read.table(endometrial_url, header = TRUE)
+data("endometrial", package = "enrichwith")
 modML <- glm(HG ~ NV + PI + EH, family = binomial("probit"), data = endometrial)
 theta_mle <- coef(modML)
 summary(modML)
