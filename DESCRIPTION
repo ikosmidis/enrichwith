@@ -1,6 +1,6 @@
 Package: enrichwith
 Title: Methods to Enrich R Objects with Extra Components
-Version: 0.1
+Version: 0.1.900
 Authors@R: person("Ioannis", "Kosmidis", email = "i.kosmidis@ucl.ac.uk", role = c("aut", "cre"))
 Description: Provides the "enrich" method to enrich list-like R objects with new, relevant components. The current version has methods for enriching objects of class 'family', 'link-glm', 'lm', 'glm' and 'betareg'. The resulting objects preserve their class, so all methods associated with them still apply. The package also provides the 'enriched_glm' function that has the same interface as 'glm' but results in objects of class 'enriched_glm'. In addition to the usual components in a `glm` object, 'enriched_glm' objects carry an object-specific simulate method and functions to compute the scores, the observed and expected information matrix, the first-order bias, as well as model densities, probabilities, and quantiles at arbitrary parameter values. The package can also be used to produce customizable source code templates for the structured implementation of methods to compute new components and enrich arbitrary objects.
 Depends:
