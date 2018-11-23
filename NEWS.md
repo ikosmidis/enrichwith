@@ -1,3 +1,8 @@
+# enrichwith 0.2
+
+## Other improvements, updates and additions
+Fixed typos in documentation
+
 # enrichwith 0.1
 
 ## Bug fixes

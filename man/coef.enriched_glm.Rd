@@ -4,8 +4,8 @@
 \alias{coef.enriched_glm}
 \title{Function to extract model coefficients from objects of class \code{enriched_glm}}
 \usage{
-\method{coef}{enriched_glm}(object, model = c("mean", "full", "dispersion"),
-  ...)
+\method{coef}{enriched_glm}(object, model = c("mean", "full",
+  "dispersion"), ...)
 }
 \arguments{
 \item{object}{an object of class \code{enriched_glm}}
