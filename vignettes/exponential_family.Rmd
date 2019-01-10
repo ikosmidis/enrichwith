@@ -88,6 +88,7 @@ and $c_1(y)$ and $c_2(y)$. To illustrate, let's write a function that
 reconstructs the densitities and probability mass functions from the
 components that result from enrichment
 ```{r, echo = TRUE, eval = TRUE}
+library("enrichwith")
 dens <- function(y, m = 1, mu, phi, family) {
     object <- enrich(family)
     with(object, {
