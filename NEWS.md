@@ -1,7 +1,16 @@
 # enrichwith 0.2
 
+## Bug fixes
+* Fixed bug in the computation of Beta regression score contributions
+* Fixed bug with the attributes of information matrices for glms with fixed dispersion
+* Bug fixes in tests
+
+## New functionality
+* `get_information_function` now returns a function that has a CHOL argument, for returning the Cholesky decomposition of the information matrix
+
 ## Other improvements, updates and additions
-Fixed typos in documentation
+* Fixed various typos in documentation
+
 
 # enrichwith 0.1
 
