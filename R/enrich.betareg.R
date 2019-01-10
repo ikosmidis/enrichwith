@@ -154,6 +154,7 @@
     phi_mu.eta <- linkprec$mu.eta
     phi_dmu.deta <- linkprec$dmu.deta
     ystar <- qlogis(y)
+    u <- log(1 - y)
     score <- function(coefficients, contributions = FALSE) {
         if (missing(coefficients)) {
             coefficients <- coef(object, model = "full")
@@ -167,10 +168,10 @@
         mustar <- digamma(mu * phi) - digamma((1 - mu) * phi)
         psi1 <- trigamma(mu * phi)
         psi2 <- trigamma((1 - mu) * phi)
-        rval <- cbind(phi * (ystar - mustar) * mu.eta(eta) *
-            weights * x, (mu * (ystar - mustar) + log(1 - y) -
-            digamma((1 - mu) * phi) + digamma(phi)) * phi_mu.eta(phi_eta) *
-            weights * z)
+        tbar_ubar <- ystar - mustar
+        ubar <- u - digamma((1 - mu) * phi) + digamma(phi)
+        rval <- cbind(phi * tbar_ubar * mu.eta(eta) * weights * x,
+        (mu * tbar_ubar + ubar) * phi_mu.eta(phi_eta) * weights * z)
         if (contributions)
             rval
         else
@@ -180,9 +181,9 @@
     information <- function(coefficients, QR = TRUE, CHOL = FALSE,
                             type = c("expected", "observed")) {
         if (missing(coefficients)) {
-
             coefficients <- coef(object, model = "full")
         }
+        type <- match.arg(type)
         beta <- coefficients[seq.int(length.out = k)]
         gamma <- coefficients[seq.int(length.out = m) + k]
         eta <- as.vector(x %*% beta + offset[[1L]])
@@ -194,9 +195,11 @@
         psi2 <- trigamma((1 - mu) * phi)
         a <- psi1 + psi2
         b <- psi1 * mu^2 + psi2 * (1 - mu)^2 - trigamma(phi)
-        wbb <- phi^2 * a * mu.eta(eta)^2
-        wpp <- b * phi_mu.eta(phi_eta)^2
-        wbp <- phi * (mu * a - psi2) * mu.eta(eta) * phi_mu.eta(phi_eta)
+        D1 <- mu.eta(eta)
+        D2 <- phi_mu.eta(phi_eta)
+        wbb <- phi^2 * a * D1^2
+        wpp <- b * D2^2
+        wbp <- phi * (mu * a - psi2) * D1 * D2
         kbb <- if (k > 0L)
             crossprod(sqrt(weights) * sqrt(wbb) * x)
         else crossprod(x)
@@ -208,15 +211,27 @@
         else crossprod(x, z)
         out <- cbind(rbind(kbb, t(kbp)), rbind(kbp, kpp))
         if (type == "observed") {
-
+            tbar_ubar <- ystar - mustar
+            ubar <- u - digamma((1 - mu) * phi) + digamma(phi)
+            D1dash <- dmu.deta(eta)
+            D2dash <- phi_dmu.deta(phi_eta)
+            kbb <- if (k > 0L)
+                       crossprod(phi * D1dash * tbar_ubar * x, x)
+                   else crossprod(x)
+            kpp <- if (m > 0L)
+                       crossprod(D2dash * (mu * tbar_ubar + ubar) * D2 * z, z)
+                   else crossprod(z)
+            kbp <- if (k > 0L & m > 0L)
+                       crossprod(D1 * D2 * tbar_ubar * x, z)
+                   else crossprod(x, z)
+            out <- out + cbind(rbind(kbb, t(kbp)), rbind(kbp, kpp))
         }
-        else {
-
-        }
+        colnames(out) <- names(coef(object))
         if (CHOL)
-            chol(out)
-        else
-            out
+            out <- chol(out)
+        attr(out, "coefficients") <- coefficients
+        out
+
     }
 
     bias <- function(coefficients) {

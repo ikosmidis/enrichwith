@@ -4,9 +4,100 @@
 \alias{enriched_glm}
 \title{Fitting generalized linear models and enriching the result}
 \usage{
-enriched_glm(...)
+enriched_glm(formula, family = gaussian, data, weights, subset,
+  na.action, start = NULL, etastart, mustart, offset,
+  control = list(...), model = TRUE, method = "glm.fit", x = FALSE,
+  y = TRUE, singular.ok = TRUE, contrasts = NULL, ...)
 }
 \arguments{
+\item{formula}{an object of class \code{"\link{formula}"} (or one that
+    can be coerced to that class): a symbolic description of the
+    model to be fitted.  The details of model specification are given
+    under \sQuote{Details}.}
+
+\item{family}{a description of the error distribution and link
+    function to be used in the model.  For \code{glm} this can be a
+    character string naming a family function, a family function or the
+    result of a call to a family function.  For \code{glm.fit} only the
+    third option is supported.  (See \code{\link{family}} for details of
+    family functions.)}
+
+\item{data}{an optional data frame, list or environment (or object
+    coercible by \code{\link{as.data.frame}} to a data frame) containing
+    the variables in the model.  If not found in \code{data}, the
+    variables are taken from \code{environment(formula)},
+    typically the environment from which \code{glm} is called.}
+
+\item{weights}{an optional vector of \sQuote{prior weights} to be used
+    in the fitting process.  Should be \code{NULL} or a numeric vector.}
+
+\item{subset}{an optional vector specifying a subset of observations
+    to be used in the fitting process.}
+
+\item{na.action}{a function which indicates what should happen
+    when the data contain \code{NA}s.  The default is set by
+    the \code{na.action} setting of \code{\link{options}}, and is
+    \code{\link{na.fail}} if that is unset.  The \sQuote{factory-fresh}
+    default is \code{\link{na.omit}}.  Another possible value is
+    \code{NULL}, no action.  Value \code{\link{na.exclude}} can be useful.}
+
+\item{start}{starting values for the parameters in the linear predictor.}
+
+\item{etastart}{starting values for the linear predictor.}
+
+\item{mustart}{starting values for the vector of means.}
+
+\item{offset}{this can be used to specify an \emph{a priori} known
+    component to be included in the linear predictor during fitting.
+    This should be \code{NULL} or a numeric vector of length equal to
+    the number of cases.  One or more \code{\link{offset}} terms can be
+    included in the formula instead or as well, and if more than one is
+    specified their sum is used.  See \code{\link{model.offset}}.}
+
+\item{control}{a list of parameters for controlling the fitting
+    process.  For \code{glm.fit} this is passed to
+    \code{\link{glm.control}}.}
+
+\item{model}{a logical value indicating whether \emph{model frame}
+    should be included as a component of the returned value.}
+
+\item{method}{the method to be used in fitting the model.  The default
+    method \code{"glm.fit"} uses iteratively reweighted least squares
+    (IWLS): the alternative \code{"model.frame"} returns the model frame
+    and does no fitting.
+
+    User-supplied fitting functions can be supplied either as a function
+    or a character string naming a function, with a function which takes
+    the same arguments as \code{glm.fit}.  If specified as a character
+    string it is looked up from within the \pkg{stats} namespace.
+  }
+
+\item{x}{For \code{glm}:
+    logical values indicating whether the response vector and model
+    matrix used in the fitting process should be returned as components
+    of the returned value.
+
+    For \code{glm.fit}: \code{x} is a design matrix of dimension
+    \code{n * p}, and \code{y} is a vector of observations of length
+    \code{n}.
+  }
+
+\item{y}{For \code{glm}:
+    logical values indicating whether the response vector and model
+    matrix used in the fitting process should be returned as components
+    of the returned value.
+
+    For \code{glm.fit}: \code{x} is a design matrix of dimension
+    \code{n * p}, and \code{y} is a vector of observations of length
+    \code{n}.
+  }
+
+\item{singular.ok}{logical; if \code{FALSE} a singular fit is an
+    error.}
+
+\item{contrasts}{an optional list. See the \code{contrasts.arg}
+    of \code{model.matrix.default}.}
+
 \item{...}{
     For \code{glm}: arguments to be used to form the default
     \code{control} argument if it is not supplied directly.

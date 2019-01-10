@@ -293,6 +293,7 @@
         ## information for the coefficients only
         if (family$family %in% c("poisson", "binomial")) {
             out <- info_beta
+            colnames(out) <- rownames(out) <- colnames(x)
         }
         ## If there is a dispersion parameter then return the
         ## information on the coefficients and the dispersion
@@ -322,13 +323,12 @@
             out <- rbind(cbind(info_beta, info_cross),
                          c(info_cross, info_dispe))
             colnames(out) <- rownames(out) <- c(colnames(x), "dispersion")
-            attr(out, "coefficients") <- coefficients
-            attr(out, "dispersion") <- dispersion
         }
         if (CHOL)
-            chol(out)
-        else
-            out
+            out <- chol(out)
+        attr(out, "coefficients") <- coefficients
+        attr(out, "dispersion") <- dispersion
+        out
     }
 
     bias <- function(coefficients, dispersion) {

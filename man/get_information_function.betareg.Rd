@@ -24,7 +24,12 @@ The computed/extracted function has arguments
 information matrix is evaluated. If missing then the maximum
 likelihood estimates are used}
 
-\item{QR}{If \code{TRUE}, then the QR decomposition of the expected information for the coefficients is returned}
+
+\item{type}{should the function return th 'expected' or 'observed' information? Default is \code{expected}}
+
+\item{QR}{Currently not used}
+
+\item{CHOL}{If \code{TRUE}, then the Cholesky decomposition of the information matrix at the coefficients is returned}
 
 }
 }
