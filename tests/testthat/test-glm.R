@@ -69,7 +69,8 @@ test_that("expected information matrix from enrich with is equal to that coming 
     enriched_mod2 <- enrich(mod2, with = "auxiliary functions")
     expect_equal(enriched_mod2$auxiliary_functions$information(coef(mod2), type = "expected"),
                  crossprod(qr.R(mod2$qr)),
-                 tolerance = 200)
+                 tolerance = 0.0001,
+                 check.attributes = FALSE)
 })
 
 

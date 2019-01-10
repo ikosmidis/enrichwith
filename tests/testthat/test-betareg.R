@@ -19,14 +19,18 @@ test_that("implementation of the expected information is correct",
     expect_equal(solve(get_information_function(gy)()), vcov(gy), tolerance = tol, check.attributes = FALSE)
 })
 
+
 test_that("implementation of the scores corresponds to that of the observed information",
 {
+
     info_appr <- -jacobian(function(coefs) {
-        p <- length(coefs)
-        gy_enriched$auxiliary_functions$score(coefs)
-    }, c(coef(gy_enriched)))
+                      gy_enriched$auxiliary_functions$score(coefs)
+                  },
+                  x = c(coef(gy)),
+                  method.args = list(eps = 1e-7, d = 0.01,
+                                     zero.tol=sqrt(.Machine$double.eps/7e-7), r = 10, v = 5))
     info_exac <- gy_enriched$auxiliary_functions$information(coef(gy_enriched),
                                                                type = "observed")
-    expect_equal(info_appr, info_exac, tolerance = 0.01)
+    expect_equal(solve(info_appr), solve(info_exac), tolerance = 1e-03, check.attributes = FALSE)
 })
 
