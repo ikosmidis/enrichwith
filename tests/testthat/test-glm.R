@@ -1,4 +1,4 @@
-context("enrichment of glms")
+context("enrichment of glm objects")
 
 library("numDeriv")
 library("MASS")
