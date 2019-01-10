@@ -6,6 +6,7 @@
 #'
 #' @inheritParams stats::glm
 #'
+#'
 #' @details
 #'
 #' \code{enriched_glm} has the same interface as \code{\link{glm}}
@@ -76,7 +77,13 @@
 #'
 #'
 #' @export
-enriched_glm <- function(...) {
-    fit <- glm(...)
+enriched_glm <- function(formula, family = gaussian, data, weights, subset,
+                         na.action, start = NULL, etastart, mustart, offset, control = list(...),
+                         model = TRUE, method = "glm.fit", x = FALSE, y = TRUE, singular.ok = TRUE,
+                         contrasts = NULL, ...) {
+    fit <- glm(formula, family = gaussian, data, weights, subset,
+               na.action, start = NULL, etastart, mustart, offset, control = list(...),
+               model = TRUE, method = "glm.fit", x = FALSE, y = TRUE, singular.ok = TRUE,
+               contrasts = NULL, ...)
     enrich(fit, with = "all")
 }
