@@ -1,4 +1,4 @@
-context("implementation of *model auxiliary functions")
+context("implementation of model auxiliary functions")
 
 ## Tolerance for comparisons
 tolerance <- 1e-05

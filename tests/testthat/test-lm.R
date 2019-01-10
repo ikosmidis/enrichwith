@@ -22,7 +22,7 @@ test_that("implementation of the scores corresponds to that of the observed info
                                                dispersion = coefs[p])
     }, c(coef(enriched_fm1), disp))
     info_exac <- get_information_function(enriched_fm1)
-    all.equal(info_exac(type = "observed"), info_appr, check.attributes = FALSE)
+    expect_equal(info_exac(type = "observed"), info_appr, check.attributes = FALSE)
 })
 
 
