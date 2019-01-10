@@ -253,7 +253,7 @@
     }
 
     information <- function(coefficients, dispersion,
-                            type = c("expected", "observed"), QR = FALSE) {
+                            type = c("expected", "observed"), QR = FALSE, CHOL = FALSE) {
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -292,7 +292,7 @@
         ## If there is no dispersion parameter then return the
         ## information for the coefficients only
         if (family$family %in% c("poisson", "binomial")) {
-            return(info_beta)
+            out <- info_beta
         }
         ## If there is a dispersion parameter then return the
         ## information on the coefficients and the dispersion
@@ -324,8 +324,11 @@
             colnames(out) <- rownames(out) <- c(colnames(x), "dispersion")
             attr(out, "coefficients") <- coefficients
             attr(out, "dispersion") <- dispersion
-            out
         }
+        if (CHOL)
+            chol(out)
+        else
+            out
     }
 
     bias <- function(coefficients, dispersion) {
@@ -997,7 +1000,9 @@ get_score_function.glm <- function(object, ...) {
 #'
 #' \item{type}{should the function return th 'expected' or 'observed' information? Default is \code{expected}}
 #'
-#' \item{QR}{If \code{TRUE}, then the QR decomposition of the expected information for the coefficients is returned}
+#' \item{QR}{If \code{TRUE}, then the QR decomposition of \deqn{W^{1/2} X} is returned, where \deqn{W} is a diagonal matrix with the working weights (\code{object$weights}) and \deqn{X} is the model matrix.}
+#'
+#' \item{CHOL}{If \code{TRUE}, then the Cholesky decomposition of the information matrix at the coefficients is returned}
 #'
 #' }
 #'

@@ -177,7 +177,8 @@
             colSums(rval)
     }
 
-    information <- function(coefficients, QR = FALSE) {
+    information <- function(coefficients, QR = TRUE, CHOL = FALSE,
+                            type = c("expected", "observed")) {
         if (missing(coefficients)) {
 
             coefficients <- coef(object, model = "full")
@@ -205,7 +206,17 @@
         kbp <- if (k > 0L & m > 0L)
             crossprod(weights * wbp * x, z)
         else crossprod(x, z)
-        cbind(rbind(kbb, t(kbp)), rbind(kbp, kpp))
+        out <- cbind(rbind(kbb, t(kbp)), rbind(kbp, kpp))
+        if (type == "observed") {
+
+        }
+        else {
+
+        }
+        if (CHOL)
+            chol(out)
+        else
+            out
     }
 
     bias <- function(coefficients) {
@@ -445,7 +456,12 @@ get_score_function.betareg <- function(object, ...) {
 #' information matrix is evaluated. If missing then the maximum
 #' likelihood estimates are used}
 #'
-#' \item{QR}{If \code{TRUE}, then the QR decomposition of the expected information for the coefficients is returned}
+#'
+#' \item{type}{should the function return th 'expected' or 'observed' information? Default is \code{expected}}
+#'
+#' \item{QR}{Currently not used}
+#'
+#' \item{CHOL}{If \code{TRUE}, then the Cholesky decomposition of the information matrix at the coefficients is returned}
 #'
 #' }
 #'
