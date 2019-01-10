@@ -154,7 +154,7 @@
     phi_mu.eta <- linkprec$mu.eta
     phi_dmu.deta <- linkprec$dmu.deta
     ystar <- qlogis(y)
-    score <- function(coefficients, contributions = TRUE) {
+    score <- function(coefficients, contributions = FALSE) {
         if (missing(coefficients)) {
             coefficients <- coef(object, model = "full")
         }
@@ -172,8 +172,9 @@
             digamma((1 - mu) * phi) + digamma(phi)) * phi_mu.eta(phi_eta) *
             weights * z)
         if (contributions)
+            rval
+        else
             colSums(rval)
-        else rval
     }
 
     information <- function(coefficients, QR = FALSE) {
