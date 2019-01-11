@@ -15,12 +15,12 @@ enriched_eML <- enrich(eML, with = "auxiliary functions")
 simu1 <- enriched_eML$auxiliary_functions$simulate(coef(eML), nsim = nsimu, seed = 123)
 simu2 <- simulate(eML, nsim = nsimu, seed = 123)
 
-test_that("simulate method and the simulate auxiliary function return the same result with the same seed", {
+test_that("simulate method and the simulate auxiliary function return the same result with the same seed [glm]", {
     expect_equal(rowMeans(simu1), rowMeans(simu2), tolerance = tol)
 })
 
 simu1 <- enriched_eML$auxiliary_functions$simulate(coefficients = c(0.5, 0, 0, 0), nsim = nsimu, seed = 123)
-test_that("the simulate auxiliary function does the right thing", {
+test_that("the simulate auxiliary function does the right thing [glm]", {
     expect_lt(max(abs(rowMeans(simu1) - pnorm(0.5))), 0.01)
 })
 
@@ -45,13 +45,11 @@ simu1 <- enriched_cML$auxiliary_functions$simulate(coef(cML),
 ## The simulate method uses the ML estimate of dispersion only
 simu2 <- simulate(cML, nsim = nsimu, seed = 123)
 
-test_that("simulate method and the simulate auxiliary function return the same result with the same seed", {
+test_that("simulate method and the simulate auxiliary function return the same result with the same seed [glm]", {
     expect_equal(rowMeans(simu1), rowMeans(simu2), tolerance = tol)
 })
 
-
-## Simulation at the ML fit and the Pearson-residual based estimator of dispersion
-simu3 <- enriched_cML$auxiliary_functions$simulate(coef(cML),
-                                                   dispersion = summary(enriched_cML)$dispersion,
-                                                   nsim = nsimu, seed = 123)
+test_that("simulate returns an error for coefficient vectors with wrong length [glm]", {
+    expect_error(enriched_cML$auxiliary_functions$simulate(c(0, 0)))
+})
 

@@ -221,6 +221,11 @@
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
+        else {
+            if (!isTRUE(identical(length(coefficients), length(coef(object))))) {
+                stop("`coefficients` does not have the right length")
+            }
+        }
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }

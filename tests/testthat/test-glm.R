@@ -11,7 +11,7 @@ clotting <- data.frame(
 mod1 <- glm(conc ~ lot*log(u), data = clotting, family = Gamma)
 
 tol <- 1e-05
-test_that("implementation of the scores corresponds to that of the observed information",
+test_that("implementation of the scores corresponds to that of the observed information [glm]",
 {
     enriched_mod1 <- enrich(mod1, with = "auxiliary functions")
     disp <- summary(enriched_mod1)$disp
@@ -42,7 +42,7 @@ test_that("standard errors from expected information matrix match those from sum
 })
 
 
-test_that("enrichwith handles aliasing correctly",
+test_that("enrichwith handles aliasing correctly [glm]",
 {
 
     umod1 <- update(mod1, . ~ . + I(2 * log(u)) + I(3 * log(u)))
@@ -65,12 +65,13 @@ outcome <- gl(3,1,9)
 treatment <- gl(3,3)
 mod2 <- glm(counts ~ outcome + treatment, family = poisson())
 
-test_that("expected information matrix from enrich with is equal to that coming from the qr decomposition component of the object", {
+test_that("expected information matrix from enrich with is equal to that coming from the qr decomposition component of the object [glm]", {
     enriched_mod2 <- enrich(mod2, with = "auxiliary functions")
     expect_equal(enriched_mod2$auxiliary_functions$information(coef(mod2), type = "expected"),
                  crossprod(qr.R(mod2$qr)),
                  tolerance = 0.0001,
                  check.attributes = FALSE)
 })
+
 
 

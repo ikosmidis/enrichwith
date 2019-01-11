@@ -311,7 +311,12 @@
 
     simulate <- function(coefficients, nsim = 1, seed = NULL) {
         if (missing(coefficients)) {
-            coefficients <-  coefficients <- coef(object, model = "full")
+            coefficients <-  coef(object, model = "full")
+        }
+        else {
+            if (!isTRUE(identical(length(coefficients), length(coef(object, model = "full"))))) {
+                stop("`coefficients` does not have the right length")
+            }
         }
         if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
             runif(1)

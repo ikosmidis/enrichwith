@@ -12,7 +12,7 @@ fm2 <- glm(Employed ~ ., data = longley)
 
 tol <- 1e-05
 
-test_that("implementation of the scores corresponds to that of the observed information", {
+test_that("implementation of the scores corresponds to that of the observed information [lm]", {
     enriched_fm1 <- enrich(fm1, with = "auxiliary functions")
     ## MLE of dispersion
     disp <- summary(fm1)$sigma^2 * 9 / 16
@@ -26,13 +26,18 @@ test_that("implementation of the scores corresponds to that of the observed info
 })
 
 
-test_that("impementation of the bias functions corresponds to what glm returns", {
-    enriched_fm1 <- enrich(fm1, with = "auxiliary functions")
-    enriched_fm2 <- enrich(fm2, with = "auxiliary functions")
-    enriched_ufm1 <- enrich(update(fm1, weights = 1:16), with = "auxiliary functions")
-    enriched_ufm2 <- enrich(update(fm2, weights = 1:16), with = "auxiliary functions")
+enriched_fm1 <- enrich(fm1, with = "auxiliary functions")
+enriched_fm2 <- enrich(fm2, with = "auxiliary functions")
+enriched_ufm1 <- enrich(update(fm1, weights = 1:16), with = "auxiliary functions")
+enriched_ufm2 <- enrich(update(fm2, weights = 1:16), with = "auxiliary functions")
+
+test_that("impementation of the bias functions corresponds to what glm returns [lm]", {
     expect_equal(enriched_fm1$auxiliary_functions$bias(), enriched_fm2$auxiliary_functions$bias(), tolerance = tol)
     expect_equal(enriched_ufm1$auxiliary_functions$bias(), enriched_ufm2$auxiliary_functions$bias(), tolerance = tol)
+})
+
+test_that("simulate returns an error for coefficient vectors with wrong length [lm]", {
+    expect_error(enriched_fm1$auxiliary_functions$simulate(c(0, 0, 0)))
 })
 
 
