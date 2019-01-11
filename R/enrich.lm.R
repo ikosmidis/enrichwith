@@ -158,7 +158,7 @@
     }
 
     information <- function(coefficients, dispersion,
-                            type = c("expected", "observed"), QR = FALSE) {
+                            type = c("expected", "observed"), QR = FALSE, CHOL = FALSE) {
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -188,6 +188,8 @@
         out <- rbind(cbind(info_beta, info_cross),
                      c(info_cross, info_dispe))
         colnames(out) <- rownames(out) <- c(colnames(x), "dispersion")
+        if (CHOL)
+            out <- chol(out)
         attr(out, "coefficients") <- coefficients
         attr(out, "dispersion") <- dispersion
         out
@@ -468,7 +470,9 @@ get_score_function.lm <- function(object, ...) {
 #'
 #' \item{type}{should the function return th 'expected' or 'observed' information? Default is \code{expected}}
 #'
-#' \item{QR}{If \code{TRUE}, then the QR decomposition of the expected information for the coefficients is returned}
+#' \item{QR}{If \code{TRUE}, then the QR decomposition of \deqn{W^{1/2} X} is returned, where \deqn{W} is a diagonal matrix with the working weights (\code{object$weights}) and \deqn{X} is the model matrix.}
+#'
+#' \item{CHOL}{If \code{TRUE}, then the Cholesky decomposition of the information matrix at the coefficients is returned}
 #'
 #' }
 #'

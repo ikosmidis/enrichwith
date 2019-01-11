@@ -1,6 +1,6 @@
 ---
 title: "Enriching `family` objects: exponential family of distirbutions"
-author: "[Ioannis Kosmidis](http://www.ucl.ac.uk/~ucakiko/)"
+author: "[Ioannis Kosmidis](http://www.ikosmidis.com)"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: enrichwith.bib

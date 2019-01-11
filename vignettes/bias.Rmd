@@ -1,6 +1,6 @@
 ---
 title: "Bias reduction in generalized linear models using **enrichwith**"
-author: "[Ioannis Kosmidis](http://www.ucl.ac.uk/~ucakiko/)"
+author: "[Ioannis Kosmidis](http://www.ikosmidis.com)"
 date: 2016-09-02
 output: rmarkdown::html_vignette
 bibliography: enrichwith.bib

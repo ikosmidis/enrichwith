@@ -1,15 +1,18 @@
 # enrichwith 0.2
 
 ## Bug fixes
-* Fixed bug in the computation of Beta regression score contributions
-* Fixed bug with the attributes of information matrices for glms with fixed dispersion
-* Bug fixes in tests
+* Fixed bug in the computation of beta regression score contributions from `betareg` obejcts
+* Fixed bug with the attributes of information matrices for generalized linear models with fixed dispersion
+* Fixed the row names in the information matrices for `glm` and `betareg` objects
 
 ## New functionality
-* `get_information_function` now returns a function that has a CHOL argument, for returning the Cholesky decomposition of the information matrix
+* `get_information_function` for `betareg` objects returns a function that can compute observed information matrices (by setting `type = "observed"`)
+* `get_information_function` now returns a function that can compute the Cholesky decomposition of the information matrix (by setting `CHOL = TRUE`)
+* `simulate` methods (coming form `get_simulate_function`) now check for correct length of coefficient vector if this is specified
 
 ## Other improvements, updates and additions
-* Fixed various typos in documentation
+* Fixed various problems with documentation
+* Improved tests and added some new
 
 
 # enrichwith 0.1
