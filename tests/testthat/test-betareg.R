@@ -34,3 +34,8 @@ test_that("implementation of the scores corresponds to that of the observed info
     expect_equal(solve(info_appr), solve(info_exac), tolerance = 1e-03, check.attributes = FALSE)
 })
 
+test_that("score contributions add up to scores",
+{
+    scores <- gy_enriched$auxiliary_functions$score
+    expect_equal(colSums(scores(contributions = TRUE)), scores())
+})
