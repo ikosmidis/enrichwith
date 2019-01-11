@@ -13,7 +13,7 @@
 ## Other improvements, updates and additions
 * Fixed various problems with documentation
 * Improved tests and added some new
-
+* Changed maintainer email to <ioannis.kosmidis@warwick.ac.uk>
 
 # enrichwith 0.1
 
