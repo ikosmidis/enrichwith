@@ -2,7 +2,7 @@
 % Please edit documentation in R/enriched_glm.R
 \name{enriched_glm}
 \alias{enriched_glm}
-\title{Fitting generalized linear models and enriching the result}
+\title{Fitting generalized linear models enriched with useful components}
 \usage{
 enriched_glm(formula, family = gaussian, ...)
 }
