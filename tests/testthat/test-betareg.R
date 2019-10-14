@@ -2,7 +2,7 @@ context("enrichment of betareg objects")
 
 
 library("betareg")
-
+library("numDeriv")
 
 ## Section 4 from Ferrari and Cribari-Neto (2004)
 data("GasolineYield", package = "betareg")

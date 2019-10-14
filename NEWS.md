@@ -1,3 +1,12 @@
+# enrichwith 0.3
+
+## New functionality
+* Added support for `wedderburn` family from the `gnm` R package.
+
+## Other improvements, updates and additions
+* Improved documentation
+* Improved tests and added some new
+ 
 # enrichwith 0.2
 
 ## Bug fixes
