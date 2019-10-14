@@ -57,11 +57,16 @@ respectively), and the first four derivatives of
 \eqn{a(\zeta)}{a(zeta)} (\code{d1afun}, \code{d2afun},
 \code{d3afun}, \code{d4afun}, respectively).
 
-See \code{\link{enrich.link-glm}} for the enrichment of
-\code{\link[=make.link]{link-glm}} objects.
+Corresponding enrichment options are also avaialble for
+\code{\link[stats]{quasibinomial}},
+\code{\link[stats]{quasipoisson}} and \code{\link[gnm]{wedderburn}}
+families.
 
 The \code{\link[stats]{quasi}} families are enriched with
 \code{d1variance} and \code{d2variance}.
+
+See \code{\link{enrich.link-glm}} for the enrichment of
+\code{\link[=make.link]{link-glm}} objects.
 }
 \examples{
 

@@ -30,7 +30,9 @@ is used}
 
 \item{type}{should the function return th 'expected' or 'observed' information? Default is \code{expected}}
 
-\item{QR}{If \code{TRUE}, then the QR decomposition of the expected information for the coefficients is returned}
+\item{QR}{If \code{TRUE}, then the QR decomposition of \deqn{W^{1/2} X} is returned, where \deqn{W} is a diagonal matrix with the working weights (\code{object$weights}) and \deqn{X} is the model matrix.}
+
+\item{CHOL}{If \code{TRUE}, then the Cholesky decomposition of the information matrix at the coefficients is returned}
 
 }
 }

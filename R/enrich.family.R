@@ -43,11 +43,16 @@
 #' \eqn{a(\zeta)}{a(zeta)} (\code{d1afun}, \code{d2afun},
 #' \code{d3afun}, \code{d4afun}, respectively).
 #'
-#' See \code{\link{enrich.link-glm}} for the enrichment of
-#' \code{\link[=make.link]{link-glm}} objects.
+#' Corresponding enrichment options are also avaialble for
+#' \code{\link[stats]{quasibinomial}},
+#' \code{\link[stats]{quasipoisson}} and \code{\link[gnm]{wedderburn}}
+#' families.
 #'
 #' The \code{\link[stats]{quasi}} families are enriched with
 #' \code{d1variance} and \code{d2variance}.
+#'
+#' See \code{\link{enrich.link-glm}} for the enrichment of
+#' \code{\link[=make.link]{link-glm}} objects.
 #'
 #' @return The object \code{object} of class \code{\link{family}} with
 #'     extra components. \code{get_enrichment_options.family()}
@@ -148,26 +153,29 @@
     family <- object$family
     switch(family,
            "poisson" = function(mu) {
-        log(mu)
-    },
-    "quasipoisson" = function(mu) {
-        log(mu)
-    },
-    "gaussian" = function(mu) {
-        mu
-    },
-    "binomial" = function(mu) {
-        log(mu/(1 - mu))
-    },
-    "quasibinomial" = function(mu) {
-        log(mu/(1 - mu))
-    },
-    "Gamma" = function(mu) {
-        -1/mu
-    },
-    "inverse.gaussian" = function(mu) {
-        -1/2*mu^2
-    })
+               log(mu)
+           },
+           "quasipoisson" = function(mu) {
+               log(mu)
+           },
+           "gaussian" = function(mu) {
+               mu
+           },
+           "binomial" = function(mu) {
+               log(mu/(1 - mu))
+           },
+           "quasibinomial" = function(mu) {
+               log(mu/(1 - mu))
+           },
+           "wedderburn" = function(mu) {
+               log(mu/(1 - mu))
+           },
+           "Gamma" = function(mu) {
+               -1/mu
+           },
+           "inverse.gaussian" = function(mu) {
+               -1/2*mu^2
+           })
 }
 
 `compute_theta` <- function(object, ...) {
@@ -179,26 +187,29 @@
     family <- object$family
     switch(family,
            "poisson" = function(theta) {
-        exp(theta)
-    },
-    "quasipoisson" = function(theta) {
-        exp(theta)
-    },
-    "gaussian" = function(theta) {
-        theta^2/2
-    },
-    "binomial" = function(theta) {
-        log(1 + exp(theta))
-    },
-    "quasibinomial" = function(theta) {
-        log(1 + exp(theta))
-    },
-    "Gamma" = function(theta) {
-        -log(-theta)
-    },
-    "inverse.gaussian" = function(theta) {
-        -sqrt(-2*theta)
-    })
+               exp(theta)
+           },
+           "quasipoisson" = function(theta) {
+               exp(theta)
+           },
+           "gaussian" = function(theta) {
+               theta^2/2
+           },
+           "binomial" = function(theta) {
+               log(1 + exp(theta))
+           },
+           "quasibinomial" = function(theta) {
+               log(1 + exp(theta))
+           },
+           "wedderburn" = function(theta) {
+               log(1 + exp(theta))
+           },
+           "Gamma" = function(theta) {
+               -log(-theta)
+           },
+           "inverse.gaussian" = function(theta) {
+               -sqrt(-2*theta)
+           })
 }
 
 `compute_bfun` <- function(object, ...) {
@@ -223,6 +234,9 @@
         0
     },
     "quasibinomial" = function(y) {
+        0
+    },
+    "wedderburn" = function(y) {
         0
     },
     "Gamma" = function(y) {
@@ -257,6 +271,9 @@
     "quasibinomial" = function(y, m) {
         log(choose(m, m * y))
     },
+    "wedderburn" = function(y, m) {
+        log(choose(m, m * y))
+    },
     "Gamma" = function(y) {
         -log(y)
     },
@@ -287,6 +304,9 @@
                      },
            "quasibinomial" = function(mu) {
                1 - 2 * mu
+           },
+           "wedderburn" = function(mu) {
+               2 * mu * (1 - mu) * (1 - 2 * mu)
            },
            "Gamma" = function(mu) {
                2 * mu
@@ -337,6 +357,9 @@
            },
            "quasibinomial" = function(mu) {
                rep(-2, length(mu))
+           },
+           "wedderburn" = function(mu) {
+               2 - 12 * mu * ( 1- mu)
            },
            "Gamma" = function(mu) {
                rep(2, length(mu))
@@ -392,6 +415,9 @@
     },
     "quasibinomial" = function(zeta) {
         0
+    },
+    "wedderburn" = function(zeta) {
+        0
     })
 }
 
@@ -425,6 +451,9 @@
     },
     "quasibinomial" = function(zeta) {
         0
+    },
+    "wedderburn" = function(zeta) {
+        0
     })
 }
 
@@ -456,6 +485,9 @@
         0
     },
     "quasibinomial" = function(zeta) {
+        0
+    },
+    "wedderburn" = function(zeta) {
         0
     })
 }
@@ -489,6 +521,9 @@
     },
     "quasibinomial" = function(zeta) {
         0
+    },
+    "wedderburn" = function(zeta) {
+        0
     })
 }
 
@@ -519,6 +554,9 @@
         0
     },
     "quasibinomial" = function(zeta) {
+        0
+    },
+    "wedderburn" = function(zeta) {
         0
     })
 }
