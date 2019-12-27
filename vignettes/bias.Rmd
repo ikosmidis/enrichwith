@@ -58,7 +58,7 @@ for cumulative link models].
 One of the variants of that bias reduction method is implemented in
 the
 [**brglm**](https://CRAN.R-project.org/package=brglm) R
-package, which estimates binomial-reponse GLMs using iterative ML fits
+package, which estimates binomial-response GLMs using iterative ML fits
 on binomial pseudo-data [see, @kosmidis:07, Chapter 5, for
 details]. The reduced-bias estimates for the probit regression on the
 endometrial data can be computed as follows.

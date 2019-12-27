@@ -134,7 +134,7 @@ which is the negative [Hessian
 matrix](https://en.wikipedia.org/wiki/Hessian_matrix) of the
 log-likelihood.
 
-At least at the time of writting the current vignette, there appears
+At least at the time of writing the current vignette, there appears
 to be no general implementation of the observed information for `glm`
 objects. I guess the reason for that is the dependence of the observed
 information on higher-order derivatives of the inverse link and
@@ -203,7 +203,7 @@ corresponding `coef` method to extract the estimates for the mean
 regression parameters and/or the estimate for the dispersion
 parameter.
 
-The score statiistic is then
+The score statistic is then
 ```{r, echo = TRUE, eval = TRUE}
 (score_statistic <- drop(scores%*%solve(info)%*%scores))
 ```

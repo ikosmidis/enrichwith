@@ -72,7 +72,7 @@ $\displaystyle c_2(y) = -\frac{1}{2}\log\left(\pi y^3\right)$
 
 
 # Components in `family` objects
-`family` objects provide functions for the variance function (`variance`), a speficiation of deviance residuals (`dev.resids`) and the Akaike information criterion (`aic`). For example
+`family` objects provide functions for the variance function (`variance`), a specification of deviance residuals (`dev.resids`) and the Akaike information criterion (`aic`). For example
 ```{r, echo = TRUE, eval = TRUE}
 inverse.gaussian()$dev.resids
 inverse.gaussian()$variance
@@ -85,7 +85,7 @@ The **enrichwith** R package provides methods for the enrichment of
 $\theta$ with $\mu$, the function $b(\theta)$, the first two
 derivatives of $V(\mu)$, $a(\zeta)$ and its first four derivatives,
 and $c_1(y)$ and $c_2(y)$. To illustrate, let's write a function that
-reconstructs the densitities and probability mass functions from the
+reconstructs the densities and probability mass functions from the
 components that result from enrichment
 ```{r, echo = TRUE, eval = TRUE}
 library("enrichwith")
