@@ -1,5 +1,14 @@
 # enrichwith 0.3
 
+## Bug fixes
+* Added conditional use of `SuppDists`
+
+## Other improvements, updates and additions
+* Fixed typos and spelling mistakes in documentation
+* Added new tests for d/r/p/qmodel
+
+# enrichwith 0.3
+
 ## New functionality
 * Added support for `wedderburn` family from the `gnm` R package.
 

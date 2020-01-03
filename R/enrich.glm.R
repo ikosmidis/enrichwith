@@ -468,7 +468,9 @@
                                rpois(n * nsim, lambda = fitted_values)
                            },
                            "inverse.gaussian" = {
-                               SuppDists::rinvGauss(n * nsim, nu = fitted_values, lambda = prior_weights/dispersion)
+                                if (!requireNamespace("SuppDists", quietly = TRUE)) 
+                                    stop("need CRAN package 'SuppDists' for simulation from the 'inverse.gaussian' family")
+                                SuppDists::rinvGauss(n * nsim, nu = fitted_values, lambda = prior_weights/dispersion)
                            },
 NULL)
         ## Inspired by stats:::simulate.lm
@@ -570,6 +572,8 @@ NULL)
                            dpois(new_y, lambda = fitted_values, log = log)
                        },
                        "inverse.gaussian" = {
+                           if (!requireNamespace("SuppDists", quietly = TRUE)) 
+                                    stop("need CRAN package 'SuppDists' for simulation from the 'inverse.gaussian' family")
                            SuppDists::dinvGauss(new_y, nu = fitted_values, lambda = new_prior_weights/dispersion, log = log)
                        },
                        NULL)
@@ -659,6 +663,8 @@ NULL)
                            ppois(new_y, lambda = fitted_values, log.p = log.p)
                        },
                        "inverse.gaussian" = {
+                           if (!requireNamespace("SuppDists", quietly = TRUE)) 
+                                    stop("need CRAN package 'SuppDists' for simulation from the 'inverse.gaussian' family")
                            SuppDists::pinvGauss(new_y, nu = fitted_values, lambda = new_prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)
                        },
                        NULL)
@@ -753,6 +759,8 @@ NULL)
                            qpois(p, lambda = fitted_values, log.p = log.p)
                        },
                        "inverse.gaussian" = {
+                           if (!requireNamespace("SuppDists", quietly = TRUE)) 
+                               stop("need CRAN package 'SuppDists' for simulation from the 'inverse.gaussian' family")
                            SuppDists::qinvGauss(p, nu = fitted_values, lambda = new_prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)
                        },
                        NULL)

@@ -83,3 +83,39 @@ test_that("qmodel returns the same results for various equivalent representation
                  check.attributes = FALSE,
                  tol = tolerance)
 })
+
+
+library("numDeriv")
+library("MASS")
+
+## A Gamma example, from McCullagh & Nelder (1989, pp. 300-2)
+clotting <- data.frame(
+    u = c(5,10,15,20,30,40,60,80,100, 5,10,15,20,30,40,60,80,100),
+    conc = c(118,58,42,35,27,25,21,19,18,69,35,26,21,18,16,13,12,12),
+    lot = factor(c(rep(1, 9), rep(2, 9))))
+mod1 <- glm(conc ~ lot*log(u), data = clotting, family = inverse.gaussian)
+
+test_that("d/p/r/qmodel works for inverse gaussian regression", {
+    simulate_ig <- get_simulate_function(mod1)
+    set.seed(123)
+    s1 <- simulate_ig(coefficients = coef(mod1), dispersion = summary(mod1)$dispersion)
+    set.seed(123)
+    s2 <- simulate(mod1)
+    expect_equal(s1, s2, check.attributes = FALSE)
+
+    disp <- enrich(mod1)$dispersion
+
+    d1 <- SuppDists::dinvGauss(clotting$conc, fitted.values(mod1), lambda = 1/disp)
+    p1 <- SuppDists::pinvGauss(clotting$conc, fitted.values(mod1), lambda = 1/disp)
+    q1 <- SuppDists::qinvGauss(rep(0.2, 18), fitted.values(mod1), lambda = 1/disp)
+    
+    d2 <- get_dmodel_function(mod1)()
+    p2 <- get_pmodel_function(mod1)()
+    q2 <- get_qmodel_function(mod1)(rep(0.2, 18))
+
+    expect_equal(d1, d2, check.attributes = FALSE)
+    expect_equal(q1, q2, check.attributes = FALSE)
+    expect_equal(p1, p2, check.attributes = FALSE)
+    
+    
+})
