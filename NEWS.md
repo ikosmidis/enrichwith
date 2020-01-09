@@ -1,4 +1,4 @@
-# enrichwith 0.3
+# enrichwith 0.3.1
 
 ## Bug fixes
 * Added conditional use of `SuppDists`
