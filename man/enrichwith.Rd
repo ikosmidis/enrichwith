@@ -2,8 +2,8 @@
 % Please edit documentation in R/enrich-package.R
 \docType{package}
 \name{enrichwith}
-\alias{enrichwith}
 \alias{enrichwith-package}
+\alias{enrichwith}
 \title{Methods to enrich list-like R objects with extra components}
 \description{
 The enrichwith package provides the \code{\link{enrich}} method to
@@ -49,4 +49,8 @@ particularly if that extends core R objects.
 }
 \seealso{
 \code{\link{enrich.glm}} and \code{\link{enriched_glm}}, \code{\link{enrich.family}}, \code{\link{enrich.link-glm}}, \code{\link{enrich.betareg}}
+}
+\author{
+\strong{Maintainer}: Ioannis Kosmidis \email{ioannis.kosmidis@warwick.ac.uk}
+
 }

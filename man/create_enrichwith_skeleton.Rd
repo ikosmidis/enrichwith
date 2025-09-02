@@ -4,8 +4,15 @@
 \alias{create_enrichwith_skeleton}
 \title{Create a enrichwith skeleton}
 \usage{
-create_enrichwith_skeleton(class, option, description, component, path,
-  filename = paste0(class, "_options.R"), attempt_rename = TRUE)
+create_enrichwith_skeleton(
+  class,
+  option,
+  description,
+  component,
+  path,
+  filename = paste0(class, "_options.R"),
+  attempt_rename = TRUE
+)
 }
 \arguments{
 \item{class}{the class of the objects to be enriched}

@@ -4,8 +4,7 @@
 \alias{get_enrichment_options.family}
 \title{Available options for the enrichment objects of class family}
 \usage{
-\method{get_enrichment_options}{family}(object, option,
-  all_options = missing(option))
+\method{get_enrichment_options}{family}(object, option, all_options = missing(option))
 }
 \arguments{
 \item{object}{the object to be enriched}

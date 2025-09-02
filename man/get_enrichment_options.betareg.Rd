@@ -4,8 +4,7 @@
 \alias{get_enrichment_options.betareg}
 \title{Available options for the enrichment objects of class betareg}
 \usage{
-\method{get_enrichment_options}{betareg}(object, option,
-  all_options = missing(option))
+\method{get_enrichment_options}{betareg}(object, option, all_options = missing(option))
 }
 \arguments{
 \item{object}{the object to be enriched}

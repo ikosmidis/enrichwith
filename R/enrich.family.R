@@ -148,7 +148,7 @@
     out
 }
 
-
+#' @method compute_theta family
 `compute_theta.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -182,7 +182,7 @@
     UseMethod('compute_theta')
 }
 
-
+#' @method compute_bfun family
 `compute_bfun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -217,7 +217,7 @@
 }
 
 
-
+#' @method compute_c1fun family
 `compute_c1fun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -252,7 +252,7 @@
 }
 
 
-
+#' @method compute_c2fun family
 `compute_c2fun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -286,7 +286,7 @@
     UseMethod('compute_c2fun')
 }
 
-
+#' @method compute_d1variance family
 `compute_d1variance.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -340,6 +340,7 @@
 }
 
 
+#' @method compute_d2variance family
 `compute_d2variance.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -392,6 +393,7 @@
     UseMethod('compute_d2variance')
 }
 
+#' @method compute_afun family
 `compute_afun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -427,6 +429,7 @@
 }
 
 
+#' @method compute_d1afun family
 `compute_d1afun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -463,6 +466,7 @@
 }
 
 
+#' @method compute_d2afun family
 `compute_d2afun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -497,7 +501,7 @@
     UseMethod('compute_d2afun')
 }
 
-
+#' @method compute_d3afun family
 `compute_d3afun.family` <- function(object, ...) {
     family <- object$family
     switch(family,
@@ -532,6 +536,7 @@
 }
 
 
+#' @method compute_d4afun family
 `compute_d4afun.family` <- function(object, ...) {
     family <- object$family
     switch(family,

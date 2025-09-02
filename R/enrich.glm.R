@@ -157,7 +157,7 @@
     out
 }
 
-
+#' @method compute_auxiliary_functions glm
 `compute_auxiliary_functions.glm` <- function(object, ...) {
     if (is.null(object$model)) {
         object <- update(object, model = TRUE)
@@ -468,7 +468,7 @@
                                rpois(n * nsim, lambda = fitted_values)
                            },
                            "inverse.gaussian" = {
-                                if (!requireNamespace("SuppDists", quietly = TRUE)) 
+                                if (!requireNamespace("SuppDists", quietly = TRUE))
                                     stop("need CRAN package 'SuppDists' for simulation from the 'inverse.gaussian' family")
                                 SuppDists::rinvGauss(n * nsim, nu = fitted_values, lambda = prior_weights/dispersion)
                            },
@@ -572,7 +572,7 @@ NULL)
                            dpois(new_y, lambda = fitted_values, log = log)
                        },
                        "inverse.gaussian" = {
-                           if (!requireNamespace("SuppDists", quietly = TRUE)) 
+                           if (!requireNamespace("SuppDists", quietly = TRUE))
                                     stop("need CRAN package 'SuppDists' for simulation from the 'inverse.gaussian' family")
                            SuppDists::dinvGauss(new_y, nu = fitted_values, lambda = new_prior_weights/dispersion, log = log)
                        },
@@ -663,7 +663,7 @@ NULL)
                            ppois(new_y, lambda = fitted_values, log.p = log.p)
                        },
                        "inverse.gaussian" = {
-                           if (!requireNamespace("SuppDists", quietly = TRUE)) 
+                           if (!requireNamespace("SuppDists", quietly = TRUE))
                                     stop("need CRAN package 'SuppDists' for simulation from the 'inverse.gaussian' family")
                            SuppDists::pinvGauss(new_y, nu = fitted_values, lambda = new_prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)
                        },
@@ -759,7 +759,7 @@ NULL)
                            qpois(p, lambda = fitted_values, log.p = log.p)
                        },
                        "inverse.gaussian" = {
-                           if (!requireNamespace("SuppDists", quietly = TRUE)) 
+                           if (!requireNamespace("SuppDists", quietly = TRUE))
                                stop("need CRAN package 'SuppDists' for simulation from the 'inverse.gaussian' family")
                            SuppDists::qinvGauss(p, nu = fitted_values, lambda = new_prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)
                        },
@@ -796,7 +796,7 @@ NULL)
     UseMethod('compute_auxiliary_functions')
 }
 
-
+#' @method compute_score_mle glm
 `compute_score_mle.glm` <- function(object, ...) {
     get_score_function(object)()
 }
@@ -806,7 +806,7 @@ NULL)
     UseMethod('compute_score_mle')
 }
 
-
+#' @method compute_dispersion_mle glm
 `compute_dispersion_mle.glm` <- function(object, ...) {
     if (object$family$family %in% c("poisson", "binomial")) {
         dispersion_mle <- 1
@@ -845,8 +845,8 @@ NULL)
     UseMethod('compute_dispersion_mle')
 }
 
-
-`compute_expected_information_mle.glm` <- function(object, dispersion) {
+#' @method compute_expected_information_mle glm
+`compute_expected_information_mle.glm` <- function(object, dispersion, ...) {
     get_information_function(object)(dispersion = dispersion, type = "expected")
 }
 
@@ -855,8 +855,8 @@ NULL)
     UseMethod('compute_expected_information_mle')
 }
 
-
-`compute_observed_information_mle.glm` <- function(object, dispersion = dispersion) {
+#' @method compute_observed_information_mle glm
+`compute_observed_information_mle.glm` <- function(object, dispersion = dispersion, ...) {
     get_information_function(object)(dispersion = dispersion, type = "observed")
 }
 
@@ -865,7 +865,7 @@ NULL)
     UseMethod('compute_observed_information_mle')
 }
 
-
+#' @method compute_bias_mle glm
 `compute_bias_mle.glm` <- function(object, ...) {
     get_bias_function(object)()
 }

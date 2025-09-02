@@ -103,7 +103,7 @@
     out
 }
 
-
+#' @method compute_d2mu.deta link-glm
 `compute_d2mu.deta.link-glm` <- function(object, ...) {
     mu.eta <- object$mu.eta
     linkinv <- object$linkinv
@@ -154,7 +154,7 @@
     UseMethod('compute_d2mu.deta')
 }
 
-
+#' @method compute_d3mu.deta link-glm
 `compute_d3mu.deta.link-glm` <- function(object, ...) {
     mu.eta <- object$mu.eta
     linkinv <- object$linkinv

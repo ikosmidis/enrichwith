@@ -7,7 +7,7 @@
 enriched_glm(formula, family = gaussian, ...)
 }
 \arguments{
-\item{formula}{an object of class \code{"\link{formula}"} (or one that
+\item{formula}{an object of class \code{"\link[stats]{formula}"} (or one that
     can be coerced to that class): a symbolic description of the
     model to be fitted.  The details of model specification are given
     under \sQuote{Details}.}
@@ -16,7 +16,7 @@ enriched_glm(formula, family = gaussian, ...)
     function to be used in the model.  For \code{glm} this can be a
     character string naming a family function, a family function or the
     result of a call to a family function.  For \code{glm.fit} only the
-    third option is supported.  (See \code{\link{family}} for details of
+    third option is supported.  (See \code{\link[stats]{family}} for details of
     family functions.)}
 
 \item{...}{other arguments passed to \code{\link{glm}}}

@@ -27,6 +27,7 @@
 #' components. \code{get_enrichment_options.lm()} returns the
 #' components and their descriptions.
 #'
+#' @method enrich lm
 #' @export
 `enrich.lm` <- function(object, with = "all", ...) {
     if (is.null(with)) {
@@ -106,6 +107,7 @@
 }
 
 
+#' @method compute_auxiliary_functions lm
 `compute_auxiliary_functions.lm` <- function(object, ...) {
     if (is.null(object$model)) {
         object <- update(object, model = TRUE)
@@ -277,6 +279,7 @@
 }
 
 
+#' @method compute_score_mle lm
 `compute_score_mle.lm` <- function(object, ...) {
     get_score_function(object)()
 }
@@ -286,7 +289,7 @@
     UseMethod('compute_score_mle')
 }
 
-
+#' @method compute_dispersion_mle lm
 `compute_dispersion_mle.lm` <- function(object, ...) {
     prior_weights <- weights(object)
     nobs <- nobs(object)
@@ -303,31 +306,29 @@
     UseMethod('compute_dispersion_mle')
 }
 
-
-`compute_expected_information_mle.lm` <- function(object, dispersion) {
+#' @method compute_expected_information_mle lm
+`compute_expected_information_mle.lm` <- function(object, dispersion, ...) {
     get_information_function(object)(type = "expected")
 }
-
 
 `compute_expected_information_mle` <- function(object, ...) {
     UseMethod('compute_expected_information_mle')
 }
 
-
-`compute_observed_information_mle.lm` <- function(object, dispersion) {
+#' @method compute_observed_information_mle lm
+`compute_observed_information_mle.lm` <- function(object, dispersion, ...) {
     get_information_function(object)(type = "observed")
 }
-
 
 `compute_observed_information_mle` <- function(object, ...) {
     UseMethod('compute_observed_information_mle')
 }
 
 
+#' @method compute_bias_mle lm
 `compute_bias_mle.lm` <- function(object, ...) {
     get_bias_function(object)()
 }
-
 
 `compute_bias_mle` <- function(object, ...) {
     UseMethod('compute_bias_mle')

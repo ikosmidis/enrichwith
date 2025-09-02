@@ -46,7 +46,7 @@
 #' @name enrichwith
 #' @import stats
 #'
-NULL
+"_PACKAGE"
 #> NULL
 
 ## register S3 methods
