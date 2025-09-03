@@ -1,8 +1,9 @@
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/enrichwith)](https://cran.r-project.org/package=enrichwith)
-[![Travis-CI Build Status](https://travis-ci.org/ikosmidis/enrichwith.svg?branch=master)](https://travis-ci.org/ikosmidis/enrichwith)
 [![R-CMD-check](https://github.com/ikosmidis/enrichwith/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ikosmidis/enrichwith/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/ikosmidis/enrichwith/graph/badge.svg)](https://app.codecov.io/gh/ikosmidis/enrichwith)
-
+[![Licence](https://img.shields.io/badge/licence-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![Contributor
+Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](https://contributor-covenant.org/version/2/1/CODE_OF_CONDUCT.html)
 
 # enrichwith
 
