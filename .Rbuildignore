@@ -6,3 +6,4 @@ inst/temporary
 inst/enrich_family.gif
 ^\.travis\.yml$
 ^CRAN-RELEASE$
+^\.github$
