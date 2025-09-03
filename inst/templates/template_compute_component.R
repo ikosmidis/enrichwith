@@ -1,3 +1,4 @@
+#' @method compute_{{component}} {{class}}
 `compute_{{component}}.{{class}}` <- function(object, ...) {
     ## Write some code to compute the component {{component}} using
     ## the components of object and any other arguments in ...
