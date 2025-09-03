@@ -18,7 +18,8 @@ Suggests:
     ggplot2,
     MASS,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 Enhances:
     betareg,
     gnm,
