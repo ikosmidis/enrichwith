@@ -1,5 +1,11 @@
 # enrichwith 0.3.2
 
+## Bug fixes
+
+*  fixed a typo (`dmu.deta` -> `d2mu.deta`) for `betareg` enrichment,
+   which would cause failures with `get_bias_function()` and other
+   methods.
+
 ## Other improvements, updated, and additions
 
 * Documentation fixes.
