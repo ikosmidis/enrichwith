@@ -19,7 +19,8 @@ Suggests:
     MASS,
     knitr,
     rmarkdown,
-    testthat
+    testthat,
+    numDeriv
 Enhances:
     betareg,
     gnm,
