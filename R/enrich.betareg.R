@@ -149,10 +149,11 @@
     linkprec <- enrich(object$link$precision)
     linkinv <- linkmean$linkinv
     mu.eta <- linkmean$mu.eta
-    dmu.deta <- linkmean$dmu.deta
+
+    dmu.deta <- linkmean$d2mu.deta
     phi_linkinv <- linkprec$linkinv
     phi_mu.eta <- linkprec$mu.eta
-    phi_dmu.deta <- linkprec$dmu.deta
+    phi_dmu.deta <- linkprec$d2mu.deta
     ystar <- qlogis(y)
     u <- log(1 - y)
     score <- function(coefficients, contributions = FALSE) {
