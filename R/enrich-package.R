@@ -4,7 +4,7 @@
 #' enrich list-like R objects with new, relevant components. The
 #' resulting objects preserve their class, so all methods associated
 #' with them still apply. The package can also be used to produce
-#' customisable source code templates for the structured
+#' customizable source code templates for the structured
 #' implementation of methods to compute new components
 #'
 #' Depending on the object, enriching it can be a tedious task. The
@@ -14,12 +14,12 @@
 #' \enumerate{
 #'
 #' \item Use \code{\link{create_enrichwith_skeleton}} to produce a
-#' customisable enrichwith template.
+#' customizable enrichwith template.
 #'
 #' \item Edit the \code{compute_*} functions by adding the specific
 #' code that calculates the components.
 #'
-#' \item Finalise the documentation and/or include more examples.
+#' \item Finalize the documentation and/or include more examples.
 #' }
 #'
 #' The first step results in a template that includes all necessary

@@ -29,7 +29,7 @@ particularly the latter is rarely bug-free.
 I believe that
 
 * users and developers should have direct access to useful
-  functionality and quantities in the R ecosystem, epsecially if these include implementations of complex statistical quantities
+  functionality and quantities in the R ecosystem, especially if these include implementations of complex statistical quantities
 
 * quantities and functionality that are specific to a list-like `object_x` should be components of `object_x`
 
@@ -42,15 +42,15 @@ enrich(object_x, with = enrichment_option)
 ```
 
 The call is inspired by [Donald
-Knuth's](https://en.wikipedia.org/wiki/Donald_Knuth) [literare
-programing](https://en.wikipedia.org/wiki/Literate_programming)
+Knuth's](https://en.wikipedia.org/wiki/Donald_Knuth) [literate
+programming](https://en.wikipedia.org/wiki/Literate_programming)
 paradigm.
 
 ## Purpose and objective
 
 The main objective of **enrichwith** is to allow users and developers
 to directly use the enrichment options that other developers have
-provided, through a *clean interface*, minimising the need to adopt
+provided, through a *clean interface*, minimizing the need to adopt
 source code of others.
 
 The purpose of **enrichwith** is to provide:
@@ -59,7 +59,7 @@ The purpose of **enrichwith** is to provide:
   class `lm`, `glm`, `link-glm` and `family` (see, for example,
   `?enrich.glm`)
 
-* methods for producing *customisable source code templates* for the
+* methods for producing *customizable source code templates* for the
   structured implementation of methods to compute new components (see
   `?enrichwith` and `?create_enrichwith_skeleton`)
 
@@ -75,7 +75,7 @@ illustrations from recent research of mine on methods for statistical
 learning and inference.
 
 ## Installation
-Get the development version from github with
+Get the development version from GitHub with
 
 ``` r
 # install.packages("devtools")

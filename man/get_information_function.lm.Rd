@@ -28,7 +28,7 @@ likelihood estimates are used}
 matrix is evaluated. If missing then the maximum likelihood estimate
 is used}
 
-\item{type}{should the function return th 'expected' or 'observed' information? Default is \code{expected}}
+\item{type}{should the function return the 'expected' or 'observed' information? Default is \code{expected}}
 
 \item{QR}{If \code{TRUE}, then the QR decomposition of \deqn{W^{1/2} X} is returned, where \deqn{W} is a diagonal matrix with the working weights (\code{object$weights}) and \deqn{X} is the model matrix.}
 

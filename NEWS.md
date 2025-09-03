@@ -32,7 +32,7 @@
 # enrichwith 0.2
 
 ## Bug fixes
-* Fixed bug in the computation of beta regression score contributions from `betareg` obejcts.
+* Fixed bug in the computation of beta regression score contributions from `betareg` objects.
 * Fixed bug with the attributes of information matrices for generalized linear models with fixed dispersion.
 * Fixed the row names in the information matrices for `glm` and `betareg` objects.
 

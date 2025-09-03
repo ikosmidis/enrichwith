@@ -7,7 +7,7 @@
 #'
 #' \item{PI}{pulsality index of arteria uterina}
 #'
-#' \item{EH}{endometrium heigh}
+#' \item{EH}{endometrium height}
 #'
 #' \item{HG}{histology grade with coding 0 for low grade and 1 for high grade}
 #'
@@ -17,7 +17,7 @@
 #'     from \url{http://www.stat.ufl.edu/~aa/glm/data}. The latter
 #'     link provides the data sets used in Agresti (2015).
 #'
-#'     The endometrial data set was first analysed in Heinze and
+#'     The endometrial data set was first analyzed in Heinze and
 #'     Schemper (2002), and was originally provided by Dr
 #'     E. Asseryanis from the Medical University of Vienna.
 #'
@@ -25,8 +25,8 @@
 #' Agresti, A. 2015. *Foundations of Linear and Generalized Linear
 #' Models*.  Wiley Series in Probability and Statistics. Wiley.
 #'
-#' Heinze, G., and M. Schemper. 2002. “A Solution to the Problem of
-#' Separation in Logistic Regression.” *Statistics in Medicine*
-#' 21:2409–19.
+#' Heinze G, Schemper M (2002). A Solution to the Problem of
+#' Separation in Logistic Regression. *Statistics in Medicine*,
+#' **21**, 2409–2419. \doi{10.1002/sim.1047}.
 #'
 "endometrial"

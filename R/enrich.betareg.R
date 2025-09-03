@@ -480,7 +480,7 @@ get_score_function.betareg <- function(object, ...) {
 #' likelihood estimates are used}
 #'
 #'
-#' \item{type}{should the function return th 'expected' or 'observed' information? Default is \code{expected}}
+#' \item{type}{should the function return the 'expected' or 'observed' information? Default is \code{expected}}
 #'
 #' \item{QR}{Currently not used}
 #'

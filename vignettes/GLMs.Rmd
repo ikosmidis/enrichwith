@@ -37,7 +37,7 @@ clotting <- data.frame(conc = c(5,10,15,20,30,40,60,80,100,
 ```
 
 @mccullagh:89 [Section 8.4] fitted a series of nested generalized
-linear models assuming that the times are realisations of independent
+linear models assuming that the times are realizations of independent
 [Gamma](https://en.wikipedia.org/wiki/Gamma_distribution) random
 variables whose mean varies appropriately with concentration and
 lot. In particular, @mccullagh:89 linked the inverse mean of the gamma

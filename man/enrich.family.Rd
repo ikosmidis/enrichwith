@@ -57,7 +57,7 @@ respectively), and the first four derivatives of
 \eqn{a(\zeta)}{a(zeta)} (\code{d1afun}, \code{d2afun},
 \code{d3afun}, \code{d4afun}, respectively).
 
-Corresponding enrichment options are also avaialble for
+Corresponding enrichment options are also available for
 \code{\link[stats]{quasibinomial}},
 \code{\link[stats]{quasipoisson}} and \code{\link[gnm]{wedderburn}}
 families.
