@@ -1,6 +1,6 @@
 ---
 title: "Bias reduction in generalized linear models using **enrichwith**"
-author: "[Ioannis Kosmidis](http://www.ikosmidis.com)"
+author: "[Ioannis Kosmidis](https://www.ikosmidis.com)"
 date: 2016-09-02
 output: rmarkdown::html_vignette
 bibliography: enrichwith.bib
@@ -77,19 +77,17 @@ In the following, we use **enrichwith** to implement two variants of the bias re
 
 # Quasi Fisher scoring for bias reduction
 
-Consider a parametric [statistical
-model](https://en.wikipedia.org/wiki/Statistical_model)
-$\mathcal{P}_\theta$ with unknown parameter $\theta \in \Re^p$ and the
-iteration $$\theta^{(k + 1)} := \theta^{(k)} +
-\left\{i(\theta^{(k)})\right\}^{-1} s(\theta^{(k)}) - c(\theta^{(k)})
-b(\theta^{(k)})$$ where $\theta^{(k)}$ is the value of $\theta$ at the
-$k$th iteration, $s(\theta)$ is the gradient of the
+Consider a parametric statistical model $\mathcal{P}_\theta$ with
+unknown parameter $\theta \in \Re^p$ and the iteration $$\theta^{(k +
+1)} := \theta^{(k)} + \left\{i(\theta^{(k)})\right\}^{-1}
+s(\theta^{(k)}) - c(\theta^{(k)}) b(\theta^{(k)})$$ where
+$\theta^{(k)}$ is the value of $\theta$ at the $k$th iteration,
+$s(\theta)$ is the gradient of the
 log-[likelihood](https://en.wikipedia.org/wiki/Likelihood_function)
 for $\mathcal{P}_\theta$, $i(\theta)$ is the [expected
 information](https://en.wikipedia.org/wiki/Fisher_information) matrix,
 and $b(\theta)$ is the $O(n^{-1})$ term in the expansion of the
-[bias](https://en.wikipedia.org/wiki/Bias_of_an_estimator) of the
-[ML
+[bias](https://en.wikipedia.org/wiki/Bias_of_an_estimator) of the [ML
 estimator](https://en.wikipedia.org/wiki/Maximum_likelihood_estimation)
 of $\theta$ [see, for example, @cox:68].
 

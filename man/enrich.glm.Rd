@@ -76,7 +76,7 @@ cML_functions$simulate(coef = c(0.1, 0.1, 0, 0),
 \dontrun{
 
 ## Reproduce left plot in Figure 4.1 in Kosimdis (2007)
-## (see http://www.ucl.ac.uk/~ucakiko/files/ikosmidis_thesis.pdf)
+## (see https://ikosmidis.com/files/ikosmidis_thesis.pdf)
 mod <- glm(1 ~ 1, weights = 10, family = binomial())
 enriched_mod <- enrich(mod, with = "auxiliary functions")
 biasfun <- enriched_mod$auxiliary_functions$bias
