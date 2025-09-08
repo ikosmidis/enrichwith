@@ -78,15 +78,8 @@
 #'
 #' @export
 enriched_glm <- function(formula, family = gaussian, ...) {
-    fit <- glm(formula = formula, family = gaussian, ...)
+    .Deprecated(msg = '`enriched_glm()` is deprecated and will be defunct in the next release. Use the call `enrich(glm(...), with = "all") or `glm(...) |> enrich(with = "all")` instead.')
+    fit <- glm(formula, family = family, ...)
     enrich(fit, with = "all")
 }
 
-
-
-aa <- function(x, y) {
-    bb <- function(y) {
-        if (missing(y)) 2 else y + 2
-    }
-    x + bb(y)
-}

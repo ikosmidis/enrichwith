@@ -9,7 +9,11 @@
 ## Other improvements, updated, and additions
 
 * Documentation fixes.
-* Added MASS in Suggests to allow for using ggplot2 in vignettes.
+* Added **MASS** in Suggests to allow for using **ggplot2** in vignettes.
+
+* Deprecated `enriched_glm()` as it might lead to scoping
+  issues. Users are recommended to use the call `enrich(glm(...))` or 
+  `glm(...) |> enrich()`.
 
 # enrichwith 0.3.1
 
