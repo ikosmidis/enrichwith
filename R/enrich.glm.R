@@ -356,7 +356,7 @@
 
         Pbb <- lapply(1:ncol(x), function(t) {
             out <- crossprod(x, x * working_weights * d1mus * d1variances / variances * x[, t]) / dispersion
-            ## out[na_coefficients, ] <- out[, na_coefficients] <- NA
+            out[na_coefficients, ] <- out[, na_coefficients] <- NA
             dimnames(out) <- list(coefnames, coefnames)
             out
         })
@@ -367,8 +367,11 @@
         } else {
             wx <- x * sqrt(working_weights)
             xwx <- crossprod(wx)
-            ## xwx[na_coefficients, ] <- xwx[, na_coefficients] <- NA
             Pbphi <- colSums(xwx / dispersion^2)
+            zeros <- rep(0, ncol(x))
+            zeros[na_coefs] <- NA
+            Pbphi[na_coefs] <- NA
+            xwx[na_coefficients, ] <- xwx[, na_coefficients] <- NA
             P <- lapply(Pbb, function(Pm) {
                 out <- rbind(cbind(Pm, Pbphi), c(Pbphi, 0))
                 colnames(out) <- rownames(out) <- c(coefnames, "dispersion")
@@ -377,8 +380,8 @@
             zetas <- -prior_weights / dispersion
             d3afuns <- rep(NA, nobs)
             d3afuns[keep] <- d3afun(zetas[keep])
-            Pa <- rbind(cbind(xwx / dispersion^2, 0),
-                        c(rep(0, ncol(x)), 0.5 * sum(prior_weights^3 * d3afuns, na.rm = TRUE) / dispersion^6))
+            Pa <- rbind(cbind(xwx / dispersion^2, zeros),
+                        c(zeros, 0.5 * sum(prior_weights^3 * d3afuns, na.rm = TRUE) / dispersion^6))
             dimnames(Pa) <- dimnames(P[[1]])
             P <- c(P, list(Pa))
             names(P) <- c(coefnames, "dispersion")
@@ -424,10 +427,14 @@
         } else {
             wx <- x * sqrt(working_weights)
             xwx <- crossprod(wx)
-            ## xwx[na_coefficients, ] <- xwx[, na_coefficients] <- NA
             Qbphi <- - colSums(xwx / dispersion^2)
+            zeros <- rep(0, ncol(x))
+            zeros[na_coefs] <- NA
+            Qbphi[na_coefs] <- NA
+            xwx[na_coefficients, ] <- xwx[, na_coefficients] <- NA
             Q <- lapply(Qbb, function(Qm) {
                 out <- rbind(cbind(Qm, Qbphi), c(Qbphi, 0))
+                out[na_coefficients, ] <- out[, na_coefficients] <- NA
                 colnames(out) <- rownames(out) <- c(coefnames, "dispersion")
                 out
             })
@@ -436,6 +443,7 @@
             d2afuns[keep] <- d2afun(zetas[keep])
             Qa <- matrix(0, ncol(x) + 1, ncol(x) + 1)
             Qa[ncol(x) + 1, ncol(x) + 1] <- -sum(prior_weights^2 * d2afuns, na.rm = TRUE) / dispersion^5
+            Qa[na_coefs, ] <- Qa[, na_coefs] <- NA
             dimnames(Qa) <- dimnames(Q[[1]])
             Q <- c(Q, list(Qa))
             names(Q) <- c(coefnames, "dispersion")

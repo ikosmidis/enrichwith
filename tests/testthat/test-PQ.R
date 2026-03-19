@@ -123,23 +123,22 @@ test_that("bias implementation matches manual implementation through P and Q [po
 
 data("coalition", package = "brglm2")
 
-## TODO: Check aliased coefficients - NEEDS FIX in code
 test_that("bias implementation matches manual implementation through P and Q [Gamma - coalition]", {
     mod1 <- glm(duration ~ fract + I(2 * fract) + numst2, family = Gamma, data = coalition)
     mod1e <- enrich(mod1, with = "auxiliary functions")
-    v <- solve(mod1e$auxiliary_functions$information())
+    i <- mod1e$auxiliary_functions$information()
     P <- mod1e$auxiliary_functions$Pmat()
     Q <- mod1e$auxiliary_functions$Qmat()
     b0 <- mod1e$auxiliary_functions$bias()
-    expect_equal(b0, - drop(v %*% sapply(seq.int(length(coef(mod1)) + 1), function(t) sum(v * (P[[t]] + Q[[t]])) / 2)),
-                 check.attributes = FALSE)
-    coefs <- coef(mod1e)
-    coefs <- coefs * 10
-    disp <- 0.5
-    v <- solve(mod1e$auxiliary_functions$information(coefs, disp))
-    P <- mod1e$auxiliary_functions$Pmat(coefs, disp)
-    Q <- mod1e$auxiliary_functions$Qmat(coefs, disp)
-    b0 <- mod1e$auxiliary_functions$bias(coefs, disp)
-    expect_equal(b0, - drop(v %*% sapply(seq.int(length(coef(mod1)) + 1), function(t) sum(v * (P[[t]] + Q[[t]])) / 2)),
-                 check.attributes = FALSE)
+    na_coefs <- is.na(coef(mod1e))
+    v <- i
+    i <- i[!na_coefs, !na_coefs]
+    v[!na_coefs, !na_coefs] <- solve(i)
+    expect_true(all(sapply(P, function(mat) all(is.na(mat[which(na_coefs), ])))))
+    expect_true(all(sapply(P, function(mat) all(is.na(mat[, which(na_coefs)])))))
+    expect_true(all(sapply(Q, function(mat) all(is.na(mat[which(na_coefs), ])))))
+    expect_true(all(sapply(Q, function(mat) all(is.na(mat[, which(na_coefs)])))))
+    b1 <- - colSums(v * sapply(seq.int(length(coef(mod1)) + 1), function(t) sum(v * (P[[t]] + Q[[t]]), na.rm = TRUE) / 2), na.rm = TRUE)
+    b1[na_coefs] <- NA
+    expect_equal(b0, b1, check.attributes = FALSE)
 })
