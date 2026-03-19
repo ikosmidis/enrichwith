@@ -15,6 +15,7 @@ Suggests:
     whisker,
     SuppDists,
     brglm,
+    brglm2,
     ggplot2,
     MASS,
     knitr,

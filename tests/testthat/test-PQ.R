@@ -131,7 +131,7 @@ test_that("enriching a brglmFit object returns same reults as enriching a glm ob
                  eML$auxiliary_functions$Pmat(coef(mRB)))
     expect_equal(eRB$auxiliary_functions$Qmat(),
                  eML$auxiliary_functions$Qmat(coef(mRB)))
-}
+})
 
 test_that("bias implementation matches manual implementation through P and Q [poisson(sqrt)]", {
     mod2 <- glm(counts ~ outcome + treatment, family = poisson("sqrt"))
