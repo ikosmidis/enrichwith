@@ -31,6 +31,21 @@ test_that("bias implementation matches manual implementation through P and Q [Ga
 
 })
 
+
+test_that("enriching a brglmFit object returns same reults as enriching a glm object and evaluating at RB estimates", {
+    mML <- glm(conc ~ lot*log(u), data = clotting, family = Gamma)
+    mRB <- glm(conc ~ lot*log(u), data = clotting, family = Gamma, method = brglm2::brglmFit)
+    eML <- enrich(mML, with = "auxiliary functions")
+    eRB <- enrich(mRB, with = "auxiliary functions")
+    expect_equal(eRB$auxiliary_functions$information(dispersion = coef(mRB, model = "dispersion")),
+                 eML$auxiliary_functions$information(coef(mRB), coef(mRB, model = "dispersion")))
+    expect_equal(eRB$auxiliary_functions$Pmat(dispersion = coef(mRB, model = "dispersion")),
+                 eML$auxiliary_functions$Pmat(coef(mRB), coef(mRB, model = "dispersion")))
+    expect_equal(eRB$auxiliary_functions$Qmat(dispersion = coef(mRB, model = "dispersion")),
+                 eML$auxiliary_functions$Qmat(coef(mRB), coef(mRB, model = "dispersion")))
+})
+
+
 ## A binomial examples
 data("lizards", package = "brglm2")
 
@@ -104,6 +119,19 @@ test_that("bias implementation matches manual implementation through P and Q [po
     for (k in seq.int(nvars))
         expect_equal(Q[[k]], matrix(0, nvars, nvars, dimnames = list(cnams, cnams)))
 })
+
+test_that("enriching a brglmFit object returns same reults as enriching a glm object and evaluating at RB estimates", {
+    mML <- glm(counts ~ outcome + treatment, family = poisson())
+    mRB <- glm(counts ~ outcome + treatment, family = poisson(), method = brglm2::brglmFit)
+    eML <- enrich(mML, with = "auxiliary functions")
+    eRB <- enrich(mRB, with = "auxiliary functions")
+    expect_equal(eRB$auxiliary_functions$information(),
+                 eML$auxiliary_functions$information(coef(mRB)))
+    expect_equal(eRB$auxiliary_functions$Pmat(),
+                 eML$auxiliary_functions$Pmat(coef(mRB)))
+    expect_equal(eRB$auxiliary_functions$Qmat(),
+                 eML$auxiliary_functions$Qmat(coef(mRB)))
+}
 
 test_that("bias implementation matches manual implementation through P and Q [poisson(sqrt)]", {
     mod2 <- glm(counts ~ outcome + treatment, family = poisson("sqrt"))
