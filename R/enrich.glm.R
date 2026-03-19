@@ -22,6 +22,8 @@
 #' \item \code{dmodel}: computes densities or probability mass functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_dmodel_function.glm}}
 #' \item \code{pmodel}: computes distribution functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_pmodel_function.glm}}
 #' \item \code{qmodel}: computes quantile functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_qmodel_function.glm}}
+#' \item \code{Pmat}: the matrices \eqn{P_t} as a function of the model parameters (see, Kosmidis, 2014, expression (4))
+#' \item \code{Qmat}: the matrices \eqn{Q_t} as a function of the model parameters (see, Kosmidis, 2014, expression (4))
 #' }
 #'
 #' @return
@@ -29,6 +31,13 @@
 #' The object \code{object} of class \code{\link{glm}} with extra
 #' components. See \code{get_enrichment_options.glm()} for the
 #' components and their descriptions.
+#'
+#'
+#' @references
+#'
+#' Kosmidis I (2014). Bias in parametric estimation: reduction and
+#' useful side-effects. *WIRE Computational Statistics*, **6**,
+#' 185-196. \doi{10.1002/wics.1296}.
 #'
 #' @export
 #' @examples
