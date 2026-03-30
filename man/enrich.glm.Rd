@@ -36,8 +36,8 @@ The \code{auxiliary_functions} component consists of any or all of the following
 \item \code{dmodel}: computes densities or probability mass functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_dmodel_function.glm}}
 \item \code{pmodel}: computes distribution functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_pmodel_function.glm}}
 \item \code{qmodel}: computes quantile functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_qmodel_function.glm}}
-\item \code{Pmat}: the matrices \eqn{P_t} as a function of the model parameters (see, Kosmidis, 2014, expression (4))
-\item \code{Qmat}: the matrices \eqn{Q_t} as a function of the model parameters (see, Kosmidis, 2014, expression (4))
+\item \code{Pmat}: the matrices \eqn{P_t} as a function of the model parameters (see, Kosmidis, 2014, expression (5))
+\item \code{Qmat}: the matrices \eqn{Q_t} as a function of the model parameters (see, Kosmidis, 2014, expression (5))
 }
 }
 \examples{

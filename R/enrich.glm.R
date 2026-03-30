@@ -22,8 +22,8 @@
 #' \item \code{dmodel}: computes densities or probability mass functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_dmodel_function.glm}}
 #' \item \code{pmodel}: computes distribution functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_pmodel_function.glm}}
 #' \item \code{qmodel}: computes quantile functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_qmodel_function.glm}}
-#' \item \code{Pmat}: the matrices \eqn{P_t} as a function of the model parameters (see, Kosmidis, 2014, expression (4))
-#' \item \code{Qmat}: the matrices \eqn{Q_t} as a function of the model parameters (see, Kosmidis, 2014, expression (4))
+#' \item \code{Pmat}: the matrices \eqn{P_t} as a function of the model parameters (see, Kosmidis, 2014, expression (5))
+#' \item \code{Qmat}: the matrices \eqn{Q_t} as a function of the model parameters (see, Kosmidis, 2014, expression (5))
 #' }
 #'
 #' @return
@@ -376,13 +376,14 @@
         } else {
             wx <- x * sqrt(working_weights)
             xwx <- crossprod(wx)
-            Pbphi <- colSums(xwx / dispersion^2)
             zeros <- rep(0, ncol(x))
             zeros[na_coefficients] <- NA
-            Pbphi[na_coefficients] <- NA
             xwx[na_coefficients, ] <- xwx[, na_coefficients] <- NA
-            P <- lapply(Pbb, function(Pm) {
-                out <- rbind(cbind(Pm, Pbphi), c(Pbphi, 0))
+            Pbp <- xwx / dispersion^2
+            P <- lapply(seq_along(Pbb), function(r) {
+                Pbphi <- Pbp[r, , drop = TRUE]
+                Pbphi[na_coefficients] <- NA
+                out <- rbind(cbind(Pbb[[r]], Pbphi), c(Pbphi, 0))
                 colnames(out) <- rownames(out) <- c(coefnames, "dispersion")
                 out
             })
@@ -436,13 +437,14 @@
         } else {
             wx <- x * sqrt(working_weights)
             xwx <- crossprod(wx)
-            Qbphi <- - colSums(xwx / dispersion^2)
             zeros <- rep(0, ncol(x))
             zeros[na_coefficients] <- NA
-            Qbphi[na_coefficients] <- NA
             xwx[na_coefficients, ] <- xwx[, na_coefficients] <- NA
-            Q <- lapply(Qbb, function(Qm) {
-                out <- rbind(cbind(Qm, Qbphi), c(Qbphi, 0))
+            Qbp <- - xwx / dispersion^2
+            Q <- lapply(seq_along(Qbb), function(r) {
+                Qbphi <- Qbp[r, , drop = TRUE]
+                Qbphi[na_coefficients] <- NA
+                out <- rbind(cbind(Qbb[[r]], Qbphi), c(Qbphi, 0))
                 out[na_coefficients, ] <- out[, na_coefficients] <- NA
                 colnames(out) <- rownames(out) <- c(coefnames, "dispersion")
                 out
