@@ -170,3 +170,28 @@ test_that("bias implementation matches manual implementation through P and Q [Ga
     b1[na_coefs] <- NA
     expect_equal(b0, b1, check.attributes = FALSE)
 })
+
+test_that("Pmat and Qmat handle aliased coefficients consistently for binomial and poisson models", {
+    lizards_alias_data <- lizards
+    lizards_alias_data$z <- seq_len(nrow(lizards_alias_data))
+    lizards_alias_data$z2 <- 2 * lizards_alias_data$z
+    counts_alias_data <- data.frame(counts = counts, z = seq_along(counts))
+    counts_alias_data$z2 <- 2 * counts_alias_data$z
+
+    lizards_alias <- glm(cbind(grahami, opalinus) ~ z + z2,
+                         family = binomial(cauchit), data = lizards_alias_data)
+    counts_alias <- glm(counts ~ z + z2, family = poisson("sqrt"),
+                        data = counts_alias_data)
+
+    for (mod in list(lizards_alias, counts_alias)) {
+        mod_e <- enrich(mod, with = "auxiliary functions")
+        na_coefs <- is.na(coef(mod))
+        P <- mod_e$auxiliary_functions$Pmat()
+        Q <- mod_e$auxiliary_functions$Qmat()
+
+        expect_true(all(sapply(P, function(mat) all(is.na(mat[which(na_coefs), ])))))
+        expect_true(all(sapply(P, function(mat) all(is.na(mat[, which(na_coefs)])))))
+        expect_true(all(sapply(Q, function(mat) all(is.na(mat[which(na_coefs), ])))))
+        expect_true(all(sapply(Q, function(mat) all(is.na(mat[, which(na_coefs)])))))
+    }
+})

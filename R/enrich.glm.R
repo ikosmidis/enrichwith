@@ -426,7 +426,7 @@
 
         Qbb <- lapply(1:ncol(x), function(t) {
             out <- - crossprod(x, x * working_weights * d1mus * (d1variances / variances - d2mus / d1mus^2) * x[, t]) / dispersion
-            ## out[na_coefficients, ] <- out[, na_coefficients] <- NA
+            out[na_coefficients, ] <- out[, na_coefficients] <- NA
             dimnames(out) <- list(coefnames, coefnames)
             out
         })

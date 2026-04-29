@@ -1,6 +1,10 @@
-# enrichwith 0.5.0
+# enrichwith 0.4.1
 
+## New functionality
 
+## Bug fixes
+
+## Other improvements, updates, and additions
 
 # enrichwith 0.4.0
 
