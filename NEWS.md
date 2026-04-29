@@ -1,10 +1,23 @@
-# enrichwith 0.4.1
+# enrichwith 0.5.0
 
 ## New functionality
 
+* Added `Pmat()` and `Qmat()` to the auxiliary functions for enriched
+ `glm` objects. These return the `P_t` and `Q_t` matrices used in mean
+ and median bias-reduction calculations, and can be evaluated at
+ user-supplied regression and dispersion parameter values.
+
 ## Bug fixes
 
+* Fixed bugs with the handling aliasing.
+
 ## Other improvements, updates, and additions
+
+* Added new tests for existing and new functionality.
+
+* Various documentation updates.
+
+* Updated package metadata, including adding `brglm2` to `Suggests`.
 
 # enrichwith 0.4.0
 

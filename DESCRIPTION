@@ -1,8 +1,8 @@
 Package: enrichwith
 Title: Methods to Enrich R Objects with Extra Components
-Version: 0.4.1
+Version: 0.5.0
 Authors@R: person("Ioannis", "Kosmidis", email = "ioannis.kosmidis@warwick.ac.uk", role = c("aut", "cre"))
-Description: Provides the "enrich()" method for augmenting list-like R objects with additional, model-specific components. Methods are currently available for objects of class "family", "link-glm", "lm", "glm", and "betareg". Enriched objects retain their original class and remain compatible with existing methods. For example, enriching a "glm" object produces an "enriched_glm" object that also inhetits from "glm". In addition to the standard components, the "enriched_glm" object includes methods for simulation and functions to compute scores, observed and expected information matrices, first-order bias, and other model quantities such as densities, probabilities, and quantiles, which can be evaluated at use-supplied parameter values. The package also provides tools for generating customizable source code templates for the structured implementation of methods to compute new components and enrich arbitrary objects.
+Description: Provides the "enrich()" method for augmenting list-like R objects with additional, model-specific components. Methods are currently available for objects of class "family", "link-glm", "lm", "glm", and "betareg". Enriched objects retain their original class and remain compatible with existing methods. For example, enriching a "glm" object produces an "enriched_glm" object that also inherits from "glm". In addition to the standard components, the "enriched_glm" object includes methods for simulation and functions to compute scores, observed and expected information matrices, first-order bias, and other model quantities such as densities, probabilities, and quantiles, which can be evaluated at use-supplied parameter values. The package also provides tools for generating customizable source code templates for the structured implementation of methods to compute new components and enrich arbitrary objects.
 Depends:
     R (>= 3.0.0)
 URL: https://github.com/ikosmidis/enrichwith
