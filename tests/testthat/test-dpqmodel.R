@@ -30,58 +30,25 @@ test_that("simulate and get_simulate_function return the same variates for vario
                      get_simulate_function(model3)(seed = 123)[, 1])
 })
 
-## Create a test data set
-test_data <- model1$data[1:8, ]
-test_data$grahami <- c(1, 1, 1, 1, 0, 0, 0, 0)
-test_data$opalinus <- c(0, 0, 0, 0, 1, 1, 1, 1)
-test_data$species <- factor(rep(c("grahami", "opalinus"), each = 4), levels = c("opalinus", "grahami"))
-
-test_that("dmodel returns the same results for various equivalent representations of the data for logistic regression", {
-    expect_equal(enrich(model1)$auxiliary_functions$dmodel(test_data),
-                 enrich(model3)$auxiliary_functions$dmodel(test_data),
-                 check.attributes = FALSE,
-                 tol = tolerance)
-    expect_equal(enrich(model1)$auxiliary_functions$dmodel(test_data),
-                 enrich(model2)$auxiliary_functions$dmodel(test_data),
-                 check.attributes = FALSE,
-                 tol = tolerance)
-    expect_equal(enrich(model2)$auxiliary_functions$dmodel(test_data),
-                 enrich(model3)$auxiliary_functions$dmodel(test_data),
-                 check.attributes = FALSE,
-                 tol = tolerance)
+probs <- 1:10 / 11
+test_that("qmodel returns the same output across data representations", {
+    for (pr in probs) {
+        expect_equal(aux1$qmodel(rep(pr, nrow(lizards))), aux2$qmodel(rep(pr, nrow(lizards))))
+    }
 })
 
+aux1 <- get_auxiliary_functions(model1)
+aux2 <- get_auxiliary_functions(model2)
+aux3 <- get_auxiliary_functions(model3)
+tots <- lizards$grahami + lizards$opalinus
+d1 <- simulate(model1, seed = 123)[, 1]
+d2 <- simulate(model2, seed = 123)[, 1]
 
-test_that("pmodel returns the same results for various equivalent representations of the data for logistic regression", {
-    expect_equal(enrich(model1)$auxiliary_functions$pmodel(test_data),
-                 enrich(model3)$auxiliary_functions$pmodel(test_data),
-                 check.attributes = FALSE,
-                 tol = tolerance)
-    expect_equal(enrich(model1)$auxiliary_functions$pmodel(test_data),
-                 enrich(model2)$auxiliary_functions$pmodel(test_data),
-                 check.attributes = FALSE,
-                 tol = tolerance)
-    expect_equal(enrich(model2)$auxiliary_functions$pmodel(test_data),
-                 enrich(model3)$auxiliary_functions$pmodel(test_data),
-                 check.attributes = FALSE,
-                 tol = tolerance)
-})
-
-
-ps <- seq(0, 1, length = nrow(test_data))
-test_that("qmodel returns the same results for various equivalent representations of the data for logistic regression", {
-    expect_equal(enrich(model1)$auxiliary_functions$qmodel(ps, test_data),
-                 enrich(model3)$auxiliary_functions$qmodel(ps, test_data),
-                 check.attributes = FALSE,
-                 tol = tolerance)
-    expect_equal(enrich(model1)$auxiliary_functions$qmodel(ps, test_data),
-                 enrich(model2)$auxiliary_functions$qmodel(ps, test_data),
-                 check.attributes = FALSE,
-                 tol = tolerance)
-    expect_equal(enrich(model2)$auxiliary_functions$qmodel(ps, test_data),
-                 enrich(model3)$auxiliary_functions$qmodel(ps, test_data),
-                 check.attributes = FALSE,
-                 tol = tolerance)
+test_that("d/pmodel returns the same results for various equivalent representations of the data for logistic regression", {
+    expect_equal(aux1$dmodel(d2[, 1] / rowSums(d2)) , aux1$dmodel(d1), check.attributes = FALSE)
+    expect_equal(aux2$dmodel(cbind(d1, 1- d1) * tots), aux2$dmodel(d2), check.attributes = FALSE)
+    expect_equal(aux1$pmodel(d2[, 1] / rowSums(d2)) , aux1$pmodel(d1), check.attributes = FALSE)
+    expect_equal(aux2$pmodel(cbind(d1, 1- d1) * tots), aux2$pmodel(d2), check.attributes = FALSE)
 })
 
 
@@ -108,7 +75,7 @@ test_that("d/p/r/qmodel works for inverse gaussian regression", {
     d1 <- SuppDists::dinvGauss(clotting$conc, fitted.values(mod1), lambda = 1/disp)
     p1 <- SuppDists::pinvGauss(clotting$conc, fitted.values(mod1), lambda = 1/disp)
     q1 <- SuppDists::qinvGauss(rep(0.2, 18), fitted.values(mod1), lambda = 1/disp)
-    
+
     d2 <- get_dmodel_function(mod1)()
     p2 <- get_pmodel_function(mod1)()
     q2 <- get_qmodel_function(mod1)(rep(0.2, 18))
@@ -116,6 +83,6 @@ test_that("d/p/r/qmodel works for inverse gaussian regression", {
     expect_equal(d1, d2, check.attributes = FALSE)
     expect_equal(q1, q2, check.attributes = FALSE)
     expect_equal(p1, p2, check.attributes = FALSE)
-    
-    
+
+
 })

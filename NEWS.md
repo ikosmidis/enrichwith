@@ -1,3 +1,24 @@
+# enrichwith 0.6.0
+
+## New functionality
+
+* The `score()`, `information()`, `dmodel()`, and `pmodel()` auxiliary
+  functions for `glm` objects can now be evaluated at a supplied response
+  under the fitted model design.
+
+## Other improvements, updates, and additions
+
+* Standardized the interfaces of the `dmodel()`, `pmodel()`, and `qmodel()`
+  auxiliary functions for `glm` objects around the fitted model design, in
+  line with `score()` and `information()`. Consequently, `dmodel()` and
+  `pmodel()` now accept a response rather than a data frame, and `qmodel()`
+  evaluates one probability per fitted observation. This replaces the
+  previous interface for evaluation at arbitrary data frames.
+
+* Added new tests for existing and new functionality.
+
+* Various documentation updates.
+
 # enrichwith 0.5.0
 
 ## New functionality
@@ -149,6 +170,4 @@
 # enrichwith 0.01
 
 * First release.
-
-
 

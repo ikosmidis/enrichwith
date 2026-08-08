@@ -30,5 +30,9 @@ used}
 function is evaluated. If missing then the maximum likelihood
 estimate is used}
 
+\item{response}{an optional response vector or matrix. It must have
+the same shape as the response in the fitted model. If missing, the
+fitted response is used}
+
 }
 }

@@ -15,13 +15,13 @@
 #'
 #' The \code{auxiliary_functions} component consists of any or all of the following functions:
 #' \itemize{
-#' \item \code{score}: the log-likelihood derivatives as a function of the model parameters; see \code{\link{get_score_function.glm}}
-#' \item \code{information}: the expected or observed information as a function of the model parameters; see \code{\link{get_information_function.glm}}
+#' \item \code{score}: the log-likelihood derivatives as a function of the model parameters and, optionally, a supplied response; see \code{\link{get_score_function.glm}}
+#' \item \code{information}: the expected or observed information as a function of the model parameters and, optionally, a supplied response; see \code{\link{get_information_function.glm}}
 #' \item \code{bias}: the first-order term in the expansion of the bias of the maximum likelihood estimator as a function of the model parameters; see \code{\link{get_bias_function.glm}}
 #' \item \code{simulate}: a \code{\link{simulate}} function for \code{\link{glm}} objects that can simulate variates from the model at user-supplied parameter values for the regression parameters and the dispersion (default is the maximum likelihood estimates); see \code{\link{get_simulate_function.glm}}
-#' \item \code{dmodel}: computes densities or probability mass functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_dmodel_function.glm}}
-#' \item \code{pmodel}: computes distribution functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_pmodel_function.glm}}
-#' \item \code{qmodel}: computes quantile functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_qmodel_function.glm}}
+#' \item \code{dmodel}: computes densities or probability mass functions under the fitted design at user-supplied responses and parameter values; see \code{\link{get_dmodel_function.glm}}
+#' \item \code{pmodel}: computes distribution functions under the fitted design at user-supplied responses and parameter values; see \code{\link{get_pmodel_function.glm}}
+#' \item \code{qmodel}: computes quantile functions under the fitted design at user-supplied probabilities and parameter values; see \code{\link{get_qmodel_function.glm}}
 #' \item \code{Pmat}: the matrices \eqn{P_t} as a function of the model parameters (see, Kosmidis, 2014, expression (5))
 #' \item \code{Qmat}: the matrices \eqn{Q_t} as a function of the model parameters (see, Kosmidis, 2014, expression (5))
 #' }
@@ -166,14 +166,11 @@
     out
 }
 
-#' @method compute_auxiliary_functions glm
+#' @export
 `compute_auxiliary_functions.glm` <- function(object, ...) {
     if (is.null(object$model)) {
         object <- update(object, model = TRUE)
     }
-
-    ## Extract formula
-    formula <- formula(object)
 
     ## Enrich link-glm and family objects
     link <- enrich(make.link(object$family$link), with = "all")
@@ -213,7 +210,59 @@
         off <- rep(0, nobs)
     }
 
-    score <- function(coefficients, dispersion, contributions = FALSE) {
+    fitted_response <- model.response(object$model)
+    case_weights <- model.weights(object$model)
+    if (is.null(case_weights)) {
+        case_weights <- rep(1, nobs)
+    }
+
+    response_data <- function(response) {
+        if (missing(response)) {
+            return(list(y = y, prior_weights = prior_weights))
+        }
+        if (is.matrix(fitted_response)) {
+            if (!is.matrix(response) ||
+                !identical(dim(response), dim(fitted_response))) {
+                stop("'response' must be a matrix with the same dimensions as the fitted response")
+            }
+        }
+        else {
+            if (is.data.frame(response) || !is.null(dim(response)) ||
+                length(response) != length(fitted_response)) {
+                stop("'response' must be a vector with the same length as the fitted response")
+            }
+            if (is.factor(fitted_response)) {
+                if (!is.factor(response)) {
+                    stop("'response' must be a factor when the fitted response is a factor")
+                }
+                response_values <- as.character(response)
+                if (any(!is.na(response_values) &
+                        !response_values %in% levels(fitted_response))) {
+                    stop("'response' has levels not present in the fitted response")
+                }
+                response <- factor(response_values,
+                                   levels = levels(fitted_response),
+                                   ordered = is.ordered(fitted_response))
+            }
+            else if (is.factor(response)) {
+                stop("'response' must not be a factor when the fitted response is not a factor")
+            }
+        }
+        local({
+            y <- response
+            weights <- case_weights
+            nobs <- NROW(y)
+            eval(family$initialize)
+            list(y = y, prior_weights = weights)
+        })
+    }
+
+    score <- function(coefficients, dispersion, contributions = FALSE,
+                      response) {
+        response_values <- response_data(response)
+        y <- response_values$y
+        prior_weights <- response_values$prior_weights
+        keep <- prior_weights > 0
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -262,7 +311,12 @@
     }
 
     information <- function(coefficients, dispersion,
-                            type = c("expected", "observed"), QR = FALSE, CHOL = FALSE) {
+                            type = c("expected", "observed"), QR = FALSE,
+                            CHOL = FALSE, response) {
+        response_values <- response_data(response)
+        y <- response_values$y
+        prior_weights <- response_values$prior_weights
+        keep <- prior_weights > 0
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -624,36 +678,10 @@
         variates
     }
 
-    ## data should have a response
-    dmodel <- function(data, coefficients, dispersion, log = FALSE) {
-        if (missing(coefficients)) {
-            coefficients <- coef(object)
-        }
-        if (missing(dispersion)) {
-            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
-        }
-        if (missing(data)) {
-            mf <- object$model
-        }
-        else  {
-            mf <- model.frame(formula = formula, data = data)
-        }
-        contr <- attr(model.matrix(object), "contrasts")
-        new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
-        new_y <- model.response(mf)
-        new_off <- model.offset(mf)
-        if (is.null(new_off)) {
-            new_off <- rep(0, nrow(mf))
-        }
-        if (missing(data)) {
-            new_prior_weights <- model.weights(mf)
-        }
-        else {
-            new_prior_weights <- with(data, eval(object$call$weights))
-        }
-        if (is.null(new_prior_weights)) {
-            new_prior_weights <- rep(1, nrow(mf))
-        }
+    dmodel <- function(response, coefficients, dispersion, log = FALSE) {
+        response_values <- response_data(response)
+        new_y <- response_values$y
+        new_prior_weights <- response_values$prior_weights
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -661,14 +689,12 @@
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
         if (has_na) {
-            predictors <- drop(new_x[, !na_coefficients] %*% coefficients[!na_coefficients] + new_off)
+            predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
         }
         else {
-            predictors <- drop(new_x %*% coefficients + new_off)
+            predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
-        d1mus <- d1mu(predictors)
-        variances <- variance(fitted_values)
         dfun <- switch(family$family,
                        "gaussian" = {
             dnorm(new_y, mean = fitted_values, sd = sqrt(dispersion/new_prior_weights), log = log)
@@ -683,20 +709,8 @@
             if (any(new_prior_weights %% 1 != 0)) {
                 stop("cannot simulate from non-integer prior.weights")
             }
-            if (is.matrix(new_y) && ncol(new_y)) {
-                new_prior_weights <- rowSums(new_y)
-                new_y <- new_y[, 1]
-                dbinom(new_y, size = new_prior_weights, prob = fitted_values, log = log)
-            }
-            else {
-                if (is.factor(new_y)) {
-                    new_y <- as.numeric(new_y) - 1
-                    dbinom(new_y, size = 1, prob = fitted_values, log = log)
-                }
-                else {
-                    dbinom(new_y*new_prior_weights, size = new_prior_weights, prob = fitted_values, log = log)
-                }
-            }
+            dbinom(new_y * new_prior_weights, size = new_prior_weights,
+                   prob = fitted_values, log = log)
         },
         "poisson" = {
             if (any(new_prior_weights != 1)) {
@@ -715,36 +729,11 @@
         dfun
     }
 
-    ## data should have a response
-    pmodel <- function(data, coefficients, dispersion, lower.tail = TRUE, log.p = FALSE) {
-        if (missing(coefficients)) {
-            coefficients <- coef(object)
-        }
-        if (missing(dispersion)) {
-            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
-        }
-        contr <- attr(model.matrix(object), "contrasts")
-        if (missing(data)) {
-            mf <- object$model
-        }
-        else  {
-            mf <- model.frame(formula = formula, data = data)
-        }
-        new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
-        new_y <- model.response(mf)
-        new_off <- model.offset(mf)
-        if (is.null(new_off)) {
-            new_off <- rep(0, nrow(mf))
-        }
-        if (missing(data)) {
-            new_prior_weights <- model.weights(mf)
-        }
-        else {
-            new_prior_weights <- with(data, eval(object$call$weights))
-        }
-        if (is.null(new_prior_weights)) {
-            new_prior_weights <- rep(1, nrow(mf))
-        }
+    pmodel <- function(response, coefficients, dispersion,
+                       lower.tail = TRUE, log.p = FALSE) {
+        response_values <- response_data(response)
+        new_y <- response_values$y
+        new_prior_weights <- response_values$prior_weights
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
@@ -752,14 +741,12 @@
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
         if (has_na) {
-            predictors <- drop(new_x[, !na_coefficients] %*% coefficients[!na_coefficients] + new_off)
+            predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
         }
         else {
-            predictors <- drop(new_x %*% coefficients + new_off)
+            predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
-        d1mus <- d1mu(predictors)
-        variances <- variance(fitted_values)
         pfun <- switch(family$family,
                        "gaussian" = {
             pnorm(new_y, mean = fitted_values, sd = sqrt(dispersion/new_prior_weights), lower.tail = lower.tail, log.p = log.p)
@@ -774,20 +761,9 @@
             if (any(new_prior_weights %% 1 != 0)) {
                 stop("cannot simulate from non-integer prior.weights")
             }
-            if (is.matrix(new_y) && ncol(new_y)) {
-                new_prior_weights <- rowSums(new_y)
-                new_y <- new_y[, 1]
-                pbinom(new_y, size = new_prior_weights, prob = fitted_values, log.p = log.p)
-            }
-            else {
-                if (is.factor(new_y)) {
-                    new_y <- as.numeric(new_y) - 1
-                    pbinom(new_y, size = 1, prob = fitted_values, log.p = log.p)
-                }
-                else {
-                    pbinom(new_y*new_prior_weights, size = new_prior_weights, prob = fitted_values, log.p = log.p)
-                }
-            }
+            pbinom(new_y * new_prior_weights, size = new_prior_weights,
+                   prob = fitted_values, lower.tail = lower.tail,
+                   log.p = log.p)
         },
         "poisson" = {
             if (any(new_prior_weights != 1)) {
@@ -807,86 +783,43 @@
     }
 
 
-    ## any response in the data is ignored
-    qmodel <- function(p, data, coefficients, dispersion, lower.tail = TRUE, log.p = FALSE) {
+    qmodel <- function(p, coefficients, dispersion, lower.tail = TRUE,
+                       log.p = FALSE) {
         if (missing(coefficients)) {
             coefficients <- coef(object)
         }
         if (missing(dispersion)) {
             dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
         }
-        ## output an function that takes as input a data frame and returns densities
-        contr <- attr(model.matrix(object), "contrasts")
-        if (missing(data)) {
-            mf <- object$model
-        }
-        else  {
-            mf <- model.frame(formula = formula, data = data)
-        }
-        if (length(p) != nrow(mf)) {
-            stop("length(p) must be equal to nrow(data)")
-        }
-        new_x <- model.matrix(object = formula, data = mf, terms = terms, contrasts.arg = contr)
-        new_y <- model.response(mf)
-        new_off <- model.offset(mf)
-        if (is.null(new_off)) {
-            new_off <- rep(0, nrow(mf))
-        }
-        if (missing(data)) {
-            new_prior_weights <- model.weights(mf)
-        }
-        else {
-            new_prior_weights <- with(data, eval(object$call$weights))
-        }
-        if (is.null(new_prior_weights)) {
-            new_prior_weights <- rep(1, nrow(mf))
-        }
-        if (missing(coefficients)) {
-            coefficients <- coef(object)
-        }
-        if (missing(dispersion)) {
-            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
+        if (length(p) != nobs) {
+            stop("'p' must have one element for each fitted observation")
         }
         if (has_na) {
-            predictors <- drop(new_x[, !na_coefficients] %*% coefficients[!na_coefficients] + new_off)
+            predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
         }
         else {
-            predictors <- drop(new_x %*% coefficients + new_off)
+            predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
-        d1mus <- d1mu(predictors)
-        variances <- variance(fitted_values)
         qfun <- switch(family$family,
                        "gaussian" = {
-            qnorm(p, mean = fitted_values, sd = sqrt(dispersion/new_prior_weights), lower.tail = lower.tail, log.p = log.p)
+            qnorm(p, mean = fitted_values, sd = sqrt(dispersion/prior_weights), lower.tail = lower.tail, log.p = log.p)
         },
         "Gamma" = {c
-            if (any(new_prior_weights!= 1)) {
+            if (any(prior_weights!= 1)) {
                 message("using prior weights in the shape parameters")
             }
-            qgamma(p, shape = new_prior_weights/dispersion, scale = fitted_values*dispersion, lower.tail = lower.tail, log.p = log.p)
+            qgamma(p, shape = prior_weights/dispersion, scale = fitted_values*dispersion, lower.tail = lower.tail, log.p = log.p)
         },
         "binomial" = {
-            if (any(new_prior_weights %% 1 != 0)) {
+            if (any(prior_weights %% 1 != 0)) {
                 stop("cannot simulate from non-integer prior.weights")
             }
-            if (is.matrix(new_y) && ncol(new_y)) {
-                new_prior_weights <- rowSums(new_y)
-                new_y <- new_y[, 1]
-                qbinom(p, size = new_prior_weights, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
-            }
-            else {
-                if (is.factor(new_y)) {
-                    new_y <- as.numeric(new_y) - 1
-                    qbinom(p, size = 1, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
-                }
-                else {
-                    qbinom(p, size = new_prior_weights, prob = fitted_values, lower.tail = lower.tail, log.p = log.p)
-                }
-            }
+            qbinom(p, size = prior_weights, prob = fitted_values,
+                   lower.tail = lower.tail, log.p = log.p)
         },
         "poisson" = {
-            if (any(new_prior_weights != 1)) {
+            if (any(prior_weights != 1)) {
                 warning("ignoring prior weights")
             }
             qpois(p, lambda = fitted_values, log.p = log.p)
@@ -894,26 +827,13 @@
         "inverse.gaussian" = {
             if (!requireNamespace("SuppDists", quietly = TRUE))
                 stop("need CRAN package 'SuppDists' for simulation from the 'inverse.gaussian' family")
-            SuppDists::qinvGauss(p, nu = fitted_values, lambda = new_prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)
+            SuppDists::qinvGauss(p, nu = fitted_values, lambda = prior_weights/dispersion, lower.tail = lower.tail, log.p = log.p)
         },
         NULL)
         attr(qfun, "coefficients") <- coefficients
         attr(qfun, "dispersion") <- dispersion
         qfun
     }
-
-
-    ## any response in the data is ignored
-    ## To be implemented at a later release
-    rmodel <- function(n, data, coefficients, dispersion, nsim = 1, seed = NULL) {
-        if (missing(coefficients)) {
-            coefficients <- coef(object)
-        }
-        if (missing(dispersion)) {
-            dispersion <- enrich(object, with = "mle of dispersion")$dispersion_mle
-        }
-    }
-
     return(list(score = score,
                 information = information,
                 bias = bias,
@@ -931,7 +851,7 @@
     UseMethod('compute_auxiliary_functions')
 }
 
-#' @method compute_score_mle glm
+#' @export
 `compute_score_mle.glm` <- function(object, ...) {
     get_score_function(object)()
 }
@@ -941,7 +861,7 @@
     UseMethod('compute_score_mle')
 }
 
-#' @method compute_dispersion_mle glm
+#' @export
 `compute_dispersion_mle.glm` <- function(object, ...) {
     if (object$family$family %in% c("poisson", "binomial")) {
         dispersion_mle <- 1
@@ -980,7 +900,7 @@
     UseMethod('compute_dispersion_mle')
 }
 
-#' @method compute_expected_information_mle glm
+#' @export
 `compute_expected_information_mle.glm` <- function(object, dispersion, ...) {
     get_information_function(object)(dispersion = dispersion, type = "expected")
 }
@@ -990,7 +910,7 @@
     UseMethod('compute_expected_information_mle')
 }
 
-#' @method compute_observed_information_mle glm
+#' @export
 `compute_observed_information_mle.glm` <- function(object, dispersion = dispersion, ...) {
     get_information_function(object)(dispersion = dispersion, type = "observed")
 }
@@ -1000,7 +920,7 @@
     UseMethod('compute_observed_information_mle')
 }
 
-#' @method compute_bias_mle glm
+#' @export
 `compute_bias_mle.glm` <- function(object, ...) {
     get_bias_function(object)()
 }
@@ -1117,6 +1037,10 @@ get_simulate_function.glm <- function(object, ...) {
 #' function is evaluated. If missing then the maximum likelihood
 #' estimate is used}
 #'
+#' \item{response}{an optional response vector or matrix. It must have
+#' the same shape as the response in the fitted model. If missing, the
+#' fitted response is used}
+#'
 #' }
 #'
 #' @export
@@ -1152,6 +1076,10 @@ get_score_function.glm <- function(object, ...) {
 #' \item{QR}{If \code{TRUE}, then the QR decomposition of \deqn{W^{1/2} X} is returned, where \deqn{W} is a diagonal matrix with the working weights (\code{object$weights}) and \deqn{X} is the model matrix.}
 #'
 #' \item{CHOL}{If \code{TRUE}, then the Cholesky decomposition of the information matrix at the coefficients is returned}
+#'
+#' \item{response}{an optional response vector or matrix. It must have
+#' the same shape as the response in the fitted model. If missing, the
+#' fitted response is used}
 #'
 #' }
 #'
@@ -1207,9 +1135,9 @@ get_bias_function.glm <- function(object, ...) {
 #' The computed/extracted function has arguments
 #' \describe{
 #'
-#' \item{data}{a data frame with observations at which to compute
-#' densities. If missing then densities are computed at the model
-#' frame extracted from the object (see \code{\link{glm}})}
+#' \item{response}{an optional response vector or matrix at which to
+#' compute densities. It must have the same shape as the response in
+#' the fitted model. If missing, the fitted response is used}
 #'
 #' \item{coefficients}{the regression coefficients at which the
 #' densities are computed. If missing then the maximum likelihood
@@ -1243,10 +1171,10 @@ get_dmodel_function.glm <- function(object, ...) {
 #' The computed/extracted function has arguments
 #' \describe{
 #'
-#' \item{data}{a data frame with observations at which to compute the
-#' distribution function. If missing then probabilities are computed
-#' at the model frame extracted from the object (see
-#' \code{\link{glm}})}
+#' \item{response}{an optional response vector or matrix at which to
+#' compute the distribution function. It must have the same shape as
+#' the response in the fitted model. If missing, the fitted response
+#' is used}
 #'
 #' \item{coefficients}{the regression coefficients at which the
 #' distribution function are computed. If missing then the maximum
@@ -1282,12 +1210,8 @@ get_pmodel_function.glm <- function(object, ...) {
 #' The computed/extracted function has arguments
 #' \describe{
 #'
-#' \item{p}{a vector of probabilities with \code{length(p)} equal to
-#' \code{nrow(data)} at which to evaluate quantiles}
-#'
-#' \item{data}{a data frame with observations at which to compute the
-#' quantiles. If missing then quantiles are computed at the model
-#' frame extracted from the object (see \code{\link{glm}})}
+#' \item{p}{a vector with one probability for each observation in the
+#' fitted model}
 #'
 #' \item{coefficients}{the regression coefficients at which the
 #' quantiles are computed. If missing then the maximum likelihood

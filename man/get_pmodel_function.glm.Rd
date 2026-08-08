@@ -18,10 +18,10 @@ Function to compute/extract a \code{pmodel} function
 The computed/extracted function has arguments
 \describe{
 
-\item{data}{a data frame with observations at which to compute the
-distribution function. If missing then probabilities are computed
-at the model frame extracted from the object (see
-\code{\link{glm}})}
+\item{response}{an optional response vector or matrix at which to
+compute the distribution function. It must have the same shape as
+the response in the fitted model. If missing, the fitted response
+is used}
 
 \item{coefficients}{the regression coefficients at which the
 distribution function are computed. If missing then the maximum

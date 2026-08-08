@@ -43,19 +43,17 @@
 #' cML_dmodel <- get_dmodel_function(cML) # same as cML$auxiliary_functions$dmodel
 #' cML_dmodel()
 #'
-#' # Evaluate the densities at supplied data points
-#' new_data <- data.frame(u = c(15:17, 15:17),
-#'                        time = c(30:32, 15:17),
-#'                        lot = factor(c(1, 1, 1, 2, 2, 2)))
-#' cML_dmodel(data = new_data)
+#' # Evaluate the densities at a supplied response under the fitted design
+#' new_response <- rev(clotting$time)
+#' cML_dmodel(response = new_response)
 #'
 #' # Get pmodel and qmodel function
 #' cML_pmodel <- get_pmodel_function(cML) # same as cML$auxiliary_functions$pmodel
 #' cML_qmodel <- get_qmodel_function(cML) # same as cML$auxiliary_functions$qmodel
 #'
-#' # The following should return c(30:32, 15:17)
-#' probs <- cML_pmodel(data = new_data)
-#' cML_qmodel(probs, data = new_data)
+#' # The following should return new_response
+#' probs <- cML_pmodel(response = new_response)
+#' cML_qmodel(probs)
 #'
 #' # Evaluate the observed information matrix at the MLE
 #' cML_info <- get_information_function(cML)
@@ -82,4 +80,3 @@ enriched_glm <- function(formula, family = gaussian, ...) {
     fit <- glm(formula, family = family, ...)
     enrich(fit, with = "all")
 }
-

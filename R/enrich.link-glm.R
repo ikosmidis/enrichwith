@@ -104,6 +104,7 @@
 }
 
 #' @method compute_d2mu.deta link-glm
+#' @export
 `compute_d2mu.deta.link-glm` <- function(object, ...) {
     mu.eta <- object$mu.eta
     linkinv <- object$linkinv
@@ -155,6 +156,7 @@
 }
 
 #' @method compute_d3mu.deta link-glm
+#' @export
 `compute_d3mu.deta.link-glm` <- function(object, ...) {
     mu.eta <- object$mu.eta
     linkinv <- object$linkinv
@@ -218,5 +220,4 @@ if (getRversion() >= "2.15.1") globalVariables(c("lambda"))
 ##     "3rd derivative of the inverse link function", "2nd and 3rd derivative of the inverse link function"),
 ##     component = list("d2mu.deta", "d3mu.deta", c("d2mu.deta",
 ##         "d3mu.deta")), path = "~/Downloads", attempt_rename = TRUE)
-
 

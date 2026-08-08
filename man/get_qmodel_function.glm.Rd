@@ -18,12 +18,8 @@ Function to compute/extract a \code{qmodel} function
 The computed/extracted function has arguments
 \describe{
 
-\item{p}{a vector of probabilities with \code{length(p)} equal to
-\code{nrow(data)} at which to evaluate quantiles}
-
-\item{data}{a data frame with observations at which to compute the
-quantiles. If missing then quantiles are computed at the model
-frame extracted from the object (see \code{\link{glm}})}
+\item{p}{a vector with one probability for each observation in the
+fitted model}
 
 \item{coefficients}{the regression coefficients at which the
 quantiles are computed. If missing then the maximum likelihood

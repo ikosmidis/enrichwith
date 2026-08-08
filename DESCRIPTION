@@ -10,7 +10,6 @@ BugReports: https://github.com/ikosmidis/enrichwith/issues
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.3
 Suggests:
     whisker,
     SuppDists,
@@ -27,3 +26,4 @@ Enhances:
     gnm,
     stats
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0

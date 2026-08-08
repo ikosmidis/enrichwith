@@ -29,13 +29,13 @@ of the bias of the maximum likelihood estimator.
 \details{
 The \code{auxiliary_functions} component consists of any or all of the following functions:
 \itemize{
-\item \code{score}: the log-likelihood derivatives as a function of the model parameters; see \code{\link{get_score_function.glm}}
-\item \code{information}: the expected or observed information as a function of the model parameters; see \code{\link{get_information_function.glm}}
+\item \code{score}: the log-likelihood derivatives as a function of the model parameters and, optionally, a supplied response; see \code{\link{get_score_function.glm}}
+\item \code{information}: the expected or observed information as a function of the model parameters and, optionally, a supplied response; see \code{\link{get_information_function.glm}}
 \item \code{bias}: the first-order term in the expansion of the bias of the maximum likelihood estimator as a function of the model parameters; see \code{\link{get_bias_function.glm}}
 \item \code{simulate}: a \code{\link{simulate}} function for \code{\link{glm}} objects that can simulate variates from the model at user-supplied parameter values for the regression parameters and the dispersion (default is the maximum likelihood estimates); see \code{\link{get_simulate_function.glm}}
-\item \code{dmodel}: computes densities or probability mass functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_dmodel_function.glm}}
-\item \code{pmodel}: computes distribution functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_pmodel_function.glm}}
-\item \code{qmodel}: computes quantile functions under the model at user-supplied \code{\link{data.frame}}s and at user-supplied values for the regression parameters and the dispersion, if any (default is at the maximum likelihood estimates); see \code{\link{get_qmodel_function.glm}}
+\item \code{dmodel}: computes densities or probability mass functions under the fitted design at user-supplied responses and parameter values; see \code{\link{get_dmodel_function.glm}}
+\item \code{pmodel}: computes distribution functions under the fitted design at user-supplied responses and parameter values; see \code{\link{get_pmodel_function.glm}}
+\item \code{qmodel}: computes quantile functions under the fitted design at user-supplied probabilities and parameter values; see \code{\link{get_qmodel_function.glm}}
 \item \code{Pmat}: the matrices \eqn{P_t} as a function of the model parameters (see, Kosmidis, 2014, expression (5))
 \item \code{Qmat}: the matrices \eqn{Q_t} as a function of the model parameters (see, Kosmidis, 2014, expression (5))
 }

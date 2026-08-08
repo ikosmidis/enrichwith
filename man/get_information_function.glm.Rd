@@ -34,5 +34,9 @@ is used}
 
 \item{CHOL}{If \code{TRUE}, then the Cholesky decomposition of the information matrix at the coefficients is returned}
 
+\item{response}{an optional response vector or matrix. It must have
+the same shape as the response in the fitted model. If missing, the
+fitted response is used}
+
 }
 }

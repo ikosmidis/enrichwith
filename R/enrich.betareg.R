@@ -123,7 +123,7 @@
     out
 }
 
-#' @method compute_auxiliary_functions betareg
+#' @export
 `compute_auxiliary_functions.betareg` <- function(object, ...) {
     if (is.null(object$model)) {
         object <- update(object, model = TRUE)
@@ -350,7 +350,7 @@
     UseMethod('compute_auxiliary_functions')
 }
 
-#' @method compute_score_mle betareg
+#' @export
 `compute_score_mle.betareg` <- function(object, ...) {
     get_score_function(object)()
 }
@@ -360,7 +360,7 @@
     UseMethod('compute_score_mle')
 }
 
-#' @method compute_expected_information betareg
+#' @export
 `compute_expected_information_mle.betareg` <- function(object, ...) {
     get_information_function(object)()
 }
@@ -370,7 +370,7 @@
     UseMethod('compute_expected_information_mle')
 }
 
-#' @method compute_bias_mle betareg
+#' @export
 `compute_bias_mle.betareg` <- function(object, ...) {
     get_bias_function(object)()
 }
@@ -537,4 +537,3 @@ get_bias_function.betareg <- function(object, ...) {
 ##     component = list("auxiliary_functions", "score_mle", "dispersion_mle",
 ##         "expected_information_mle",
 ##         "bias_mle"), path = "~/Downloads", attempt_rename = FALSE)
-

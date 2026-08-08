@@ -53,4 +53,9 @@ particularly if that extends core R objects.
 \author{
 \strong{Maintainer}: Ioannis Kosmidis \email{ioannis.kosmidis@warwick.ac.uk}
 
+Authors:
+\itemize{
+  \item Ioannis Kosmidis \email{ioannis.kosmidis@warwick.ac.uk}
+}
+
 }

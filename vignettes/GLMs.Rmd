@@ -257,7 +257,7 @@ max(abs(apply(samples, 1, var) - variances))
 ```
 
 # pmodel, dmodel, qmodel
-**enrichwith** also provides the `get_dmodel_function`, `get_pmodel_function` and `get_qmodel_function` methods, which can be used to evaluate densities or probability mass functions, distribution functions, and quantile functions, respectively at arbitrary parameter values and data settings.
+**enrichwith** also provides the `get_dmodel_function`, `get_pmodel_function` and `get_qmodel_function` methods, which can be used to evaluate densities or probability mass functions, distribution functions, and quantile functions, respectively, under the fitted design and at arbitrary parameter values.
 
 For example, the following code chunk computes the density at the observations in the `clotting` data set under then maximum likelihood fit
 ```{r, echo = TRUE, eval = TRUE}
@@ -268,45 +268,23 @@ We can also compute the densities at user-supplied parameter values
 ```{r, echo = TRUE, eval = TRUE}
 cML_dmodel(coefficients = c(-0.01, 0.02, -0.01, 0), dispersion = 0.1)
 ```
-or even at different data points
+or at a different response under the same fitted design
 ```{r, echo = TRUE, eval = TRUE}
-new_data <- data.frame(conc = 5:10, time = 50:45, lot = factor(c(1, 1, 1, 2, 2, 2)))
-cML_dmodel(data = new_data, coefficients = c(-0.01, 0.02, -0.01, 0), dispersion = 0.1)
+new_response <- rev(clotting$time)
+cML_dmodel(response = new_response,
+           coefficients = c(-0.01, 0.02, -0.01, 0), dispersion = 0.1)
 ```
 We can also compute cumulative probabilities and quantile functions. So
 ```{r, echo = TRUE, eval = TRUE}
 cML_qmodel <- get_qmodel_function(clottingML)
 cML_pmodel <- get_pmodel_function(clottingML)
-probs <- cML_pmodel(data = new_data, coefficients = c(-0.01, 0.02, -0.01, 0), dispersion = 0.1)
-cML_qmodel(probs, data = new_data, coefficients = c(-0.01, 0.02, -0.01, 0), dispersion = 0.1)
+probs <- cML_pmodel(response = new_response,
+                    coefficients = c(-0.01, 0.02, -0.01, 0),
+                    dispersion = 0.1)
+cML_qmodel(probs, coefficients = c(-0.01, 0.02, -0.01, 0),
+           dispersion = 0.1)
 ```
-returns `new_data$time`.
-
-For example the fitted densities when `(conc, lot)` is `c(15, 1)`, `c(15, 2)`, `c(40, 1)` or `c(40, 2)` are
-```{r, echo = TRUE, eval = TRUE}
-new_data <- expand.grid(conc = c(15, 40),
-                        lot = factor(1:2),
-                        time = seq(0, 50, length = 500))
-new_data$density <- cML_dmodel(new_data)
-ggplot(data = new_data) + 
-     geom_line(aes(time, density)) + facet_grid(conc ~ lot) +
-     theme_bw() +
-     geom_vline(data = clotting[c(3, 6, 12, 15), ], aes(xintercept = time), lty = 2)
-```
-
-The dashed vertical lines are the observed values of time for the `(conc, lot)` combinations in the figure.
-
-# `enriched_glm`
-**enrichwith** provides a wrapper to the `glm` interface that results directly in `enriched_glm` objects that carry all the components described above. For example,
-```{r, echo = TRUE, eval = TRUE}
-enriched_clottingML <- enriched_glm(time ~ log(conc) * lot, family = Gamma, data = clotting)
-names(enriched_clottingML$auxiliary_functions)
-enriched_clottingML$score_mle
-enriched_clottingML$expected_information_mle
-enriched_clottingML$observed_information_mle
-enriched_clottingML$bias_mle
-enriched_clottingML$dispersion_mle
-```
+returns `new_response` (up to numerical tolerance).
 
 # Links to other resources
 
@@ -317,4 +295,3 @@ reduce the bias of the maximum likelihood estimator for generalized
 linear models.
 
 # References
-
