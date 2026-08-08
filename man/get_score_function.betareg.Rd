@@ -26,5 +26,9 @@ The computed/extracted function has arguments
 are computed. If missing then the maximum likelihood estimates are
 used}
 
+\item{response}{an optional numeric response vector with values in
+\code{(0, 1)}. It must have the same length as the response in the
+fitted model. If missing, the fitted response is used}
+
 }
 }

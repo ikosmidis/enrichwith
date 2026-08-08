@@ -31,5 +31,9 @@ likelihood estimates are used}
 
 \item{CHOL}{If \code{TRUE}, then the Cholesky decomposition of the information matrix at the coefficients is returned}
 
+\item{response}{an optional numeric response vector with values in
+\code{(0, 1)}. It must have the same length as the response in the
+fitted model. If missing, the fitted response is used}
+
 }
 }

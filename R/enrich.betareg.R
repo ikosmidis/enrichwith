@@ -14,8 +14,8 @@
 #' @details
 #' The \code{auxiliary_functions} component consists of any or all of the following functions:
 #' \itemize{
-#' \item \code{score}: the log-likelihood derivatives as a function of the model parameters; see \code{get_score_function.betareg}
-#' \item \code{information}: the expected information as a function of the model parameters; see \code{\link{get_information_function.betareg}}
+#' \item \code{score}: the log-likelihood derivatives as a function of the model parameters and, optionally, a supplied response; see \code{get_score_function.betareg}
+#' \item \code{information}: the expected or observed information as a function of the model parameters and, optionally, a supplied response; see \code{\link{get_information_function.betareg}}
 #' \item \code{bias}: the first-order term in the expansion of the bias of the maximum likelihood estimator as a function of the model parameters; see \code{\link{get_bias_function.betareg}}
 #' \item \code{simulate}: a \code{\link{simulate}} function for \code{\link[betareg]{betareg}} objects that can simulate variates from the model at user-supplied parameter values for the regression parameters (default is the maximum likelihood estimates); see \code{\link{get_simulate_function.betareg}}
 #' }
@@ -154,9 +154,24 @@
     phi_linkinv <- linkprec$linkinv
     phi_mu.eta <- linkprec$mu.eta
     phi_dmu.deta <- linkprec$d2mu.deta
-    ystar <- qlogis(y)
-    u <- log(1 - y)
-    score <- function(coefficients, contributions = FALSE) {
+    response_data <- function(response) {
+        if (missing(response)) {
+            response <- y
+        }
+        if (!is.numeric(response) || is.data.frame(response) ||
+            !is.null(dim(response)) || length(response) != length(y)) {
+            stop("'response' must be a numeric vector with the same length as the fitted response")
+        }
+        if (anyNA(response) || any(!is.finite(response)) ||
+            any(response <= 0 | response >= 1)) {
+            stop("all values of 'response' must be finite and in (0, 1)")
+        }
+        list(ystar = qlogis(response), u = log1p(-response))
+    }
+    score <- function(coefficients, contributions = FALSE, response) {
+        response_values <- response_data(response)
+        ystar <- response_values$ystar
+        u <- response_values$u
         if (missing(coefficients)) {
             coefficients <- coef(object, model = "full")
         }
@@ -180,7 +195,10 @@
     }
 
     information <- function(coefficients, QR = TRUE, CHOL = FALSE,
-                            type = c("expected", "observed")) {
+                            type = c("expected", "observed"), response) {
+        response_values <- response_data(response)
+        ystar <- response_values$ystar
+        u <- response_values$u
         if (missing(coefficients)) {
             coefficients <- coef(object, model = "full")
         }
@@ -453,6 +471,10 @@ get_simulate_function.betareg <- function(object, ...) {
 #' are computed. If missing then the maximum likelihood estimates are
 #' used}
 #'
+#' \item{response}{an optional numeric response vector with values in
+#' \code{(0, 1)}. It must have the same length as the response in the
+#' fitted model. If missing, the fitted response is used}
+#'
 #' }
 #'
 #' @export
@@ -485,6 +507,10 @@ get_score_function.betareg <- function(object, ...) {
 #' \item{QR}{Currently not used}
 #'
 #' \item{CHOL}{If \code{TRUE}, then the Cholesky decomposition of the information matrix at the coefficients is returned}
+#'
+#' \item{response}{an optional numeric response vector with values in
+#' \code{(0, 1)}. It must have the same length as the response in the
+#' fitted model. If missing, the fitted response is used}
 #'
 #' }
 #'

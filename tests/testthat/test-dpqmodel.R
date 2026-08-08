@@ -30,6 +30,10 @@ test_that("simulate and get_simulate_function return the same variates for vario
                      get_simulate_function(model3)(seed = 123)[, 1])
 })
 
+aux1 <- get_auxiliary_functions(model1)
+aux2 <- get_auxiliary_functions(model2)
+aux3 <- get_auxiliary_functions(model3)
+
 probs <- 1:10 / 11
 test_that("qmodel returns the same output across data representations", {
     for (pr in probs) {
@@ -37,9 +41,6 @@ test_that("qmodel returns the same output across data representations", {
     }
 })
 
-aux1 <- get_auxiliary_functions(model1)
-aux2 <- get_auxiliary_functions(model2)
-aux3 <- get_auxiliary_functions(model3)
 tots <- lizards$grahami + lizards$opalinus
 d1 <- simulate(model1, seed = 123)[, 1]
 d2 <- simulate(model2, seed = 123)[, 1]

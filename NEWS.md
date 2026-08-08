@@ -6,6 +6,10 @@
   functions for `glm` objects can now be evaluated at a supplied response
   under the fitted model design.
 
+* The `score()` and `information()` auxiliary functions for `betareg`
+  objects can now be evaluated at a supplied response under the fitted
+  model design.
+
 ## Other improvements, updates, and additions
 
 * Standardized the interfaces of the `dmodel()`, `pmodel()`, and `qmodel()`
@@ -170,4 +174,3 @@
 # enrichwith 0.01
 
 * First release.
-
