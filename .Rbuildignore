@@ -4,6 +4,7 @@ tests/
 inst/TODO.org
 inst/temporary
 inst/enrich_family.gif
+inst/dev_resids*
 ^\.travis\.yml$
 ^CRAN-RELEASE$
 ^\.github$
