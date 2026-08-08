@@ -8,3 +8,5 @@ inst/enrich_family.gif
 ^CRAN-RELEASE$
 ^\.github$
 ^CRAN-SUBMISSION$
+^doc$
+^Meta$
