@@ -3,6 +3,34 @@ context("Implementation of P/Q matrices")
 library("numDeriv")
 library("MASS")
 
+test_that("bias implementation matches manual implementation through P and Q [betareg]", {
+    skip_if_not_installed("betareg")
+    data("GasolineYield", package = "betareg")
+    mod <- betareg::betareg(yield ~ batch + temp | temp,
+                            data = GasolineYield)
+    auxiliary <- get_auxiliary_functions(mod)
+    coefficients <- coef(mod, model = "full")
+
+    for (values in list(coefficients,
+                        replace(coefficients, 1L, coefficients[1L] + 0.1))) {
+        v <- solve(auxiliary$information(values))
+        P <- auxiliary$Pmat(values)
+        Q <- auxiliary$Qmat(values)
+        manual_bias <- -drop(v %*% vapply(seq_along(P), function(t) {
+            sum(v * (P[[t]] + Q[[t]])) / 2
+        }, numeric(1)))
+
+        expect_equal(auxiliary$bias(values), manual_bias,
+                     check.attributes = FALSE)
+        expect_named(P, names(coefficients))
+        expect_named(Q, names(coefficients))
+        expect_equal(attr(P, "coefficients"), values)
+        expect_equal(attr(Q, "coefficients"), values)
+        expect_true(all(vapply(P, isSymmetric, logical(1))))
+        expect_true(all(vapply(Q, isSymmetric, logical(1))))
+    }
+})
+
 ## A Gamma example, from McCullagh & Nelder (1989, pp. 300-2)
 clotting <- data.frame(
     u = c(5,10,15,20,30,40,60,80,100, 5,10,15,20,30,40,60,80,100),

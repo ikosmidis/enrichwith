@@ -24,6 +24,8 @@
 #' \item \code{dmodel}: computes beta densities under the fitted design at user-supplied responses and parameter values; see \code{\link{get_dmodel_function.betareg}}
 #' \item \code{pmodel}: computes beta distribution functions under the fitted design at user-supplied responses and parameter values; see \code{\link{get_pmodel_function.betareg}}
 #' \item \code{qmodel}: computes beta quantile functions under the fitted design at user-supplied probabilities and parameter values; see \code{\link{get_qmodel_function.betareg}}
+#' \item \code{Pmat}: the matrices \eqn{P_t} as a function of the model parameters
+#' \item \code{Qmat}: the matrices \eqn{Q_t} as a function of the model parameters
 #' }
 #'
 #' @return The object \code{object} of class \code{\link[betareg]{betareg}}
@@ -308,7 +310,7 @@
         out
     }
 
-    bias <- function(coefficients) {
+    PQmatrices <- function(coefficients) {
         if (missing(coefficients)) {
             coefficients <- coef(object, model = "full")
         }
@@ -318,10 +320,8 @@
         phi_eta <- as.vector(z %*% gamma + offset[[2L]])
         mu <- linkinv(eta)
         phi <- phi_linkinv(phi_eta)
-        mustar <- digamma(mu * phi) - digamma((1 - mu) * phi)
         psi1 <- trigamma(mu * phi)
         psi2 <- trigamma((1 - mu) * phi)
-        InfoInv <- try(solve(information(coefficients)), silent = TRUE)
         D1 <- mu.eta(eta)
         D2 <- phi_mu.eta(phi_eta)
         D1dash <- dmu.deta(eta)
@@ -332,51 +332,97 @@
         kappa3 <- dPsi1 - dPsi2
         psi3 <- psigamma(phi, 1)
         dPsi3 <- psigamma(phi, 2)
-        PQsum <- function(t) {
+        coefnames <- names(coef(object, model = "full"))
+
+        PQ <- lapply(seq_len(k + m), function(t) {
             if (t <= k) {
                 Xt <- x[, t]
-                bb <- if (k > 0L)
-                  crossprod(x, weights * phi^2 * D1 * (phi *
-                    D1^2 * kappa3 + D1dash * kappa2) * Xt * x)
+                Pbb <- if (k > 0L)
+                  crossprod(x, weights * phi^3 * D1^3 * kappa3 *
+                    Xt * x)
                 else crossprod(x)
-                bg <- if ((k > 0L) & (m > 0L))
-                  crossprod(x, weights * phi * D1^2 * D2 * (mu *
-                    phi * kappa3 + phi * dPsi2 + kappa2) * Xt *
-                    z)
+                Qbb <- if (k > 0L)
+                  crossprod(x, weights * phi^2 * D1 * D1dash *
+                    kappa2 * Xt * x)
+                else crossprod(x)
+                Pbg <- if ((k > 0L) & (m > 0L))
+                  crossprod(x, weights * phi^2 * D1^2 * D2 *
+                    (mu * kappa3 + dPsi2) * Xt * z)
                 else crossprod(x, z)
-                gg <- if (m > 0L)
+                Qbg <- if ((k > 0L) & (m > 0L))
+                  crossprod(x, weights * phi * D1^2 * D2 *
+                    kappa2 * Xt * z)
+                else crossprod(x, z)
+                Pgg <- if (m > 0L)
                   crossprod(z, weights * phi * D1 * D2^2 * (mu^2 *
-                    kappa3 - dPsi2 + 2 * mu * dPsi2) * Xt * z) +
-                    crossprod(z, weights * phi * D1 * D2dash *
-                      (mu * kappa2 - psi2) * Xt * z)
+                    kappa3 + (2 * mu - 1) * dPsi2) * Xt * z)
+                else crossprod(z)
+                Qgg <- if (m > 0L)
+                  crossprod(z, weights * phi * D1 * D2dash *
+                    (mu * kappa2 - psi2) * Xt * z)
                 else crossprod(z)
             } else {
                 Zt <- z[, t - k]
-                bb <- if (k > 0L)
-                  crossprod(x, weights * phi * D2 * (phi * D1^2 *
-                    mu * kappa3 + phi * D1^2 * dPsi2 + D1dash *
-                    mu * kappa2 - D1dash * psi2) * Zt * x)
+                Pbb <- if (k > 0L)
+                  crossprod(x, weights * phi^2 * D2 * D1^2 *
+                    (mu * kappa3 + dPsi2) * Zt * x)
                 else crossprod(x)
-                bg <- if ((k > 0L) & (m > 0L))
-                  crossprod(x, weights * D1 * D2^2 * (phi * mu^2 *
-                    kappa3 + phi * (2 * mu - 1) * dPsi2 + mu *
-                    kappa2 - psi2) * Zt * z)
+                Qbb <- if (k > 0L)
+                  crossprod(x, weights * phi * D2 * D1dash *
+                    (mu * kappa2 - psi2) * Zt * x)
+                else crossprod(x)
+                Pbg <- if ((k > 0L) & (m > 0L))
+                  crossprod(x, weights * phi * D1 * D2^2 *
+                    (mu^2 * kappa3 + (2 * mu - 1) * dPsi2) *
+                    Zt * z)
                 else crossprod(x, z)
-                gg <- if (m > 0L)
+                Qbg <- if ((k > 0L) & (m > 0L))
+                  crossprod(x, weights * D1 * D2^2 *
+                    (mu * kappa2 - psi2) * Zt * z)
+                else crossprod(x, z)
+                Pgg <- if (m > 0L)
                   crossprod(z, weights * D2^3 * (mu^3 * kappa3 +
                     (3 * mu^2 - 3 * mu + 1) * dPsi2 - dPsi3) *
-                    Zt * z) + crossprod(z, weights * D2dash *
-                    D2 * (mu^2 * kappa2 + (1 - 2 * mu) * psi2 -
-                    psi3) * Zt * z)
+                    Zt * z)
+                else crossprod(z)
+                Qgg <- if (m > 0L)
+                  crossprod(z, weights * D2dash * D2 * (mu^2 *
+                    kappa2 + (1 - 2 * mu) * psi2 - psi3) * Zt * z)
                 else crossprod(z)
             }
-            pq <- rbind(cbind(bb, bg), cbind(t(bg), gg))
-            sum(diag(InfoInv %*% pq))/2
+            P <- rbind(cbind(Pbb, Pbg), cbind(t(Pbg), Pgg))
+            Q <- rbind(cbind(Qbb, Qbg), cbind(t(Qbg), Qgg))
+            dimnames(P) <- dimnames(Q) <- list(coefnames, coefnames)
+            list(P = P, Q = Q)
+        })
+        P <- lapply(PQ, `[[`, "P")
+        Q <- lapply(PQ, `[[`, "Q")
+        names(P) <- names(Q) <- coefnames
+        attr(P, "coefficients") <- attr(Q, "coefficients") <- coefficients
+        list(P = P, Q = Q)
+    }
+
+    Pmat <- function(coefficients) {
+        PQmatrices(coefficients)$P
+    }
+
+    Qmat <- function(coefficients) {
+        PQmatrices(coefficients)$Q
+    }
+
+    bias <- function(coefficients) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object, model = "full")
         }
+        InfoInv <- try(solve(information(coefficients)), silent = TRUE)
         if (inherits(InfoInv, "try-error")) {
             bias <- rep.int(NA_real_, k + m)
         } else {
-            bias <- drop(-InfoInv %*% sapply(1:(k + m), PQsum))
+            PQ <- PQmatrices(coefficients)
+            adjustment <- vapply(seq_len(k + m), function(t) {
+                sum(diag(InfoInv %*% (PQ$P[[t]] + PQ$Q[[t]]))) / 2
+            }, numeric(1))
+            bias <- drop(-InfoInv %*% adjustment)
         }
         bias
     }
@@ -415,7 +461,9 @@
                 simulate = simulate,
                 dmodel = dmodel,
                 pmodel = pmodel,
-                qmodel = qmodel))
+                qmodel = qmodel,
+                Pmat = Pmat,
+                Qmat = Qmat))
 }
 
 

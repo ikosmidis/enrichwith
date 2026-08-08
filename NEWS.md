@@ -15,6 +15,10 @@
   densities, distribution functions, and quantile functions under the
   fitted model design.
 
+* Added `Pmat()` and `Qmat()` auxiliary functions for `betareg` objects
+  fitted with `dist = "beta"`. These return the `P_t` and `Q_t` matrices
+  used in bias calculations.
+
 ## Bug fixes
 
 * Fixed the incorrect application of ordinary-beta auxiliary functions to

@@ -38,6 +38,8 @@ The \code{auxiliary_functions} component consists of any or all of the following
 \item \code{dmodel}: computes beta densities under the fitted design at user-supplied responses and parameter values; see \code{\link{get_dmodel_function.betareg}}
 \item \code{pmodel}: computes beta distribution functions under the fitted design at user-supplied responses and parameter values; see \code{\link{get_pmodel_function.betareg}}
 \item \code{qmodel}: computes beta quantile functions under the fitted design at user-supplied probabilities and parameter values; see \code{\link{get_qmodel_function.betareg}}
+\item \code{Pmat}: the matrices \eqn{P_t} as a function of the model parameters
+\item \code{Qmat}: the matrices \eqn{Q_t} as a function of the model parameters
 }
 }
 \examples{
