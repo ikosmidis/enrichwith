@@ -8,6 +8,17 @@ library("numDeriv")
 data("GasolineYield", package = "betareg")
 data("FoodExpenditure", package = "betareg")
 tol <- 1e-08
+
+test_that("extended-support beta regressions are rejected", {
+    fit <- betareg(yield ~ batch + temp, data = GasolineYield)
+
+    for (dist in c("xbeta", "xbetax")) {
+        fit$dist <- dist
+        expect_error(get_auxiliary_functions(fit), 'dist = "beta"',
+                     fixed = TRUE)
+    }
+})
+
 for (link in c("logit", "probit", "cloglog", "cauchit")) {
     gy <- betareg(yield ~ batch + temp | temp, data = GasolineYield, link = link)
 

@@ -12,6 +12,9 @@
 #'     \code{compute_*} functions
 #'
 #' @details
+#' Enrichment is currently implemented only for models fitted with
+#' \code{dist = "beta"}.
+#'
 #' The \code{auxiliary_functions} component consists of any or all of the following functions:
 #' \itemize{
 #' \item \code{score}: the log-likelihood derivatives as a function of the model parameters and, optionally, a supplied response; see \code{get_score_function.betareg}
@@ -125,6 +128,9 @@
 
 #' @export
 `compute_auxiliary_functions.betareg` <- function(object, ...) {
+    if (!identical(object$dist, "beta")) {
+        stop("enrichment is currently only implemented for betareg objects with `dist = \"beta\"`")
+    }
     if (is.null(object$model)) {
         object <- update(object, model = TRUE)
     }

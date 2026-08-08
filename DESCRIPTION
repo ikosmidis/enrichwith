@@ -22,7 +22,7 @@ Suggests:
     testthat,
     numDeriv
 Enhances:
-    betareg,
+    betareg (> 3.2-0),
     gnm,
     stats
 VignetteBuilder: knitr

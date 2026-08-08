@@ -10,6 +10,12 @@
   objects can now be evaluated at a supplied response under the fitted
   model design.
 
+## Bug fixes
+
+* Fixed the incorrect application of ordinary-beta auxiliary functions to
+  `betareg` objects fitted with `dist = "xbeta"` or `dist = "xbetax"`.
+  Such objects are now rejected with an informative error.
+
 ## Other improvements, updates, and additions
 
 * Standardized the interfaces of the `dmodel()`, `pmodel()`, and `qmodel()`

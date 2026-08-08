@@ -26,6 +26,9 @@ likelihood estimator, and the first term in the expansion of the
 bias of the maximum likelihood estimator.
 }
 \details{
+Enrichment is currently implemented only for models fitted with
+\code{dist = "beta"}.
+
 The \code{auxiliary_functions} component consists of any or all of the following functions:
 \itemize{
 \item \code{score}: the log-likelihood derivatives as a function of the model parameters and, optionally, a supplied response; see \code{get_score_function.betareg}
