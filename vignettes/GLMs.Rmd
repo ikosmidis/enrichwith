@@ -6,7 +6,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: enrichwith.bib
 vignette: >
-  %\VignetteIndexEntry{enriching glm objects}
+  %\VignetteIndexEntry{Enriching `glm` objects}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---

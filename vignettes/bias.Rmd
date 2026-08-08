@@ -5,7 +5,7 @@ date: 2016-09-02
 output: rmarkdown::html_vignette
 bibliography: enrichwith.bib
 vignette: >
-  %\VignetteIndexEntry{Bias reduction in generalized linear models using enrichwith}
+  %\VignetteIndexEntry{Bias reduction in generalized linear models using **enrichwith**}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---

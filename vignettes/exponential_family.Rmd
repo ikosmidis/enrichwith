@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: enrichwith.bib
 vignette: >
-  %\VignetteIndexEntry{enriching family objects}
+  %\VignetteIndexEntry{Enriching `family` objects: exponential family of distributions}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
