@@ -1039,7 +1039,8 @@ get_simulate_function.glm <- function(object, ...) {
 #'
 #' \item{response}{an optional response vector or matrix. It must have
 #' the same shape as the response in the fitted model. If missing, the
-#' fitted response is used}
+#' fitted response is used. For grouped binomial models, the row totals
+#' of the fitted response should be retained}
 #'
 #' }
 #'
@@ -1079,7 +1080,8 @@ get_score_function.glm <- function(object, ...) {
 #'
 #' \item{response}{an optional response vector or matrix. It must have
 #' the same shape as the response in the fitted model. If missing, the
-#' fitted response is used}
+#' fitted response is used. For grouped binomial models, the row totals
+#' of the fitted response should be retained}
 #'
 #' }
 #'
@@ -1137,7 +1139,9 @@ get_bias_function.glm <- function(object, ...) {
 #'
 #' \item{response}{an optional response vector or matrix at which to
 #' compute densities. It must have the same shape as the response in
-#' the fitted model. If missing, the fitted response is used}
+#' the fitted model. If missing, the fitted response is used. For
+#' grouped binomial models, the row totals of the fitted response should
+#' be retained}
 #'
 #' \item{coefficients}{the regression coefficients at which the
 #' densities are computed. If missing then the maximum likelihood
@@ -1173,8 +1177,9 @@ get_dmodel_function.glm <- function(object, ...) {
 #'
 #' \item{response}{an optional response vector or matrix at which to
 #' compute the distribution function. It must have the same shape as
-#' the response in the fitted model. If missing, the fitted response
-#' is used}
+#' the response in the fitted model. If missing, the fitted response is
+#' used. For grouped binomial models, the row totals of the fitted
+#' response should be retained}
 #'
 #' \item{coefficients}{the regression coefficients at which the
 #' distribution function are computed. If missing then the maximum

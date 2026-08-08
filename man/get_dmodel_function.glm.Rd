@@ -20,7 +20,9 @@ The computed/extracted function has arguments
 
 \item{response}{an optional response vector or matrix at which to
 compute densities. It must have the same shape as the response in
-the fitted model. If missing, the fitted response is used}
+the fitted model. If missing, the fitted response is used. For
+grouped binomial models, the row totals of the fitted response should
+be retained}
 
 \item{coefficients}{the regression coefficients at which the
 densities are computed. If missing then the maximum likelihood
