@@ -252,6 +252,7 @@
             y <- response
             weights <- case_weights
             nobs <- NROW(y)
+            etastart <- mustart <- start <- NULL
             eval(family$initialize)
             list(y = y, prior_weights = weights)
         })

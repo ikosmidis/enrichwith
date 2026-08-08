@@ -113,7 +113,7 @@ test_that("factor responses retain the fitted levels", {
 test_that("responses transformed in the formula are supplied on the model-response scale", {
     dat <- data.frame(y = c(18, 12, 9, 7, 6, 5, 4, 3),
                       x = seq(-1, 1, length.out = 8))
-    fit <- glm(log(y) ~ x, family = Gamma("log"), data = dat)
+    fit <- glm(log(y) ~ x, family = gaussian(), data = dat)
     aux <- get_auxiliary_functions(fit)
     response <- log(dat$y)
 
