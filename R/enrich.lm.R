@@ -209,8 +209,7 @@
 
         if (df_residual > 0) {
             bias_dispersion <- -nvar/nobs * dispersion
-        }
-        else {
+        } else {
             bias_dispersion <- NA
         }
         out <- c(bias_beta, bias_dispersion)
@@ -223,8 +222,7 @@
     simulate <- function(coefficients, dispersion, nsim = 1, seed = NULL) {
         if (missing(coefficients)) {
             coefficients <- coef(object)
-        }
-        else {
+        } else {
             if (!isTRUE(identical(length(coefficients), length(coef(object))))) {
                 stop("`coefficients` does not have the right length")
             }
@@ -251,8 +249,7 @@
         if (!is.list(variates)) {
             dim(variates) <- c(n, nsim)
             variates <- as.data.frame(variates)
-        }
-        else {
+        } else {
             class(variates) <- "data.frame"
         }
         names(variates) <-  paste("sim", seq_len(nsim), sep = "_")
@@ -371,8 +368,7 @@ get_auxiliary_functions.lm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         enriched_object <- enrich(object, with = "auxiliary functions")
         enriched_object$auxiliary_functions
-    }
-    else {
+    } else {
         object$auxiliary_functions
     }
 }
@@ -412,8 +408,7 @@ get_auxiliary_functions.lm <- function(object, ...) {
 get_simulate_function.lm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$simulate
-    }
-    else {
+    } else {
         object$auxiliary_functions$simulate
     }
 }
@@ -444,8 +439,7 @@ get_simulate_function.lm <- function(object, ...) {
 get_score_function.lm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$score
-    }
-    else {
+    } else {
         object$auxiliary_functions$score
     }
 }
@@ -480,8 +474,7 @@ get_score_function.lm <- function(object, ...) {
 get_information_function.lm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$information
-    }
-    else {
+    } else {
         object$auxiliary_functions$information
     }
 }
@@ -512,8 +505,7 @@ get_information_function.lm <- function(object, ...) {
 get_bias_function.lm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$bias
-    }
-    else {
+    } else {
         object$auxiliary_functions$bias
     }
 }

@@ -301,8 +301,7 @@
                     crossprod(z, weights * phi * D1 * D2dash *
                       (mu * kappa2 - psi2) * Xt * z)
                 else crossprod(z)
-            }
-            else {
+            } else {
                 Zt <- z[, t - k]
                 bb <- if (k > 0L)
                   crossprod(x, weights * phi * D2 * (phi * D1^2 *
@@ -327,8 +326,7 @@
         }
         if (inherits(InfoInv, "try-error")) {
             bias <- rep.int(NA_real_, k + m)
-        }
-        else {
+        } else {
             bias <- drop(-InfoInv %*% sapply(1:(k + m), PQsum))
         }
         bias
@@ -337,8 +335,7 @@
     simulate <- function(coefficients, nsim = 1, seed = NULL) {
         if (missing(coefficients)) {
             coefficients <-  coef(object, model = "full")
-        }
-        else {
+        } else {
             if (!isTRUE(identical(length(coefficients), length(coef(object, model = "full"))))) {
                 stop("`coefficients` does not have the right length")
             }
@@ -419,8 +416,7 @@ get_auxiliary_functions.betareg <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         enriched_object <- enrich(object, with = "auxiliary functions")
         enriched_object$auxiliary_functions
-    }
-    else {
+    } else {
         object$auxiliary_functions
     }
 }
@@ -456,8 +452,7 @@ get_auxiliary_functions.betareg <- function(object, ...) {
 get_simulate_function.betareg <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$simulate
-    }
-    else {
+    } else {
         object$auxiliary_functions$simulate
     }
 }
@@ -487,8 +482,7 @@ get_simulate_function.betareg <- function(object, ...) {
 get_score_function.betareg <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$score
-    }
-    else {
+    } else {
         object$auxiliary_functions$score
     }
 }
@@ -524,8 +518,7 @@ get_score_function.betareg <- function(object, ...) {
 get_information_function.betareg <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$information
-    }
-    else {
+    } else {
         object$auxiliary_functions$information
     }
 }
@@ -551,8 +544,7 @@ get_information_function.betareg <- function(object, ...) {
 get_bias_function.betareg <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$bias
-    }
-    else {
+    } else {
         object$auxiliary_functions$bias
     }
 }

@@ -225,8 +225,7 @@
                 !identical(dim(response), dim(fitted_response))) {
                 stop("'response' must be a matrix with the same dimensions as the fitted response")
             }
-        }
-        else {
+        } else {
             if (is.data.frame(response) || !is.null(dim(response)) ||
                 length(response) != length(fitted_response)) {
                 stop("'response' must be a vector with the same length as the fitted response")
@@ -272,8 +271,7 @@
         }
         if (has_na) {
             predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
-        }
-        else {
+        } else {
             predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
@@ -286,8 +284,7 @@
         if (family$family %in% c("poisson", "binomial")) {
             score_dispersion <- NULL
             vnames <- colnames(score_beta)
-        }
-        else {
+        } else {
             zetas <- -prior_weights/dispersion
             d1afuns <- rep(NA, nobs)
             d1afuns[keep] <- d1afun(zetas[keep])
@@ -326,8 +323,7 @@
         }
         if (has_na) {
             predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
-        }
-        else {
+        } else {
             predictors <- drop(x %*% coefficients + off)
         }
         type <- match.arg(type)
@@ -358,10 +354,9 @@
         if (family$family %in% c("poisson", "binomial")) {
             out <- info_beta
             colnames(out) <- rownames(out) <- colnames(x)
-        }
-        ## If there is a dispersion parameter then return the
-        ## information on the coefficients and the dispersion
-        else {
+            ## If there is a dispersion parameter then return the
+            ## information on the coefficients and the dispersion
+        } else {
             ## expected info coefficients-dispersion
             info_cross <- rep(0, ncol(info_beta))
             ## expected info dispersion-dispersion
@@ -405,8 +400,7 @@
         }
         if (has_na) {
             predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
-        }
-        else {
+        } else {
             predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
@@ -466,8 +460,7 @@
         }
         if (has_na) {
             predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
-        }
-        else {
+        } else {
             predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
@@ -528,8 +521,7 @@
         }
         if (has_na) {
             predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
-        }
-        else {
+        } else {
             predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
@@ -542,8 +534,7 @@
         Q <- qr.Q(Qr)[, inds, drop = FALSE]
         if (all(dim(Q) == c(1, 1))) {
             hats <- 1
-        }
-        else {
+        } else {
             hats <- rowSums(Q * Q)
         }
         ksi <- -0.5 * dispersion * d2mus * hats / (d1mus * sqrt(working_weights))
@@ -559,8 +550,7 @@
         if (family$family %in% c("poisson", "binomial")) {
             bias_dispersion <- NULL
             vnames <- names(bias_beta)
-        }
-        else {
+        } else {
             if (df_residual > 0) {
                 ## Enrich family object with the the derivatives of the a
                 ## function (see ?enrich.family for details)
@@ -572,8 +562,7 @@
                 s3 <- sum(prior_weights^3 * d3afuns, na.rm = TRUE)
                 s2 <- sum(prior_weights^2 * d2afuns, na.rm = TRUE)
                 bias_dispersion <- - (nvar - 2) * dispersion^3 / s2  - dispersion^2 * s3 / s2^2
-            }
-            else {
+            } else {
                 bias_dispersion <- NA
             }
             vnames <- c(names(bias_beta), "dispersion")
@@ -591,8 +580,7 @@
     simulate <- function(coefficients, dispersion, nsim = 1, seed = NULL) {
         if (missing(coefficients)) {
             coefficients <- coef(object)
-        }
-        else {
+        } else {
             if (!isTRUE(identical(length(coefficients), length(coef(object))))) {
                 stop("`coefficients` does not have the right length")
             }
@@ -634,8 +622,7 @@
                     yy <- factor(1 + rbinom(n * nsim, size = 1, prob = fitted_values),
                                  labels = levels(y))
                     split(yy, rep(seq_len(nsim), each = n))
-                }
-                else if (is.matrix(y) && ncol(y) == 2) {
+                } else if (is.matrix(y) && ncol(y) == 2) {
                     yy <- vector("list", nsim)
                     for (i in seq_len(nsim)) {
                         Y <- rbinom(n, size = prior_weights, prob = fitted_values)
@@ -644,10 +631,8 @@
                         yy[[i]] <- YY
                     }
                     yy
-                }
-                else rbinom(n * nsim, size = prior_weights, prob = fitted_values)/prior_weights
-            }
-            else rbinom(n * nsim, size = prior_weights, prob = fitted_values)/prior_weights
+                } else rbinom(n * nsim, size = prior_weights, prob = fitted_values)/prior_weights
+            } else rbinom(n * nsim, size = prior_weights, prob = fitted_values)/prior_weights
         },
         "poisson" = {
             if (any(prior_weights != 1)) {
@@ -665,8 +650,7 @@
         if (!is.list(variates)) {
             dim(variates) <- c(n, nsim)
             variates <- as.data.frame(variates)
-        }
-        else {
+        } else {
             class(variates) <- "data.frame"
         }
         names(variates) <-  paste("sim", seq_len(nsim), sep = "_")
@@ -691,8 +675,7 @@
         }
         if (has_na) {
             predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
-        }
-        else {
+        } else {
             predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
@@ -743,8 +726,7 @@
         }
         if (has_na) {
             predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
-        }
-        else {
+        } else {
             predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
@@ -797,8 +779,7 @@
         }
         if (has_na) {
             predictors <- drop(x[, !na_coefficients] %*% coefficients[!na_coefficients] + off)
-        }
-        else {
+        } else {
             predictors <- drop(x %*% coefficients + off)
         }
         fitted_values <- linkinv(predictors)
@@ -866,8 +847,7 @@
 `compute_dispersion_mle.glm` <- function(object, ...) {
     if (object$family$family %in% c("poisson", "binomial")) {
         dispersion_mle <- 1
-    }
-    else {
+    } else {
         object <- enrich(object, with = "auxiliary functions")
         nobs <- nobs(object)
         prior_weights <- weights(object, type = "prior")
@@ -883,12 +863,10 @@
             if (inherits(dispFit, "try-error")) {
                 warning("the mle of dispersion could not be calculated")
                 dispersion_mle <- NA
-            }
-            else {
+            } else {
                 dispersion_mle <- exp(dispFit$root)
             }
-        }
-        else {
+        } else {
             ## if the model is saturated dispersion_mle is NA
             dispersion_mle <- NA
     }
@@ -971,8 +949,7 @@ get_auxiliary_functions.glm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         enriched_object <- enrich(object, with = "auxiliary functions")
         enriched_object$auxiliary_functions
-    }
-    else {
+    } else {
         object$auxiliary_functions
     }
 }
@@ -1012,8 +989,7 @@ get_auxiliary_functions.glm <- function(object, ...) {
 get_simulate_function.glm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$simulate
-    }
-    else {
+    } else {
         object$auxiliary_functions$simulate
     }
 }
@@ -1049,8 +1025,7 @@ get_simulate_function.glm <- function(object, ...) {
 get_score_function.glm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$score
-    }
-    else {
+    } else {
         object$auxiliary_functions$score
     }
 }
@@ -1090,8 +1065,7 @@ get_score_function.glm <- function(object, ...) {
 get_information_function.glm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$information
-    }
-    else {
+    } else {
         object$auxiliary_functions$information
     }
 }
@@ -1122,8 +1096,7 @@ get_information_function.glm <- function(object, ...) {
 get_bias_function.glm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$bias
-    }
-    else {
+    } else {
         object$auxiliary_functions$bias
     }
 }
@@ -1161,8 +1134,7 @@ get_bias_function.glm <- function(object, ...) {
 get_dmodel_function.glm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$dmodel
-    }
-    else {
+    } else {
         object$auxiliary_functions$dmodel
     }
 }
@@ -1201,8 +1173,7 @@ get_dmodel_function.glm <- function(object, ...) {
 get_pmodel_function.glm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$pmodel
-    }
-    else {
+    } else {
         object$auxiliary_functions$pmodel
     }
 }
@@ -1239,8 +1210,7 @@ get_pmodel_function.glm <- function(object, ...) {
 get_qmodel_function.glm <- function(object, ...) {
     if (is.null(object$auxiliary_functions)) {
         get_auxiliary_functions(object)$qmodel
-    }
-    else {
+    } else {
         object$auxiliary_functions$qmodel
     }
 }

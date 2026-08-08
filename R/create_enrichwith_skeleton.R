@@ -110,8 +110,7 @@ create_enrichwith_skeleton <- function(class,
                 warning(gettextf("not syntactically valid component names: %s were renamed to %s",
                                  paste0(paste0("'", comp_input[!valid], "'"), collapse = ", "),
                                  paste0(paste0("'", comp_valid[!valid], collapse = ", "))))
-            }
-            else {
+            } else {
                 ## close(con)
                 warning(gettextf("not syntactically valid component names: %s",
                                  paste0(paste0("'", comp_input[!valid], "'"), collapse = ", ")))
