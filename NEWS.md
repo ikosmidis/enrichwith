@@ -10,6 +10,11 @@
   objects can now be evaluated at a supplied response under the fitted
   model design.
 
+* Added `dmodel()`, `pmodel()`, and `qmodel()` auxiliary functions for
+  `betareg` objects fitted with `dist = "beta"`. These evaluate beta
+  densities, distribution functions, and quantile functions under the
+  fitted model design.
+
 ## Bug fixes
 
 * Fixed the incorrect application of ordinary-beta auxiliary functions to

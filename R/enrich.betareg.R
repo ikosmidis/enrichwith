@@ -21,6 +21,9 @@
 #' \item \code{information}: the expected or observed information as a function of the model parameters and, optionally, a supplied response; see \code{\link{get_information_function.betareg}}
 #' \item \code{bias}: the first-order term in the expansion of the bias of the maximum likelihood estimator as a function of the model parameters; see \code{\link{get_bias_function.betareg}}
 #' \item \code{simulate}: a \code{\link{simulate}} function for \code{\link[betareg]{betareg}} objects that can simulate variates from the model at user-supplied parameter values for the regression parameters (default is the maximum likelihood estimates); see \code{\link{get_simulate_function.betareg}}
+#' \item \code{dmodel}: computes beta densities under the fitted design at user-supplied responses and parameter values; see \code{\link{get_dmodel_function.betareg}}
+#' \item \code{pmodel}: computes beta distribution functions under the fitted design at user-supplied responses and parameter values; see \code{\link{get_pmodel_function.betareg}}
+#' \item \code{qmodel}: computes beta quantile functions under the fitted design at user-supplied probabilities and parameter values; see \code{\link{get_qmodel_function.betareg}}
 #' }
 #'
 #' @return The object \code{object} of class \code{\link[betareg]{betareg}}
@@ -172,7 +175,21 @@
             any(response <= 0 | response >= 1)) {
             stop("all values of 'response' must be finite and in (0, 1)")
         }
-        list(ystar = qlogis(response), u = log1p(-response))
+        list(response = response, ystar = qlogis(response),
+             u = log1p(-response))
+    }
+    distribution_parameters <- function(coefficients) {
+        if (missing(coefficients)) {
+            coefficients <- coef(object, model = "full")
+        }
+        beta <- coefficients[seq.int(length.out = k)]
+        gamma <- coefficients[seq.int(length.out = m) + k]
+        eta <- as.vector(x %*% beta + offset[[1L]])
+        phi_eta <- as.vector(z %*% gamma + offset[[2L]])
+        mu <- linkinv(eta)
+        phi <- phi_linkinv(phi_eta)
+        list(shape1 = mu * phi, shape2 = (1 - mu) * phi,
+             coefficients = coefficients)
     }
     score <- function(coefficients, contributions = FALSE, response) {
         response_values <- response_data(response)
@@ -257,6 +274,38 @@
         attr(out, "coefficients") <- coefficients
         out
 
+    }
+
+    dmodel <- function(response, coefficients, log = FALSE) {
+        response <- response_data(response)$response
+        parameters <- distribution_parameters(coefficients)
+        out <- dbeta(response, shape1 = parameters$shape1,
+                     shape2 = parameters$shape2, log = log)
+        attr(out, "coefficients") <- parameters$coefficients
+        out
+    }
+
+    pmodel <- function(response, coefficients, lower.tail = TRUE,
+                       log.p = FALSE) {
+        response <- response_data(response)$response
+        parameters <- distribution_parameters(coefficients)
+        out <- pbeta(response, shape1 = parameters$shape1,
+                     shape2 = parameters$shape2, lower.tail = lower.tail,
+                     log.p = log.p)
+        attr(out, "coefficients") <- parameters$coefficients
+        out
+    }
+
+    qmodel <- function(p, coefficients, lower.tail = TRUE, log.p = FALSE) {
+        if (length(p) != n) {
+            stop("'p' must have one element for each fitted observation")
+        }
+        parameters <- distribution_parameters(coefficients)
+        out <- qbeta(p, shape1 = parameters$shape1,
+                     shape2 = parameters$shape2, lower.tail = lower.tail,
+                     log.p = log.p)
+        attr(out, "coefficients") <- parameters$coefficients
+        out
     }
 
     bias <- function(coefficients) {
@@ -363,7 +412,10 @@
     return(list(score = score,
                 information = information,
                 bias = bias,
-                simulate = simulate))
+                simulate = simulate,
+                dmodel = dmodel,
+                pmodel = pmodel,
+                qmodel = qmodel))
 }
 
 
@@ -523,6 +575,106 @@ get_information_function.betareg <- function(object, ...) {
     }
 }
 
+#' Function to compute/extract a \code{dmodel} function
+#'
+#' @param object an object of class \code{betareg} or\code{enriched_betareg}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted function has arguments
+#' \describe{
+#'
+#' \item{response}{an optional numeric response vector at which to
+#' compute densities. Values must be in \code{(0, 1)}, and the vector
+#' must have the same length as the fitted response. If missing, the
+#' fitted response is used}
+#'
+#' \item{coefficients}{the mean and precision regression coefficients
+#' at which the densities are computed. If missing, the maximum
+#' likelihood estimates are used}
+#'
+#' \item{log}{logical; if \code{TRUE}, logarithmic densities are
+#' returned}
+#'
+#' }
+#'
+#' @export
+get_dmodel_function.betareg <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$dmodel
+    } else {
+        object$auxiliary_functions$dmodel
+    }
+}
+
+#' Function to compute/extract a \code{pmodel} function
+#'
+#' @param object an object of class \code{betareg} or\code{enriched_betareg}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted function has arguments
+#' \describe{
+#'
+#' \item{response}{an optional numeric response vector at which to
+#' compute the distribution function. Values must be in \code{(0, 1)},
+#' and the vector must have the same length as the fitted response. If
+#' missing, the fitted response is used}
+#'
+#' \item{coefficients}{the mean and precision regression coefficients
+#' at which the distribution function is computed. If missing, the
+#' maximum likelihood estimates are used}
+#'
+#' \item{lower.tail}{logical; if \code{TRUE} (default), probabilities
+#' are \eqn{P[X \le x]}, otherwise, \eqn{P[X > x]}}
+#'
+#' \item{log.p}{logical; if \code{TRUE}, logarithmic probabilities are
+#' returned}
+#'
+#' }
+#'
+#' @export
+get_pmodel_function.betareg <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$pmodel
+    } else {
+        object$auxiliary_functions$pmodel
+    }
+}
+
+#' Function to compute/extract a \code{qmodel} function
+#'
+#' @param object an object of class \code{betareg} or\code{enriched_betareg}
+#' @param ... currently not used
+#'
+#' @details
+#' The computed/extracted function has arguments
+#' \describe{
+#'
+#' \item{p}{a vector with one probability for each observation in the
+#' fitted model}
+#'
+#' \item{coefficients}{the mean and precision regression coefficients
+#' at which the quantiles are computed. If missing, the maximum
+#' likelihood estimates are used}
+#'
+#' \item{lower.tail}{logical; if \code{TRUE} (default), probabilities
+#' are \eqn{P[X \le x]}, otherwise, \eqn{P[X > x]}}
+#'
+#' \item{log.p}{logical; if \code{TRUE}, logarithmic probabilities are
+#' used}
+#'
+#' }
+#'
+#' @export
+get_qmodel_function.betareg <- function(object, ...) {
+    if (is.null(object$auxiliary_functions)) {
+        get_auxiliary_functions(object)$qmodel
+    } else {
+        object$auxiliary_functions$qmodel
+    }
+}
+
 
 #' Function to compute/extract a function that returns the first term
 #' in the expansion of the bias of the MLE for the parameters of an
@@ -548,7 +700,6 @@ get_bias_function.betareg <- function(object, ...) {
         object$auxiliary_functions$bias
     }
 }
-
 
 
 ## ## Call that produced the original version of the enrichwith template for the current script:

@@ -41,6 +41,27 @@ for (link in c("logit", "probit", "cloglog", "cauchit")) {
         expect_equal(solve(info_appr), solve(info_exac), tolerance = 1e-03, check.attributes = FALSE)
     })
 
+    test_that("score and information are derivatives of the dmodel log-likelihood [betareg]", {
+        auxiliary <- gy_enriched$auxiliary_functions
+        coefficients <- c(coef(gy))
+        coefficients[1] <- coefficients[1] + 0.1
+        case_weights <- gy$weights
+        if (is.null(case_weights)) {
+            case_weights <- rep.int(1, nobs(gy))
+        }
+        log_likelihood <- function(coefficients) {
+            sum(case_weights * auxiliary$dmodel(
+                coefficients = coefficients, log = TRUE))
+        }
+
+        expect_equal(auxiliary$score(coefficients),
+                     grad(log_likelihood, coefficients),
+                     tolerance = 1e-05, check.attributes = FALSE)
+        expect_equal(auxiliary$information(coefficients, type = "observed"),
+                     -hessian(log_likelihood, coefficients),
+                     tolerance = 1e-05, check.attributes = FALSE)
+    })
+
     test_that("implementation of the bias function corresponds to what is computed internally [betareg]", {
         b_betareg <- update(gy, type = "BC")$bias
         b_enrichwith <- get_bias_function(gy)(coef(gy))
