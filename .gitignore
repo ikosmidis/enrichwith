@@ -1,7 +1,6 @@
 .Rproj.user
 .Rhistory
 .DS_Store
-inst/doc
 inst/TODO.org
 inst/temporary
 inst/dev_resids*

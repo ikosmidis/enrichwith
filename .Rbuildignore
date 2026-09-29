@@ -5,7 +5,6 @@ inst/TODO.org
 inst/temporary
 inst/enrich_family.gif
 inst/dev_resids*
-inst/doc
 ^\.travis\.yml$
 ^CRAN-RELEASE$
 ^\.github$
