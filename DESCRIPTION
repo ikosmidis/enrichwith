@@ -23,7 +23,6 @@ Suggests:
     numDeriv
 Enhances:
     betareg (> 3.2-0),
-    gnm,
-    stats
+    gnm
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.1.0
