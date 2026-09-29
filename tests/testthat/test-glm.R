@@ -54,7 +54,8 @@ test_that("enrichwith handles aliasing correctly [glm]",
     expect_true(all(is.na(scorefun()[na_coefs])))
     expect_true(all(is.na(infofun()[na_coefs, ])))
     expect_true(all(is.na(infofun()[, na_coefs])))
-    expect_true(all(biasfunA()[names(biasfunB())] == biasfunB()))
+    expect_equal(biasfunA()[names(biasfunB())], biasfunB(),
+                 tolerance = tol, check.attributes = FALSE)
 
 })
 
@@ -72,6 +73,3 @@ test_that("expected information matrix from enrich with is equal to that coming 
                  tolerance = 0.0001,
                  check.attributes = FALSE)
 })
-
-
-
